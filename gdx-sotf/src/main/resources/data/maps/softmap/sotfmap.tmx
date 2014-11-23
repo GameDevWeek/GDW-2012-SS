@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="100" height="100" tilewidth="24" tileheight="24">
+ <tileset firstgid="1" source="../IronTileset.tsx"/>
+ <tileset firstgid="85" source="../FlagsTileset.tsx"/>
+ <layer name="Tile Layer 1" width="100" height="100">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+2cO28UMRRGNxBqitCiiJqCGggVLSny//8MMxIrLSs/7h2/Po9PcZooO+vxke3r6+t9ulwuP0CCl41vG89GHjY+bHwK8DvA9f+tz1+dj04fnze+BFz82XgL+Lj+/+j3nIUaPnYXr/+4d4KPvj5uXYSc4KOOj9i8f+sj5OLeScwH64rPR6wfr39Pubh1knvO6PdX44iPdxvvjXyt5GOV8eT18X3jp5NfFXysMp68PmqBD3zMAD60wIcWKR+eOMpLLO7CR9zH08UfS5XGXfgYM1958Y7X1F7lwfGcI5Tsk2bx4d33pMbekT2UlZfCfpvFxyyU9hs+8HFm8KEFPvy0zBXjo3+f4UOrz/Ch1Wf40OqzUT5a5RNHn7vO6KNVTqE0n6DQZyN8jO6LUM7vflyl8oKpMYgPf3tD+f77HGFsDOfGID6O+Tj6XrnP4gMf+MBHDx+WdR4f/XxY1nl89PWR+zw+7OwxqqWuBB9a4ON/Rtf3e+47rLCej87veu47rLCeq/qo8Vl84AMf+LBgjRMs63Ys356rna911pa6f9zCR2mbS9prWbdTZ2Y96ndD36F6Phg7gxg9D7ZGdT9Ysp+bGXxogQ8t8KFFLR+pWo2jcVQoPvPe45yNWj6OxlOpOCp2H9SSb5+V0fPVqvPSqj5K5tFcXVzs2SXnDGf3kZr3ju6hr4Tm6NJ61hV89Jz3Sr8PH/jABz7wgQ984KOljxpncL3zK2f1UfO+W8/8yll9zAo+tMCHFvjQ4gw+LHFUKGdqzd32rOue3UcujtrzpXt+NhQjWWKw3r8fMLsP9febrb340GovPrTaiw+t9uJDq70z+CjJS3rrGUrzl9b7w6185O5zWPoztTfZ+6dnPcPo+rDW+3PLHiO3Nzlz/VxvH4CPmcGHFvjQAh9a4EOLXucftWrPR9LjHKb1+UftvdpIeuyDVH//alXwoQU+tMCHFvjQAh9a4EMLfGiBDy3woQU+tMCHFvjQAh9a7D7284tHkGCvN/sL+yoJLECcAAA=
+  </data>
+ </layer>
+ <layer name="Invisible Layer" width="100" height="100">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+3bsQ0AIAgAQba0dP8tLG0tSEC9WwDqJ0QA3Gd8Ph8A4NSsXgAAAADgQW5FAL1p4wAAAJuWBQAAAAAAAAAAdOcXBAAAACCf5gIAAAAAAAAAAAAAAAB5FoQOxQpAnAAA
+  </data>
+ </layer>
+</map>

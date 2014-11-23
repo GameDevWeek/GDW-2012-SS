@@ -1,0 +1,38 @@
+{
+    "chili":  {
+        "image": "eatable_chili",
+        "isTransferable": true,
+        "modifiers": [
+            { "type": "speed", "value": 1.5, "lifetime": 5, "effect": "fire" },
+            { "type": "size", "value": -2, "lifetime": 2 }
+        ]
+    },
+    "garlic":  {
+        "image": "eatable_garlic",
+        "isTransferable": false,
+        "modifiers": [
+            { "type": "immunity", "value": 0, "lifetime": 5, "effect": "green_smoke" }
+        ]
+    },
+    "magic_mushroom":  {
+        "image": "eatable_magic_mushroom",
+        "isTransferable": true,
+        "modifiers": [
+            { "type": "halucination", "value": 1, "lifetime": 20, "effect": "halucination" }
+        ]
+    },
+    "trap_bubblegum":  {
+        "image": "usable_bubblegum",
+        "isTransferable": false,
+        "modifiers": [
+            { "type": "speed", "value": 0.3, "lifetime": 2 }
+        ]
+    },
+    "trap_bananapeel":  {
+        "image": "usable_banana",
+        "isTransferable": false,
+        "modifiers": [
+            { "type": "slipped", "value": 1, "lifetime": 2, "effect": "banana" }
+        ]
+    }
+}

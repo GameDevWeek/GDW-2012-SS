@@ -1,0 +1,17 @@
+{
+    "trap_bubblegum": {
+        "image": "usable_bubblegum_icon",
+        "sound": "player_swallow",
+        "entity": "trap_bubblegum"
+    },
+    "trap_bananapeel": {
+        "image": "usable_banana_icon",
+        "sound": "player_swallow",
+        "entity": "trap_bananapeel"
+    },
+    "candle": {
+        "image": "usable_candle_icon",
+        "sound": "player_swallow",
+        "entity": "candle"
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "eatable_generic": "data/sounds/eatable_generic.ogg",
+    "effect_chili": "data/sounds/effect_chili.ogg",
+    "effect_banana": "data/sounds/effect_banana.ogg",
+    "player_eat_player": "data/sounds/player/player_eat_player.ogg",
+    "countdown_three": "data/sounds/countdown/three.ogg",
+    "countdown_two": "data/sounds/countdown/two.ogg",
+    "countdown_one": "data/sounds/countdown/one.ogg",
+    "countdown_go": "data/sounds/countdown/go.ogg",
+    "player_teleport": "data/sounds/player/swallow.ogg"
+}

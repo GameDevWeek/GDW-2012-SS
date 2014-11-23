@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="100" height="67" tilewidth="24" tileheight="24">
+ <tileset firstgid="1" source="necron_tileset.tsx"/>
+ <tileset firstgid="115" name="portal_tileset_6" tilewidth="24" tileheight="144">
+  <image source="portal_tileset_6.png" width="192" height="144"/>
+  <tile id="0">
+   <properties>
+    <property name="height" value="6"/>
+    <property name="teleport" value="5"/>
+   </properties>
+  </tile>
+  <tile id="1">
+   <properties>
+    <property name="height" value="6"/>
+    <property name="teleport" value="-5"/>
+   </properties>
+  </tile>
+  <tile id="2">
+   <properties>
+    <property name="height" value="6"/>
+    <property name="teleport" value="6"/>
+   </properties>
+  </tile>
+  <tile id="3">
+   <properties>
+    <property name="height" value="6"/>
+    <property name="teleport" value="-6"/>
+   </properties>
+  </tile>
+  <tile id="4">
+   <properties>
+    <property name="height" value="6"/>
+    <property name="teleport" value="7"/>
+   </properties>
+  </tile>
+  <tile id="5">
+   <properties>
+    <property name="height" value="6"/>
+    <property name="teleport" value="-7"/>
+   </properties>
+  </tile>
+  <tile id="6">
+   <properties>
+    <property name="height" value="6"/>
+    <property name="teleport" value="8"/>
+   </properties>
+  </tile>
+  <tile id="7">
+   <properties>
+    <property name="height" value="6"/>
+    <property name="teleport" value="-8"/>
+   </properties>
+  </tile>
+ </tileset>
+ <tileset firstgid="123" source="portal_tileset_4.tsx"/>
+ <tileset firstgid="131" name="portal_tileset_2" tilewidth="24" tileheight="48">
+  <image source="portal_tileset_2.png" width="192" height="48"/>
+  <tile id="0">
+   <properties>
+    <property name="height" value="2"/>
+    <property name="teleport" value="9"/>
+   </properties>
+  </tile>
+  <tile id="1">
+   <properties>
+    <property name="height" value="2"/>
+    <property name="teleport" value="-9"/>
+   </properties>
+  </tile>
+  <tile id="2">
+   <properties>
+    <property name="height" value="2"/>
+    <property name="teleport" value="10"/>
+   </properties>
+  </tile>
+  <tile id="3">
+   <properties>
+    <property name="height" value="2"/>
+    <property name="teleport" value="-10"/>
+   </properties>
+  </tile>
+  <tile id="4">
+   <properties>
+    <property name="height" value="2"/>
+    <property name="teleport" value="11"/>
+   </properties>
+  </tile>
+  <tile id="5">
+   <properties>
+    <property name="height" value="2"/>
+    <property name="teleport" value="-11"/>
+   </properties>
+  </tile>
+  <tile id="6">
+   <properties>
+    <property name="height" value="2"/>
+    <property name="teleport" value="12"/>
+   </properties>
+  </tile>
+  <tile id="7">
+   <properties>
+    <property name="height" value="2"/>
+    <property name="teleport" value="-12"/>
+   </properties>
+  </tile>
+ </tileset>
+ <tileset firstgid="139" name="Flags" tilewidth="24" tileheight="24">
+  <image source="flags.png" width="96" height="96"/>
+  <tile id="0">
+   <properties>
+    <property name="team" value="0"/>
+   </properties>
+  </tile>
+  <tile id="1">
+   <properties>
+    <property name="team" value="0"/>
+   </properties>
+  </tile>
+  <tile id="2">
+   <properties>
+    <property name="team" value="0"/>
+   </properties>
+  </tile>
+  <tile id="3">
+   <properties>
+    <property name="team" value="0"/>
+   </properties>
+  </tile>
+  <tile id="8">
+   <properties>
+    <property name="team" value="1"/>
+   </properties>
+  </tile>
+  <tile id="9">
+   <properties>
+    <property name="team" value="1"/>
+   </properties>
+  </tile>
+  <tile id="10">
+   <properties>
+    <property name="team" value="1"/>
+   </properties>
+  </tile>
+  <tile id="11">
+   <properties>
+    <property name="team" value="1"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="Kachelebene 1" width="100" height="67">
+  <data encoding="base64" compression="gzip">
+   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
+  </data>
+ </layer>
+ <layer name="Kachelebene 2" width="100" height="67">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+3OMQ6AIAAEMP4vsoi+15lRE3NB2he0FID5bOnAgvZ04CNHOgAAAAAAAAAAAAAALKmmA/BQSwcAAAAAAIBBTwcAAAAAYHJnOvDClQ4A8Bs3s7nAcLBoAAA=
+  </data>
+ </layer>
+</map>

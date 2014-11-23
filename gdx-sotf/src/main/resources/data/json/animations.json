@@ -1,0 +1,82 @@
+{
+    "player_team0": {
+        "filename": "data/animations/player/team0.png",
+        "frames" : 12,
+        "frameDuration": [0.04],
+        "playType" : "LOOP",
+        "columns": 12,
+        "rows" : 1
+    },
+    "player_team1": {
+        "filename": "data/animations/player/team1.png",
+        "frames" : 12,
+        "frameDuration": [0.04],
+        "playType" : "LOOP",
+        "columns": 12,
+        "rows" : 1
+    },
+    "player_team2": {
+        "filename": "data/animations/player/team2.png",
+        "frames" : 12,
+        "frameDuration": [0.04],
+        "playType" : "LOOP",
+        "columns": 12,
+        "rows" : 1
+    },
+    "player_team3": {
+        "filename": "data/animations/player/team3.png",
+        "frames" : 12,
+        "frameDuration": [0.04],
+        "playType" : "LOOP",
+        "columns": 12,
+        "rows" : 1
+    },
+    "player_halucinating": {
+        "filename": "data/animations/player/halucinating.png",
+        "frames" : 12,
+        "frameDuration": [0.04],
+        "playType" : "LOOP",
+        "columns": 12,
+        "rows" : 1
+    },
+    "player_wiggle": {
+        "filename": "data/animations/player/wiggle.png",
+        "frames" : 14,
+        "frameDuration": [0.04],
+        "playType" : "LOOP",
+        "columns": 14,
+        "rows" : 1
+    },
+    "player_wiggle2": {
+        "filename": "data/animations/player/wiggle2.png",
+        "frames" : 14,
+        "frameDuration": [0.04],
+        "playType" : "LOOP",
+        "columns": 14,
+        "rows" : 1
+    },
+    "player_eaten": {
+        "filename": "data/animations/player/eaten.png",
+        "frames" : 9,
+        "frameDuration": [0.14],
+        "playType" : "NORMAL",
+        "columns": 9,
+        "rows" : 1
+    },
+    "player_starved": {
+        "filename": "data/animations/player/starved.png",
+        "frames" : 9,
+        "frameDuration": [0.14],
+        "playType" : "NORMAL",
+        "columns": 9,
+        "rows" : 1
+    },
+    "teambuff_pizza": {
+        "filename": "data/animations/hud/teambuff_pizza.png",
+        "frames" : 2,
+        "frameDuration": [0.2],
+        "playType" : "LOOP",
+        "columns": 2,
+        "rows" : 1
+    }
+}

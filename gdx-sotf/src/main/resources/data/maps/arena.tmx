@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="75" height="75" tilewidth="24" tileheight="24">
+ <tileset firstgid="1" source="iron_tileset.tsx"/>
+ <tileset firstgid="109" source="portal_tileset_2.tsx"/>
+ <tileset firstgid="117" source="portal_tileset_4.tsx"/>
+ <tileset firstgid="125" source="portal_tileset_6.tsx"/>
+ <tileset firstgid="133" source="FlagsTileset.tsx"/>
+ <layer name="Kachelebene 1" width="75" height="75">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+2cW2sVMRDHp4qgFS/FC4gWfRDBfgEF6YO29rSw4u1zKHgFL6Af3QznBGeHyW4myW42J3n4P7RlN5tfsnPNdgcAzjeN6oLRFaP7Rg+anHpotAdrVk+g8XIJOR1An1Xj5eYksWq8ZE4uVqgdyG9Lc9vxA/Bjhb+7bHS3Qt3bcNGwwr9dNLpUkXbJ3LWsrho9M7pVgZ4aXY9khdd3FcjONQert0bvNnoTca1W2rGWwOoVrP0p+pTXynnYa0P811mhrPA+5wLmgdfegXF/dY1pj6yLdo/NyYq/N++hH3vsK1i9NDoZ0Gpzb87KrkvIHpuTlfTe3NjcB5/5yOhY8ew+e5azojGhZm1ysOLvjY3rzpTPHTsWrsuJcm3mZEXfmxVZ+ylY8bFOE4w1t223Ngtt1Udyny4xKz5Wiay4zaL2KjUr11jfQB+j5GJF7Yi1IX8mYsXHKsUPoqwdWcF/v473SekDh8YqxQ9aoR1BG/IV+jYkJSe+v6gfOYXl+0H67NaOUHs1Jysau/vmj7lYWTtCY57UjKgf/An9fCokf8zBitoRZKa1GyH71+5hTS2Xr2PO3JnGi6ntOt+/1J4fgTuHdMUzuVlNLVd+7VoXVzxTA6tQtlJO1FitJdWKGitZrhprTfZKw0qqddk6amPVWMWwkmIvGvs1Vv38B3/m8ZeNMRqrPqsv4K5tLaWXmqLXGctqrLaVuz/IfXVMrzOGlZQLTclK2zfn/cGQ+lsK+eZCKVm5Yroh8f7gVHl0CqVmNdY3H6p7zL2fcrIa65vz+keKPlSprHzk6tn9gLWvntsHLpmVVKsMOSdTCyteTws5J1MDK1pPk3KLpfrAHKzo/qKsPkBY37w2VjF9821mRf3gd5gubvfNIZZ+9kPqK4X2zX3HSXHOdgl+MKZv7jsO97klnP3g5+1i++a+41A/UsIZSJ+11/bNfWwW2sbPjFUJ5/pcax+SP2ptVuwZwqXXkF35oy8r3p/Ba39BGWcgQ95TaW/4fPsg+ZGSzkCGsAqdr5RPleQHtaLz7QLny/Mp2tMqxQ9q91dHxu3A3+9zViV+5xXD6hP4f69VCyvqB3+DHLuO2ehaWEl+kJ87GLNZeI+/lbCS8kfXmQNJ6B/odwfbykrKH0PmW8M7KO2xkBpXzLUlsoo5453ifHhJrHIrBavHkP9/l8yhR5GsbkL+/10yp24HstLWM7dFttbhy0pbz9w27XuyOjR63gQvRlg1Tm5elFXjNMzLsmqcxnkhq9rtuMbe/wO+/9jk5FcAAA==
+  </data>
+ </layer>
+ <layer name="Invisible Layer" width="75" height="75">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+3XMQqAMBAEwPxewUIxH7ayshDE3EUz84E9UizZUgAAAGAsS0DGHJDxpog3ASBWVrdPSbnQM38tgHtf29EAXNmDAAAA8F9r9gEANLElZO4JmQC0o9fHYBMCpx57P2PXEKdmHwAAAAAPHOqAkbDkVwAA
+  </data>
+ </layer>
+</map>

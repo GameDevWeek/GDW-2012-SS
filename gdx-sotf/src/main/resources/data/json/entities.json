@@ -1,0 +1,155 @@
+{
+    "cookie": {
+        "frequency": 5,
+        "components": {
+            "EatableComponent" : {
+                "energy": 10,
+                "sound": "eatable_generic"
+            },
+            "RenderComponent": {
+                "image": "eatable_cookie"
+            }
+        }
+    },
+    "muffin": {
+        "frequency": 5,
+        "components": {
+            "EatableComponent" : {
+                "energy": 10,
+                "sound": "eatable_generic"
+            },
+            "RenderComponent": {
+                "image": "eatable_muffin"
+            }
+        }
+    },
+    "cake": {
+        "frequency": 3,
+        "components": {
+            "EatableComponent" : {
+                "energy": 20,
+                "sound": "eatable_generic",
+                "dropable": "candle"
+            },
+            "RenderComponent": {
+                "image": "eatable_cake"
+            }
+        }
+    },
+    "chili": {
+        "frequency": 3,
+        "components": {
+            "EatableComponent" : {
+                "energy": 0,
+                "sound": "effect_chili",
+                "powerup": "chili"
+            },
+            "RenderComponent": {
+                "image": "eatable_chili"
+            }
+        }
+    },
+    "garlic": {
+        "frequency": 3,
+        "components": {
+            "EatableComponent" : {
+                "energy": 0,
+                "sound": "eatable_generic",
+                "powerup": "garlic"
+            },
+            "RenderComponent": {
+                "image": "eatable_garlic"
+            }
+        }
+    },
+    "gumbox": {
+        "frequency": 3,
+        "components": {
+            "EatableComponent" : {
+                "energy": 5,
+                "sound": "eatable_generic",
+                "dropable": "trap_bubblegum"
+            },
+            "RenderComponent": {
+                "image": "eatable_bubblegum"
+            }
+        }
+    },
+    "banana": {
+        "frequency": 3,
+        "components": {
+            "EatableComponent" : {
+                "energy": 5,
+                "sound": "eatable_generic",
+                "dropable": "trap_bananapeel"
+            },
+            "RenderComponent": {
+                "image": "eatable_banana"
+            }
+        }
+    },
+    "pizza": {
+        "frequency": 1,
+        "components": {
+            "EatableComponent" : {
+                "energy": 15,
+                "sound": "eatable_generic"
+            },
+            "RenderComponent": {
+                "image": "eatable_pizza"
+            },
+            "PizzaSliceComponent": {
+            }
+        }
+    },
+    "magic_mushroom": {
+        "frequency": 1,
+        "components": {
+            "EatableComponent" : {
+                "energy": 5,
+                "sound": "eatable_generic",
+                "powerup": "magic_mushroom"
+            },
+            "RenderComponent": {
+                "image": "eatable_magic_mushroom"
+            }
+        }
+    },
+    "candle": {
+        "frequency": 0,
+        "components": {
+            "RenderComponent": {
+                "image": "candle"
+            },
+            "LightComponent": {
+                "radius": "400",
+                "shrinkPixelPerSecond": "20"
+            }
+        }
+    },
+    "trap_bubblegum": {
+        "frequency": 0,
+        "components": {
+            "ItemTrapComponent" : {
+                "energy": 0,
+                "sound": "eatable_generic",
+                "powerup": "trap_bubblegum"
+            },
+            "RenderComponent": {
+                "image": "usable_bubblegum"
+            }
+        }
+    },
+    "trap_bananapeel": {
+        "frequency": 0,
+        "components": {
+            "ItemTrapComponent" : {
+                "sound": "effect_banana",
+                "powerup": "trap_bananapeel"
+            },
+            "RenderComponent": {
+                "image": "usable_banana"
+            }
+        }
+    }
+}
