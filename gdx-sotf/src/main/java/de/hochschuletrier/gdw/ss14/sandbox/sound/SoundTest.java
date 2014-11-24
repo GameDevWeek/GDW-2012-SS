@@ -26,7 +26,7 @@ public class SoundTest extends SandboxGame {
     }
 
     @Override
-    public void stop() {
+    public void dispose() {
         emitter.dispose();
     }
 

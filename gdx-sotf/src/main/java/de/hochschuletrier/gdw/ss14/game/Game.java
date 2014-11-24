@@ -81,18 +81,7 @@ public class Game extends InputAdapter {
     private final Team[] teams = new Team[Constants.TEAM_COLOR_TABLE.length];
     private AssetManagerX assetManager;
 
-    public Game() {
-    }
-
-    public LimitedSmoothCamera getCamera() {
-        return camera;
-    }
-
-    public Entity getLocalPlayer() {
-        return localPlayer;
-    }
-
-    public void init(AssetManagerX assetManager) {
+    public Game(AssetManagerX assetManager, String mapFile) {
         this.assetManager = assetManager;
         for(int i=0; i<teams.length; i++) {
             teams[i] = new Team(i, "Team " + i, Constants.TEAM_COLOR_TABLE[i]);
@@ -109,9 +98,21 @@ public class Game extends InputAdapter {
         botsEnabled.addListener((CVar) -> engine.getSystem(BotSystem.class).setProcessing(botsEnabled.get()));
         addSystems(assetManager);
         addContactListeners();
+        map = loadMap(mapFile);
         setupPhysixWorld();
 
         Main.inputMultiplexer.addProcessor(this);
+    }
+
+    public void dispose() {
+    }
+
+    public LimitedSmoothCamera getCamera() {
+        return camera;
+    }
+
+    public Entity getLocalPlayer() {
+        return localPlayer;
     }
 
     private void addSystems(AssetManagerX assetManager) {
@@ -172,7 +173,6 @@ public class Game extends InputAdapter {
 
     private void setupPhysixWorld() {
         PhysixSystem physixSystem = engine.getSystem(PhysixSystem.class);
-        map = loadMap("data/maps/HumpNRun.tmx");
         // Generate static world
         int tileWidth = map.getTileWidth();
         int tileHeight = map.getTileHeight();

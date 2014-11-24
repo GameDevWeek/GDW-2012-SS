@@ -7,6 +7,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.gdx.input.InputInterceptor;
+import de.hochschuletrier.gdw.commons.gdx.state.BaseGameState;
 import de.hochschuletrier.gdw.commons.gdx.state.transition.SplitHorizontalTransition;
 import de.hochschuletrier.gdw.commons.gdx.utils.DrawUtil;
 import de.hochschuletrier.gdw.ss14.Main;
@@ -16,39 +17,21 @@ import de.hochschuletrier.gdw.ss14.Main;
  *
  * @author Santo Pfingsten
  */
-public class MainMenuState extends MyBaseGameState implements InputProcessor {
+public class MainMenuState extends BaseGameState implements InputProcessor {
 
+    private final AssetManagerX assetManager;
     private Music music;
 
     InputInterceptor inputProcessor;
 
-    public MainMenuState() {
-    }
-
-    @Override
-    public void init(AssetManagerX assetManager) {
-        super.init(assetManager);
-
+    public MainMenuState(AssetManagerX assetManager) {
+        this.assetManager = assetManager;
         music = assetManager.getMusic("menu");
 
         music.setLooping(true);
 //        music.play();
 
-        inputProcessor = new InputInterceptor(this) {
-            @Override
-            public boolean keyUp(int keycode) {
-                switch (keycode) {
-                    case Keys.ESCAPE:
-                        if (GameStateEnum.GAMEPLAY.isActive()) {
-                            GameStateEnum.MAINMENU.activate(new SplitHorizontalTransition(500).reverse(), null);
-                        } else {
-                            GameStateEnum.GAMEPLAY.activate(new SplitHorizontalTransition(500), null);
-                        }
-                        return true;
-                }
-                return isActive && mainProcessor.keyUp(keycode);
-            }
-        };
+        inputProcessor = new InputInterceptor(this);
         Main.inputMultiplexer.addProcessor(inputProcessor);
     }
 
@@ -63,13 +46,13 @@ public class MainMenuState extends MyBaseGameState implements InputProcessor {
     }
 
     @Override
-    public void onEnter(MyBaseGameState previousState) {
+    public void onEnter(BaseGameState previousState) {
         inputProcessor.setActive(true);
         inputProcessor.setBlocking(true);
     }
 
     @Override
-    public void onLeave(MyBaseGameState nextState) {
+    public void onLeave(BaseGameState nextState) {
         inputProcessor.setActive(false);
         inputProcessor.setBlocking(false);
     }
@@ -95,7 +78,12 @@ public class MainMenuState extends MyBaseGameState implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return false;
+        Main main = Main.getInstance();
+        if(!main.isTransitioning()) {
+            GameplayState gameplayState = new GameplayState(assetManager, "data/maps/HumpNRun.tmx");
+            main.changeState(gameplayState, new SplitHorizontalTransition(500), null);
+        }
+        return true;
     }
 
     @Override

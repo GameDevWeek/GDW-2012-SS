@@ -5,21 +5,20 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
+import de.hochschuletrier.gdw.commons.gdx.state.BaseGameState;
 import de.hochschuletrier.gdw.commons.gdx.utils.DrawUtil;
 import de.hochschuletrier.gdw.ss14.Main;
 
-public class LoadGameState extends MyBaseGameState {
+public class LoadGameState extends BaseGameState {
 
     private boolean isDone;
-    private Texture loadscreen;
+    private final Texture loadscreen;
+    private final AssetManagerX assetManager;
+    private final Runnable completeFunc;
 
-    public LoadGameState() {
-    }
-
-    @Override
-    public void init(AssetManagerX assetManager) {
-        super.init(assetManager);
-        
+    public LoadGameState(AssetManagerX assetManager, Runnable completeFunc) {
+        this.assetManager = assetManager;
+        this.completeFunc = completeFunc;
         loadscreen = new Texture(Gdx.files.internal("data/images/LoadScreen/titlescreen.png"));
     }
 
@@ -39,8 +38,7 @@ public class LoadGameState extends MyBaseGameState {
             assetManager.update();
 
             if (assetManager.getProgress() == 1) {
-                Main.getInstance().onLoadComplete();
-
+                completeFunc.run();
                 isDone = true;
             }
         }
@@ -50,5 +48,6 @@ public class LoadGameState extends MyBaseGameState {
 
     @Override
     public void dispose() {
+        loadscreen.dispose();
     }
 }

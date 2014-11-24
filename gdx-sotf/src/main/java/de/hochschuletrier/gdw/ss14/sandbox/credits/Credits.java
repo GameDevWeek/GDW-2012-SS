@@ -33,7 +33,7 @@ public class Credits extends SandboxGame {
     }
 
     @Override
-    public void stop() {
+    public void dispose() {
     }
 
     @Override
