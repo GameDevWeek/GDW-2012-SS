@@ -20,12 +20,15 @@ public class NetClientSimple {
 
     protected NetManagerClient manager;
     protected NetConnection connection;
-    protected final NetDatagramDistributor distributor;
+    protected final NetDatagramDistributor distributor = new NetDatagramDistributor();
     protected final NetDatagramPool datagramPool;
 
-    public NetClientSimple(NetDatagramHandler handler, NetDatagramPool datagramPool) {
-        distributor = new NetDatagramDistributor(handler);
+    public NetClientSimple(NetDatagramPool datagramPool) {
         this.datagramPool = datagramPool;
+    }
+    
+    public void setHandler(NetDatagramHandler handler) {
+        distributor.setHandler(handler);
     }
 
     public boolean isRunning() {
@@ -38,9 +41,7 @@ public class NetClientSimple {
                 NetDatagram datagram = connection.receive();
                 if (datagram != null) {
                     try {
-                        if (!distributor.handle(datagram)) {
-                            connection.disconnect();
-                        }
+                        distributor.handle(datagram);
                     } catch (InvocationTargetException e) {
                         logger.error("Error calling handle() for datagram", e);
                     } finally {
@@ -68,6 +69,7 @@ public class NetClientSimple {
     public void disconnect() {
         if (connection != null) {
             connection.disconnect();
+            connection = null;
         }
     }
 

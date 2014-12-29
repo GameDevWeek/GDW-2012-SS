@@ -15,7 +15,7 @@ import de.hochschuletrier.gdw.examples.netcode.pingpong.datagrams.DatagramType;
 public class ServerTest implements NetDatagramHandler, NetServerSimple.Listener {
 
     private final NetDatagramPool datagramPool = new NetDatagramPool(DatagramType.MAPPER);
-    private final NetServerSimple netServer = new NetServerSimple(this, this, datagramPool);
+    private final NetServerSimple netServer = new NetServerSimple(datagramPool);
 
     private void run() {
         if (netServer.start(9090, 10)) {
@@ -28,8 +28,15 @@ public class ServerTest implements NetDatagramHandler, NetServerSimple.Listener 
         }
     }
 
-    public ServerTest() {
+    private ServerTest() {
         DatagramType.setPool(datagramPool);
+    }
+
+    public static ServerTest create() {
+        final ServerTest instance = new ServerTest();
+        instance.netServer.setHandler(instance);
+        instance.netServer.setListener(instance);
+        return instance;
     }
 
     public void handle(ChatDatagram datagram) {
@@ -64,7 +71,7 @@ public class ServerTest implements NetDatagramHandler, NetServerSimple.Listener 
     }
 
     public static void main(String[] args) {
-        ServerTest test = new ServerTest();
+        ServerTest test = ServerTest.create();
         test.run();
     }
 }

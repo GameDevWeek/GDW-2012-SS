@@ -15,7 +15,7 @@ import de.hochschuletrier.gdw.examples.netcode.pingpong.datagrams.DatagramType;
 public class ClientTest implements NetDatagramHandler {
 
     private final NetDatagramPool datagramPool = new NetDatagramPool(DatagramType.MAPPER);
-    private final NetClientSimple netClient = new NetClientSimple(this, datagramPool);
+    private final NetClientSimple netClient = new NetClientSimple(datagramPool);
     private NetConnection connection;
 
     public void sendPing() {
@@ -25,8 +25,14 @@ public class ClientTest implements NetDatagramHandler {
         connection.sendUnreliable(ping);
     }
     
-    ClientTest() {
+    private ClientTest() {
         DatagramType.setPool(datagramPool);
+    }
+
+    static ClientTest create() {
+        final ClientTest instance = new ClientTest();
+        instance.netClient.setHandler(instance);
+        return instance;
     }
 
     private void run() {
@@ -55,7 +61,7 @@ public class ClientTest implements NetDatagramHandler {
     }
 
     public static void main(String[] args) {
-        ClientTest test = new ClientTest();
+        ClientTest test = ClientTest.create();
         test.run();
     }
 }

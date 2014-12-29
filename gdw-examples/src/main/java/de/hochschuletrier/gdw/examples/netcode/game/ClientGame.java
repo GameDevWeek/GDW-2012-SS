@@ -18,13 +18,13 @@ import java.util.HashMap;
 public class ClientGame extends BaseGame implements NetDatagramHandler {
 
     private final NetDatagramPool datagramPool = new NetDatagramPool(DatagramType.MAPPER);
-    private final NetClientSimple netClient = new NetClientSimple(this, datagramPool);
+    private final NetClientSimple netClient = new NetClientSimple(datagramPool);
     private final HashMap<Long, Entity> entityMap = new HashMap<>();
     private boolean moveChanged;
     private int moveX, moveY;
     private NetConnection connection;
 
-    public ClientGame() {
+    private ClientGame() {
         super("NetPack Game Client Example");
         DatagramType.setPool(datagramPool);
 
@@ -32,6 +32,12 @@ public class ClientGame extends BaseGame implements NetDatagramHandler {
             System.exit(-1);
         }
         connection = netClient.getConnection();
+    }
+
+    public static ClientGame create() {
+        final ClientGame instance = new ClientGame();
+        instance.netClient.setHandler(instance);
+        return instance;
     }
 
     @Override
@@ -122,7 +128,7 @@ public class ClientGame extends BaseGame implements NetDatagramHandler {
     }
 
     public static void main(String[] argv) {
-        ClientGame game = new ClientGame();
+        ClientGame game = ClientGame.create();
         game.start();
     }
 }

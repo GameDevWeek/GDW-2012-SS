@@ -18,10 +18,11 @@ public class NetDatagramDistributor {
     private static final Logger logger = LoggerFactory.getLogger(NetDatagramDistributor.class);
 
     private final HashMap<Class, Method> methods = new HashMap();
-    private final NetDatagramHandler handler;
+    private NetDatagramHandler handler;
 
-    public NetDatagramDistributor(NetDatagramHandler handler) {
+    public void setHandler(NetDatagramHandler handler) {
         this.handler = handler;
+        methods.clear();
         try {
             for (Method method : handler.getClass().getMethods()) {
                 if (method.getName().equals("handle")) {
@@ -37,17 +38,21 @@ public class NetDatagramDistributor {
     }
 
     public boolean handle(NetDatagram datagram) throws InvocationTargetException {
-        try {
-            Method method = methods.get(datagram.getClass());
-            if (method != null) {
-                method.invoke(handler, datagram);
-                return true;
+        if(handler == null) {
+            logger.error("NetDatagramHandler has not been set!");
+        } else {
+            try {
+                Method method = methods.get(datagram.getClass());
+                if (method != null) {
+                    method.invoke(handler, datagram);
+                    return true;
+                }
+                logger.warn("Missing method void handle({}) in handler class {}!", datagram.getClass().getSimpleName(), handler.getClass().getSimpleName());
+            } catch (IllegalAccessException e) {
+                logger.error("Failed accessing method void handle({}) in handler class {}.. maybe it isn't public?", datagram.getClass().getSimpleName(), handler.getClass().getSimpleName(), e);
+            } catch (IllegalArgumentException e) {
+                logger.error("Failed calling method void handle({}) in handler class {}.. illegal argument?!?", datagram.getClass().getSimpleName(), handler.getClass().getSimpleName(), e);
             }
-            logger.error("Missing method void handle({}) in handler class {}!", datagram.getClass().getSimpleName(), handler.getClass().getSimpleName());
-        } catch (IllegalAccessException e) {
-            logger.error("Failed accessing method void handle({}) in handler class {}.. maybe it isn't public?", datagram.getClass().getSimpleName(), handler.getClass().getSimpleName(), e);
-        } catch (IllegalArgumentException e) {
-            logger.error("Failed calling method void handle({}) in handler class {}.. illegal argument?!?", datagram.getClass().getSimpleName(), handler.getClass().getSimpleName(), e);
         }
         return false;
     }

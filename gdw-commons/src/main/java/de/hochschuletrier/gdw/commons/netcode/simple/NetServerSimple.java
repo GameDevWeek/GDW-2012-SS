@@ -23,14 +23,20 @@ public class NetServerSimple implements NetDatagramHandler {
 
     protected NetManagerServer manager;
     protected final List<NetConnection> connections = new ArrayList<>();
-    protected final NetDatagramDistributor distributor;
-    protected final Listener listener;
+    protected final NetDatagramDistributor distributor = new NetDatagramDistributor();
+    protected Listener listener;
     protected final NetDatagramPool datagramPool;
 
-    public NetServerSimple(NetDatagramHandler handler, Listener listener, NetDatagramPool datagramPool) {
-        distributor = new NetDatagramDistributor(handler);
-        this.listener = listener;
+    public NetServerSimple(NetDatagramPool datagramPool) {
         this.datagramPool = datagramPool;
+    }
+
+    public void setHandler(NetDatagramHandler handler) {
+        distributor.setHandler(handler);
+    }
+
+    public void setListener(Listener listener) {
+        this.listener = listener;
     }
 
     public boolean isRunning() {
@@ -65,13 +71,15 @@ public class NetServerSimple implements NetDatagramHandler {
 
             if (!connection.isConnected()) {
                 it.remove();
-                listener.onDisconnect(connection);
+                if (listener != null) {
+                    listener.onDisconnect(connection);
+                }
             }
         }
     }
 
     protected void getNewConnections() {
-        if (isRunning()) {
+        if (isRunning() && listener != null) {
             NetConnection connection = manager.pollNewConnection();
             while (connection != null) {
                 if (listener.onConnect(connection)) {

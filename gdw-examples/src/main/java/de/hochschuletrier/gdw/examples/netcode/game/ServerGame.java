@@ -1,7 +1,6 @@
 package de.hochschuletrier.gdw.examples.netcode.game;
 
 import de.hochschuletrier.gdw.commons.netcode.core.NetConnection;
-import de.hochschuletrier.gdw.commons.netcode.core.NetDatagram;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetDatagramHandler;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetServerSimple;
 import de.hochschuletrier.gdw.commons.netcode.core.NetDatagramPool;
@@ -20,16 +19,23 @@ public class ServerGame extends BaseGame implements NetDatagramHandler, NetServe
     private final NetDatagramPool datagramPool = new NetDatagramPool(DatagramType.MAPPER);
 
     private final ArrayList<Entity> players = new ArrayList();
-    private final NetServerSimple netServer = new NetServerSimple(this, this, datagramPool);
+    private final NetServerSimple netServer = new NetServerSimple(datagramPool);
     private short entityCount = 0;
 
-    public ServerGame() {
+    private ServerGame() {
         super("NetPack Game Server Example");
         DatagramType.setPool(datagramPool);
 
         if (!netServer.start(9090, 10)) {
             System.exit(-1);
         }
+    }
+
+    public static ServerGame create() {
+        final ServerGame instance = new ServerGame();
+        instance.netServer.setHandler(instance);
+        instance.netServer.setListener(instance);
+        return instance;
     }
 
     @Override
@@ -57,7 +63,7 @@ public class ServerGame extends BaseGame implements NetDatagramHandler, NetServe
     }
 
     public static void main(String[] argv) {
-        ServerGame game = new ServerGame();
+        ServerGame game = ServerGame.create();
         game.start();
     }
 
