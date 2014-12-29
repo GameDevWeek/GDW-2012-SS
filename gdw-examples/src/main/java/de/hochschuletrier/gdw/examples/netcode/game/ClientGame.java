@@ -1,42 +1,124 @@
 package de.hochschuletrier.gdw.examples.netcode.game;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Point;
+import de.hochschuletrier.gdw.commons.netcode.core.NetConnection;
+import de.hochschuletrier.gdw.commons.netcode.simple.NetDatagramHandler;
+import de.hochschuletrier.gdw.commons.netcode.simple.NetClientSimple;
+import de.hochschuletrier.gdw.commons.netcode.core.NetDatagramPool;
+import de.hochschuletrier.gdw.examples.netcode.game.datagrams.DatagramType;
+import de.hochschuletrier.gdw.examples.netcode.game.datagrams.DestroyEntityDatagram;
+import de.hochschuletrier.gdw.examples.netcode.game.datagrams.MoveIntentDatagram;
+import de.hochschuletrier.gdw.examples.netcode.game.datagrams.PlayerDatagram;
+import java.awt.event.KeyEvent;
+import java.util.HashMap;
 
 /**
  *
  * @author Santo Pfingsten
  */
-public class ClientGame extends BaseGame {
+public class ClientGame extends BaseGame implements NetDatagramHandler {
 
-    Entity player = new Entity();
-
-    public static class Entity {
-
-        Point position = new Point();
-    }
+    private final NetDatagramPool datagramPool = new NetDatagramPool(DatagramType.MAPPER);
+    private final NetClientSimple netClient = new NetClientSimple(this, datagramPool);
+    private final HashMap<Long, Entity> entityMap = new HashMap<>();
+    private boolean moveChanged;
+    private int moveX, moveY;
+    private NetConnection connection;
 
     public ClientGame() {
-        super("NetPack Game Example");
+        super("NetPack Game Client Example");
+        DatagramType.setPool(datagramPool);
 
-        Client.init("localhost", 9090);
+        if (!netClient.connect("localhost", 9090)) {
+            System.exit(-1);
+        }
+        connection = netClient.getConnection();
     }
 
     @Override
-    public void paint(Graphics g) {
-        Client.handleDatagrams(player);
+    public void update() {
+        netClient.update();
 
-        setBackground(Color.black);
-        g.clearRect(0, 0, 640, 480);
-
-        // render the circle red when updates have been received, white otherwise (messages have been deltified away by the server)
-        if ((System.currentTimeMillis() - Client.lastMessage) < 50) {
-            g.setColor(Color.red);
-        } else {
-            g.setColor(Color.white);
+        // Render the dot red when updates have been received, white otherwise (messages have been deltified away by the server)
+        for (Entity player : entityMap.values()) {
+            player.setChanged((System.currentTimeMillis() - player.getLastMessage()) < 50);
         }
-        g.drawOval(player.position.x, player.position.y, 50, 50);
+    }
+
+    public void handle(DestroyEntityDatagram datagram) {
+        destroyEntity(datagram.getID());
+    }
+
+    public void handle(PlayerDatagram datagram) {
+        Entity entity = findOrCreateEntity(datagram.getID());
+        entity.setPosition(datagram.getX(), datagram.getY());
+        entity.setLastMessage();
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_W:
+                moveY = setMove(moveY, -1);
+                break;
+            case KeyEvent.VK_S:
+                moveY = setMove(moveY, 1);
+                break;
+            case KeyEvent.VK_A:
+                moveX = setMove(moveX, -1);
+                break;
+            case KeyEvent.VK_D:
+                moveX = setMove(moveX, 1);
+                break;
+        }
+
+        if (moveChanged) {
+            sendMoveIntent();
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_W:
+            case KeyEvent.VK_S:
+                moveY = setMove(moveY, 0);
+                break;
+            case KeyEvent.VK_A:
+            case KeyEvent.VK_D:
+                moveX = setMove(moveX, 0);
+                break;
+        }
+        if (moveChanged) {
+            sendMoveIntent();
+        }
+    }
+
+    protected int setMove(int oldValue, int value) {
+        if (oldValue != value) {
+            moveChanged = true;
+        }
+        return value;
+    }
+
+    private void sendMoveIntent() {
+        MoveIntentDatagram intent = (MoveIntentDatagram) DatagramType.MOVE_INTENT.create();
+        intent.setX(moveX);
+        intent.setY(moveY);
+        connection.sendReliable(intent);
+        moveChanged = false;
+    }
+
+    public Entity findOrCreateEntity(long id) {
+        Entity entity = entityMap.get(id);
+        if (entity == null) {
+            entity = new Entity(id);
+            entityMap.put(id, entity);
+        }
+        return entity;
+    }
+
+    public void destroyEntity(long id) {
+        entityMap.remove(id).destroy();
     }
 
     public static void main(String[] argv) {
