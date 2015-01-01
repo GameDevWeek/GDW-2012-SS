@@ -9,7 +9,7 @@ import de.hochschuletrier.gdw.ss14.game.CircularProgressRenderer;
 import de.hochschuletrier.gdw.ss14.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss14.game.Constants;
 import de.hochschuletrier.gdw.ss14.game.Game;
-import de.hochschuletrier.gdw.ss14.game.componentdata.Powerup;
+import de.hochschuletrier.gdw.ss14.game.components.data.Powerup;
 import de.hochschuletrier.gdw.ss14.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss14.game.interfaces.SystemGameInitializer;
 
@@ -20,10 +20,6 @@ public class RenderPowerupHudSystem extends EntitySystem implements SystemGameIn
 
     public RenderPowerupHudSystem() {
         super(0);
-    }
-
-    public RenderPowerupHudSystem(int priority) {
-        super(priority);
     }
 
     @Override

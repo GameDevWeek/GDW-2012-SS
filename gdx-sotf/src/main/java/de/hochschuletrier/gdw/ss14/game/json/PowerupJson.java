@@ -1,7 +1,7 @@
 package de.hochschuletrier.gdw.ss14.game.json;
 
 import de.hochschuletrier.gdw.commons.jackson.JacksonList;
-import de.hochschuletrier.gdw.ss14.game.componentdata.Powerup.ModifierType;
+import de.hochschuletrier.gdw.ss14.game.components.data.Powerup.ModifierType;
 import java.util.List;
 
 public class PowerupJson {

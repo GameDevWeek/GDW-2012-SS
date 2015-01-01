@@ -27,9 +27,9 @@ import de.hochschuletrier.gdw.commons.tiled.TiledMap;
 import de.hochschuletrier.gdw.ss14.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss14.game.Constants;
 import de.hochschuletrier.gdw.ss14.game.Game;
-import de.hochschuletrier.gdw.ss14.game.componentdata.PlayerState;
-import de.hochschuletrier.gdw.ss14.game.componentdata.Powerup;
-import de.hochschuletrier.gdw.ss14.game.componentdata.Team;
+import de.hochschuletrier.gdw.ss14.game.components.data.PlayerState;
+import de.hochschuletrier.gdw.ss14.game.components.data.Powerup;
+import de.hochschuletrier.gdw.ss14.game.components.data.Team;
 import de.hochschuletrier.gdw.ss14.game.components.BotComponent;
 import de.hochschuletrier.gdw.ss14.game.components.EatableComponent;
 import de.hochschuletrier.gdw.ss14.game.components.InputComponent;
@@ -82,10 +82,6 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         super(0);
     }
 
-    public EntitySpawnSystem(int priority) {
-        super(priority);
-    }
-    
     @Override
     public void initGame(Game game, AssetManagerX assetManager) {
         this.assetManager = assetManager;

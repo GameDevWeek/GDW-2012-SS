@@ -10,7 +10,7 @@ import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.gdx.utils.DrawUtil;
 import de.hochschuletrier.gdw.ss14.game.Game;
 import de.hochschuletrier.gdw.ss14.game.interfaces.SystemGameInitializer;
-import de.hochschuletrier.gdw.ss14.game.componentdata.Team;
+import de.hochschuletrier.gdw.ss14.game.components.data.Team;
 import java.util.ArrayList;
 
 public class RenderScoreHudSystem extends EntitySystem implements SystemGameInitializer {
@@ -22,10 +22,6 @@ public class RenderScoreHudSystem extends EntitySystem implements SystemGameInit
 
     public RenderScoreHudSystem() {
         super(0);
-    }
-
-    public RenderScoreHudSystem(int priority) {
-        super(priority);
     }
 
     @Override

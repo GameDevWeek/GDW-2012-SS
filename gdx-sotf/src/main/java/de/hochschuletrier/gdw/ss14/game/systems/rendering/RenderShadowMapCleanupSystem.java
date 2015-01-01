@@ -10,10 +10,6 @@ public class RenderShadowMapCleanupSystem extends EntitySystem {
         super(0);
     }
 
-    public RenderShadowMapCleanupSystem(int priority) {
-        super(priority);
-    }
-    
     @Override
 	public void addedToEngine(Engine engine) {
         shadowMap = engine.getSystem(RenderShadowMapSystem.class);

@@ -11,6 +11,7 @@ import de.hochschuletrier.gdw.commons.gdx.state.BaseGameState;
 import de.hochschuletrier.gdw.commons.gdx.state.transition.SplitHorizontalTransition;
 import de.hochschuletrier.gdw.commons.gdx.utils.DrawUtil;
 import de.hochschuletrier.gdw.ss14.Main;
+import de.hochschuletrier.gdw.ss14.game.Game;
 
 /**
  * Menu state
@@ -80,7 +81,9 @@ public class MainMenuState extends BaseGameState implements InputProcessor {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Main main = Main.getInstance();
         if(!main.isTransitioning()) {
-            GameplayState gameplayState = new GameplayState(assetManager, "data/maps/HumpNRun.tmx");
+            Game game = new Game(assetManager);
+            game.loadMap("data/maps/HumpNRun.tmx");
+            GameplayState gameplayState = new GameplayState(assetManager, game);
             main.changeState(gameplayState, new SplitHorizontalTransition(500), null);
         }
         return true;

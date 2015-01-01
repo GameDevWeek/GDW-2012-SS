@@ -1,4 +1,4 @@
-package de.hochschuletrier.gdw.ss14.game.componentdata;
+package de.hochschuletrier.gdw.ss14.game.components.data;
 
 public enum PlayerState {
 

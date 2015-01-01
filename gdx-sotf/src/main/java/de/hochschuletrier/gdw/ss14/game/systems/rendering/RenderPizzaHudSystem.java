@@ -25,10 +25,6 @@ public class RenderPizzaHudSystem extends EntitySystem implements SystemGameInit
         super(0);
     }
 
-    public RenderPizzaHudSystem(int priority) {
-        super(priority);
-    }
-
     @Override
     public void initGame(Game game, AssetManagerX assetManager) {
         this.game = game;

@@ -3,14 +3,13 @@ package de.hochschuletrier.gdw.ss14.game;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import de.hochschuletrier.gdw.ss14.game.datagrams.WorldSetupDatagram;
 import de.hochschuletrier.gdw.commons.devcon.cvar.CVarBool;
 import de.hochschuletrier.gdw.commons.gdx.assets.AnimationExtended;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
@@ -31,8 +30,8 @@ import de.hochschuletrier.gdw.commons.tiled.TiledMap;
 import de.hochschuletrier.gdw.commons.tiled.utils.RectangleGenerator;
 import de.hochschuletrier.gdw.commons.utils.Rectangle;
 import de.hochschuletrier.gdw.ss14.Main;
-import de.hochschuletrier.gdw.ss14.game.componentdata.PlayerState;
-import de.hochschuletrier.gdw.ss14.game.componentdata.Team;
+import de.hochschuletrier.gdw.ss14.game.components.data.PlayerState;
+import de.hochschuletrier.gdw.ss14.game.components.data.Team;
 import de.hochschuletrier.gdw.ss14.game.components.BotComponent;
 import de.hochschuletrier.gdw.ss14.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss14.game.components.PositionComponent;
@@ -54,6 +53,7 @@ import de.hochschuletrier.gdw.ss14.game.systems.input.KeyboardInputSystem;
 import de.hochschuletrier.gdw.ss14.game.systems.rendering.RenderPowerupHudSystem;
 import de.hochschuletrier.gdw.ss14.game.systems.rendering.RenderItemSystem;
 import de.hochschuletrier.gdw.ss14.game.systems.rendering.RenderMapSystem;
+import de.hochschuletrier.gdw.ss14.game.systems.rendering.RenderMiniMapSystem;
 import de.hochschuletrier.gdw.ss14.game.systems.rendering.RenderPlayerSystem;
 import de.hochschuletrier.gdw.ss14.game.systems.rendering.RenderShadowMapCleanupSystem;
 import de.hochschuletrier.gdw.ss14.game.systems.rendering.RenderShadowMapSystem;
@@ -62,26 +62,22 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Game extends InputAdapter {
+public class Game {
 
-    private static final Logger logger = LoggerFactory.getLogger(Game.class);
-    private final CVarBool physixDebug = new CVarBool("physix_debug", true, 0, "Draw physix debug");
-    private final CVarBool botsEnabled = new CVarBool("bots_enable", true, 0, "Enable bots");
+    protected static final Logger logger = LoggerFactory.getLogger(Game.class);
+    protected final CVarBool physixDebug = new CVarBool("physix_debug", true, 0, "Draw physix debug");
+    protected final CVarBool botsEnabled = new CVarBool("bots_enable", true, 0, "Enable bots");
 
-    private final PooledEngine engine = new PooledEngine(
-            Constants.ENTITY_POOL_INITIAL_SIZE, Constants.ENTITY_POOL_MAX_SIZE,
-            Constants.COMPONENT_POOL_INITIAL_SIZE, Constants.COMPONENT_POOL_MAX_SIZE
-    );
+    protected final CustomPooledEngine engine = new CustomPooledEngine();
     ImmutableArray<Entity> botPlayers = engine.getEntitiesFor(Family.all(PlayerComponent.class, BotComponent.class).get());
 
-    private final LimitedSmoothCamera camera = new LimitedSmoothCamera();
-    private float totalMapWidth, totalMapHeight;
-    private TiledMap map;
-    private Entity localPlayer;
-    private final Team[] teams = new Team[Constants.TEAM_COLOR_TABLE.length];
-    private AssetManagerX assetManager;
+    protected final LimitedSmoothCamera camera = new LimitedSmoothCamera();
+    protected TiledMap map;
+    protected Entity localPlayer;
+    protected final Team[] teams = new Team[Constants.TEAM_COLOR_TABLE.length];
+    protected AssetManagerX assetManager;
 
-    public Game(AssetManagerX assetManager, String mapFile) {
+    public Game(AssetManagerX assetManager) {
         this.assetManager = assetManager;
         for(int i=0; i<teams.length; i++) {
             teams[i] = new Team(i, "Team " + i, Constants.TEAM_COLOR_TABLE[i]);
@@ -98,10 +94,6 @@ public class Game extends InputAdapter {
         botsEnabled.addListener((CVar) -> engine.getSystem(BotSystem.class).setProcessing(botsEnabled.get()));
         addSystems(assetManager);
         addContactListeners();
-        map = loadMap(mapFile);
-        setupPhysixWorld();
-
-        Main.inputMultiplexer.addProcessor(this);
     }
 
     public void dispose() {
@@ -116,29 +108,30 @@ public class Game extends InputAdapter {
     }
 
     private void addSystems(AssetManagerX assetManager) {
-        engine.addSystem(new KeyboardInputSystem(Constants.PRIORITY_INPUT));
-        engine.addSystem(new BotSystem(Constants.PRIORITY_INPUT));
-        engine.addSystem(new InputSystem(Constants.PRIORITY_INPUT + 1));
+        // Remember to set priorities in CustomPooledEngine when creating new system classes
+        engine.addSystem(new KeyboardInputSystem());
+        engine.addSystem(new BotSystem());
+        engine.addSystem(new InputSystem());
         engine.addSystem(new PhysixSystem(
                 Constants.BOX2D_SCALE, Constants.STEP_SIZE,
-                Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS,
-                Constants.PRIORITY_PHYSIX
+                Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS
         ));
-        engine.addSystem(new UpdatePositionSystem(Constants.PRIORITY_PHYSIX + 1));
-        engine.addSystem(new UpdateSoundEmitterSystem(Constants.PRIORITY_PHYSIX + 2));
+        engine.addSystem(new UpdatePositionSystem());
+        engine.addSystem(new UpdateSoundEmitterSystem());
         
-        engine.addSystem(new EntitySpawnSystem(Constants.PRIORITY_ENTITIES));
-        engine.addSystem(new PowerupSystem(Constants.PRIORITY_ENTITIES+1));
-        engine.addSystem(new UpdatePlayerSystem(Constants.PRIORITY_ENTITIES+2));
-        engine.addSystem(new UpdateLightSystem(Constants.PRIORITY_ENTITIES+3));
+        engine.addSystem(new EntitySpawnSystem());
+        engine.addSystem(new PowerupSystem());
+        engine.addSystem(new UpdatePlayerSystem());
+        engine.addSystem(new UpdateLightSystem());
         
-        engine.addSystem(new RenderShadowMapSystem(Constants.PRIORITY_ENTITY_RENDER));
-        engine.addSystem(new RenderMapSystem(Constants.PRIORITY_ENTITY_RENDER+1));
-        engine.addSystem(new RenderItemSystem(Constants.PRIORITY_ENTITY_RENDER+2));
-        engine.addSystem(new RenderPlayerSystem(Constants.PRIORITY_ENTITY_RENDER+3));
-        engine.addSystem(new RenderShadowMapCleanupSystem(Constants.PRIORITY_ENTITY_RENDER+4));
-        engine.addSystem(new PhysixDebugRenderSystem(Constants.PRIORITY_DEBUG_WORLD));
-        engine.addSystem(new RenderPowerupHudSystem(Constants.PRIORITY_HUD));
+        engine.addSystem(new RenderShadowMapSystem());
+        engine.addSystem(new RenderMapSystem());
+        engine.addSystem(new RenderItemSystem());
+        engine.addSystem(new RenderPlayerSystem());
+        engine.addSystem(new RenderShadowMapCleanupSystem());
+        engine.addSystem(new RenderMiniMapSystem());
+        engine.addSystem(new PhysixDebugRenderSystem());
+        engine.addSystem(new RenderPowerupHudSystem());
         
         
         ImmutableArray<EntitySystem> systems = engine.getSystems();
@@ -183,8 +176,8 @@ public class Game extends InputAdapter {
 
         // Setup camera
         camera.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        totalMapWidth = map.getWidth() * map.getTileWidth();
-        totalMapHeight = map.getHeight() * map.getTileHeight();
+        float totalMapWidth = map.getWidth() * map.getTileWidth();
+        float totalMapHeight = map.getHeight() * map.getTileHeight();
         camera.setBounds(0, 0, totalMapWidth, totalMapHeight);
         camera.updateForced();
         Main.getInstance().addScreenListener(camera);
@@ -310,9 +303,10 @@ public class Game extends InputAdapter {
         body.createFixture(new PhysixFixtureDef(physixSystem).density(1).friction(0).shapeBox(width, height));
     }
 
-    public TiledMap loadMap(String filename) {
+    public void loadMap(String filename) {
         try {
-            return new TiledMap(filename, LayerObject.PolyMode.ABSOLUTE);
+            map = new TiledMap(filename, LayerObject.PolyMode.ABSOLUTE);
+            setupPhysixWorld();
         } catch (Exception ex) {
             throw new IllegalArgumentException(
                     "Map konnte nicht geladen werden: " + filename);
@@ -325,6 +319,21 @@ public class Game extends InputAdapter {
         camera.update(delta);
         camera.bind();
         engine.update(delta);
+    }
+    
+    public void reset() {
+        //fixme: remove all non-player items
+    }
+    
+    public void sendStartNotices() {
+//        if (SotfGame.isServer()) {
+//            if (firstFrame) {
+//                GameEventManager.fireGameEvent(GameEventManager.THREE, 0, getPlayers());
+//                GameEventManager.fireGameEvent(GameEventManager.TWO, 1000, getPlayers());
+//                GameEventManager.fireGameEvent(GameEventManager.ONE, 2000, getPlayers());
+//                GameEventManager.fireGameEvent(GameEventManager.GO, 3000, getPlayers());
+//            }
+//        }
     }
 
     public void createTrigger(PhysixSystem physixSystem, float x, float y, float width, float height, Consumer<Entity> consumer) {

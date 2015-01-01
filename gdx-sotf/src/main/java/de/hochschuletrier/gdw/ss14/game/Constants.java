@@ -77,15 +77,6 @@ public class Constants {
     public static final float CHANCE_FOR_NEW_ITEM_REDUCED = 0.3f;
     public static final Color[] TEAM_COLOR_TABLE = {Color.BLUE, Color.RED, Color.YELLOW, Color.GREEN, Color.PINK, Color.CYAN};
 
-    // Priorities for entity systems
-    public static final int PRIORITY_INPUT = 0;
-    public static final int PRIORITY_PHYSIX = 10;
-    public static final int PRIORITY_ENTITIES = 20;
-    public static final int PRIORITY_ENTITY_RENDER = 30;
-    public static final int PRIORITY_DEBUG_WORLD = 40;
-    public static final int PRIORITY_HUD = 50;
-    public static final int PRIORITY_REMOVE_ENTITIES = 1000;
-
     // PooledEngine parameters
     public static final int ENTITY_POOL_INITIAL_SIZE = 32;
     public static final int ENTITY_POOL_MAX_SIZE = 256;

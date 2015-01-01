@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import de.hochschuletrier.gdw.commons.gdx.physix.components.PhysixBodyComponent;
 import de.hochschuletrier.gdw.ss14.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss14.game.Constants;
-import de.hochschuletrier.gdw.ss14.game.componentdata.IgnoreEatable;
+import de.hochschuletrier.gdw.ss14.game.components.data.IgnoreEatable;
 import de.hochschuletrier.gdw.ss14.game.components.BotComponent;
 import de.hochschuletrier.gdw.ss14.game.components.EatableComponent;
 import de.hochschuletrier.gdw.ss14.game.components.InputComponent;
@@ -29,10 +29,6 @@ public class BotSystem extends EntitySystem implements EntityListener {
         super(0);
     }
 
-    public BotSystem(int priority) {
-        super(priority);
-    }
-		
 	@Override
 	public void addedToEngine(Engine engine) {
 		super.addedToEngine(engine);

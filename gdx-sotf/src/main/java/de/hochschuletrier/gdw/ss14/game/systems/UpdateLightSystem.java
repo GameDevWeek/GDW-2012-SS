@@ -13,11 +13,7 @@ public class UpdateLightSystem extends IteratingSystem {
     private Engine engine;
 
     public UpdateLightSystem() {
-        this(0);
-    }
-
-    public UpdateLightSystem(int priority) {
-        super(Family.all(LightComponent.class).exclude(PlayerComponent.class).get(), priority);
+        super(Family.all(LightComponent.class).exclude(PlayerComponent.class).get(), 0);
     }
 		
 	@Override

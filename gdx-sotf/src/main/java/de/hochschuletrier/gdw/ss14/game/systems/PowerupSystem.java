@@ -7,8 +7,8 @@ import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.ss14.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss14.game.Constants;
 import de.hochschuletrier.gdw.ss14.game.Game;
-import de.hochschuletrier.gdw.ss14.game.componentdata.Powerup;
-import de.hochschuletrier.gdw.ss14.game.componentdata.Powerup.Modifier;
+import de.hochschuletrier.gdw.ss14.game.components.data.Powerup;
+import de.hochschuletrier.gdw.ss14.game.components.data.Powerup.Modifier;
 import de.hochschuletrier.gdw.ss14.game.components.InputComponent;
 import de.hochschuletrier.gdw.ss14.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss14.game.interfaces.SystemGameInitializer;
@@ -22,11 +22,7 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
     private AssetManagerX assetManager;
 
     public PowerupSystem() {
-        this(0);
-    }
-
-    public PowerupSystem(int priority) {
-        super(Family.all(PlayerComponent.class, InputComponent.class).get(), priority);
+        super(Family.all(PlayerComponent.class, InputComponent.class).get(), 0);
     }
 
     @Override

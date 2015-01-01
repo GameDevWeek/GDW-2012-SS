@@ -17,10 +17,6 @@ public class KeyboardInputSystem extends EntitySystem implements SystemGameIniti
         super(0);
     }
 
-    public KeyboardInputSystem(int priority) {
-        super(priority);
-    }
-
     @Override
     public void initGame(Game game, AssetManagerX assetManager) {
         this.game = game;

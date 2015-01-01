@@ -18,10 +18,6 @@ public class RenderInventoryHudSystem extends EntitySystem implements SystemGame
         super(0);
     }
 
-    public RenderInventoryHudSystem(int priority) {
-        super(priority);
-    }
-
     @Override
     public void initGame(Game game, AssetManagerX assetManager) {
         this.game = game;

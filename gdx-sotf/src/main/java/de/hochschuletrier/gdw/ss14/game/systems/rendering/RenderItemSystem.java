@@ -3,7 +3,6 @@ package de.hochschuletrier.gdw.ss14.game.systems.rendering;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.hochschuletrier.gdw.commons.gdx.assets.AnimationExtended;
@@ -16,11 +15,7 @@ import de.hochschuletrier.gdw.ss14.game.components.RenderComponent;
 public class RenderItemSystem extends IteratingSystem {
 
     public RenderItemSystem() {
-        this(0);
-    }
-
-    public RenderItemSystem(int priority) {
-        super(Family.all(PositionComponent.class, RenderComponent.class, EatableComponent.class).get(), priority);
+        super(Family.all(PositionComponent.class, RenderComponent.class, EatableComponent.class).get(), 0);
     }
 
     @Override

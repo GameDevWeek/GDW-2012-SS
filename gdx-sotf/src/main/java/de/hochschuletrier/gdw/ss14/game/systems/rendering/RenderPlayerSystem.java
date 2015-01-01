@@ -13,7 +13,7 @@ import de.hochschuletrier.gdw.ss14.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss14.game.Constants;
 import de.hochschuletrier.gdw.ss14.game.Game;
 import de.hochschuletrier.gdw.ss14.game.interfaces.SystemGameInitializer;
-import de.hochschuletrier.gdw.ss14.game.componentdata.PlayerState;
+import de.hochschuletrier.gdw.ss14.game.components.data.PlayerState;
 import de.hochschuletrier.gdw.ss14.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss14.game.components.PositionComponent;
 import de.hochschuletrier.gdw.ss14.game.components.RenderComponent;
@@ -25,11 +25,7 @@ public class RenderPlayerSystem extends SortedIteratingSystem implements SystemG
     private Game game;
 
     public RenderPlayerSystem() {
-        this(0);
-    }
-
-    public RenderPlayerSystem(int priority) {
-        super(Family.all(PositionComponent.class, PlayerComponent.class, RenderComponent.class).get(), new EntityComparator(), priority);
+        super(Family.all(PositionComponent.class, PlayerComponent.class, RenderComponent.class).get(), new EntityComparator(), 0);
     }
 
     @Override

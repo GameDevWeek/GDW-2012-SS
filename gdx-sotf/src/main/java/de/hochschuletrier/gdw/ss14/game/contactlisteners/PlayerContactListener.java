@@ -8,7 +8,7 @@ import de.hochschuletrier.gdw.commons.gdx.physix.components.PhysixBodyComponent;
 import de.hochschuletrier.gdw.ss14.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss14.game.Constants;
 import de.hochschuletrier.gdw.ss14.game.Game;
-import de.hochschuletrier.gdw.ss14.game.componentdata.Powerup;
+import de.hochschuletrier.gdw.ss14.game.components.data.Powerup;
 import de.hochschuletrier.gdw.ss14.game.components.EatableComponent;
 import de.hochschuletrier.gdw.ss14.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss14.game.components.UseableComponent;

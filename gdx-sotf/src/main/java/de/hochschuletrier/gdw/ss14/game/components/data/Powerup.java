@@ -1,4 +1,4 @@
-package de.hochschuletrier.gdw.ss14.game.componentdata;
+package de.hochschuletrier.gdw.ss14.game.components.data;
 
 import com.badlogic.gdx.graphics.Texture;
 import java.util.ArrayList;

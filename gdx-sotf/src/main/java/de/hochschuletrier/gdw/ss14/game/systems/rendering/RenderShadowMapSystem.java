@@ -18,7 +18,7 @@ import de.hochschuletrier.gdw.ss14.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss14.game.Constants;
 import de.hochschuletrier.gdw.ss14.game.Game;
 import de.hochschuletrier.gdw.ss14.game.interfaces.SystemGameInitializer;
-import de.hochschuletrier.gdw.ss14.game.componentdata.Team;
+import de.hochschuletrier.gdw.ss14.game.components.data.Team;
 import de.hochschuletrier.gdw.ss14.game.components.LightComponent;
 import de.hochschuletrier.gdw.ss14.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss14.game.components.PositionComponent;
@@ -42,10 +42,6 @@ public class RenderShadowMapSystem extends EntitySystem implements SystemGameIni
         super(0);
     }
 
-    public RenderShadowMapSystem(int priority) {
-        super(priority);
-    }
-    
     @Override
 	public void addedToEngine(Engine engine) {
         lights = engine.getEntitiesFor(Family.all(LightComponent.class).get());

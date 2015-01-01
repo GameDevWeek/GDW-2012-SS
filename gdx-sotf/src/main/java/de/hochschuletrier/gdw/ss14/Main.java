@@ -24,7 +24,9 @@ import de.hochschuletrier.gdw.commons.gdx.state.StateBasedGame;
 import de.hochschuletrier.gdw.commons.gdx.utils.DrawUtil;
 import de.hochschuletrier.gdw.commons.gdx.utils.GdxResourceLocator;
 import de.hochschuletrier.gdw.commons.gdx.utils.KeyUtil;
+import de.hochschuletrier.gdw.commons.netcode.core.NetDatagramPool;
 import de.hochschuletrier.gdw.commons.resourcelocator.CurrentResourceLocator;
+import de.hochschuletrier.gdw.ss14.game.datagrams.DatagramType;
 import de.hochschuletrier.gdw.ss14.sandbox.SandboxCommand;
 import de.hochschuletrier.gdw.ss14.states.GameplayState;
 import de.hochschuletrier.gdw.ss14.states.LoadGameState;
@@ -35,6 +37,7 @@ import de.hochschuletrier.gdw.ss14.states.MainMenuState;
  * @author Santo Pfingsten
  */
 public class Main extends StateBasedGame {
+    public static final NetDatagramPool datagramPool = new NetDatagramPool(DatagramType.MAPPER);
 
     public static final int WINDOW_HEIGHT = 600;
     public static final int WINDOW_WIDTH = 1024;

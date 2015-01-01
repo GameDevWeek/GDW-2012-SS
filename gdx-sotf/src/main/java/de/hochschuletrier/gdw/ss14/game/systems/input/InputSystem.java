@@ -14,11 +14,7 @@ import de.hochschuletrier.gdw.ss14.game.components.UseableComponent;
 public class InputSystem extends IteratingSystem {
 
     public InputSystem() {
-        this(0);
-    }
-
-    public InputSystem(int priority) {
-        super(Family.all(InputComponent.class).get(), priority);
+        super(Family.all(InputComponent.class).get(), 0);
     }
 
     @Override

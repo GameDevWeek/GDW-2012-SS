@@ -25,11 +25,7 @@ public class UpdateSoundEmitterSystem extends IteratingSystem implements SystemG
     private Game game;
 
     public UpdateSoundEmitterSystem() {
-        this(0);
-    }
-
-    public UpdateSoundEmitterSystem(int priority) {
-        super(Family.all(PositionComponent.class, SoundEmitterComponent.class).get(), priority);
+        super(Family.all(PositionComponent.class, SoundEmitterComponent.class).get(), 0);
     }
 
     @Override

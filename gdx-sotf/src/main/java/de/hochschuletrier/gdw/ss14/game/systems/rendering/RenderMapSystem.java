@@ -9,7 +9,7 @@ import de.hochschuletrier.gdw.commons.tiled.Layer;
 import de.hochschuletrier.gdw.commons.tiled.TileSet;
 import de.hochschuletrier.gdw.commons.tiled.TiledMap;
 import de.hochschuletrier.gdw.commons.tiled.tmx.TmxImage;
-import de.hochschuletrier.gdw.ss14.game.componentdata.Team;
+import de.hochschuletrier.gdw.ss14.game.components.data.Team;
 import de.hochschuletrier.gdw.ss14.game.interfaces.SystemMapInitializer;
 import java.util.HashMap;
 
@@ -21,10 +21,6 @@ public class RenderMapSystem extends EntitySystem implements SystemMapInitialize
         super(0);
     }
 
-    public RenderMapSystem(int priority) {
-        super(priority);
-    }
-    
     @Override
 	public void addedToEngine(Engine engine) {
     }
@@ -48,6 +44,10 @@ public class RenderMapSystem extends EntitySystem implements SystemMapInitialize
     @Override
     public void update(float deltaTime) {
         mapRenderer.update(deltaTime);
+        render();
+    }
+
+    void render() {
         for (Layer layer : map.getLayers()) {
             mapRenderer.render(0, 0, layer);
         }

@@ -8,7 +8,7 @@ import de.hochschuletrier.gdw.commons.gdx.physix.components.PhysixBodyComponent;
 import de.hochschuletrier.gdw.commons.gdx.physix.systems.PhysixSystem;
 import de.hochschuletrier.gdw.ss14.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss14.game.Constants;
-import de.hochschuletrier.gdw.ss14.game.componentdata.PlayerState;
+import de.hochschuletrier.gdw.ss14.game.components.data.PlayerState;
 import de.hochschuletrier.gdw.ss14.game.components.PlayerComponent;
 
 public class UpdatePlayerSystem extends IteratingSystem {
@@ -16,11 +16,7 @@ public class UpdatePlayerSystem extends IteratingSystem {
     private PhysixSystem physixSystem;
 
     public UpdatePlayerSystem() {
-        this(0);
-    }
-
-    public UpdatePlayerSystem(int priority) {
-        super(Family.all(PlayerComponent.class).get(), priority);
+        super(Family.all(PlayerComponent.class).get(), 0);
     }
 		
 	@Override

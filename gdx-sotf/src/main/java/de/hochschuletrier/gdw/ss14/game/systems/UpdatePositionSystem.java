@@ -10,11 +10,7 @@ import de.hochschuletrier.gdw.ss14.game.components.PositionComponent;
 public class UpdatePositionSystem extends IteratingSystem {
 
     public UpdatePositionSystem() {
-        this(0);
-    }
-
-    public UpdatePositionSystem(int priority) {
-        super(Family.all(PositionComponent.class, PhysixBodyComponent.class).get(), priority);
+        super(Family.all(PositionComponent.class, PhysixBodyComponent.class).get(), 0);
     }
 
     @Override

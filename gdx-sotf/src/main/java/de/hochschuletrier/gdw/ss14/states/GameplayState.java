@@ -13,8 +13,8 @@ public class GameplayState extends BaseGameState {
 
     private final Game game;
 
-    public GameplayState(AssetManagerX assetManager, String mapFile) {
-        game = new Game(assetManager, mapFile);
+    public GameplayState(AssetManagerX assetManager, Game game) {
+        this.game = game;
     }
 
     @Override

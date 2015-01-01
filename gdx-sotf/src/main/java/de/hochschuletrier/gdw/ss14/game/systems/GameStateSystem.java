@@ -13,10 +13,6 @@ public class GameStateSystem extends EntitySystem implements SystemGameInitializ
         super(0);
     }
 
-    public GameStateSystem(int priority) {
-        super(priority);
-    }
-
     @Override
     public void initGame(Game game, AssetManagerX assetManager) {
         this.game = game;
