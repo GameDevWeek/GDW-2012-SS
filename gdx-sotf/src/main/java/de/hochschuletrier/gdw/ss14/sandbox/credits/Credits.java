@@ -37,16 +37,13 @@ public class Credits extends SandboxGame {
     }
 
     @Override
-    public void render() {
+    public void update(float delta) {
+        if(sceneAnimator != null)
+            sceneAnimator.update(delta);
+        
         Main.getInstance().screenCamera.bind();
         DrawUtil.fillRect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), Color.DARK_GRAY);
         if(sceneAnimator != null)
             sceneAnimator.render();
-    }
-
-    @Override
-    public void update(float delta) {
-        if(sceneAnimator != null)
-            sceneAnimator.update(delta);
     }
 }

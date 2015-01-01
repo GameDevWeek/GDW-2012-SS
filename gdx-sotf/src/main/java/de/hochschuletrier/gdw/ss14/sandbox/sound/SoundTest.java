@@ -31,10 +31,6 @@ public class SoundTest extends SandboxGame {
     }
 
     @Override
-    public void render() {
-    }
-
-    @Override
     public void update(float delta) {
         emitter.update();
         emitter.setPosition(cursor.x, cursor.y, 0);

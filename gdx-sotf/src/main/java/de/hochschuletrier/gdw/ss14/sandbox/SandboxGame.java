@@ -8,8 +8,6 @@ public abstract class SandboxGame implements InputProcessor, Disposable {
 
     public abstract void init(AssetManagerX assetManager);
 
-    public abstract void render();
-
     public abstract void update(float delta);
 
     @Override
