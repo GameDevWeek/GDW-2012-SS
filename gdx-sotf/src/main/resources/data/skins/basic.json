@@ -61,7 +61,9 @@
         "console-all": {"font": "mono-font", "fontColor": "white"},
         "connectionTitle": {"font": "mainMenu-font", "fontColor": "white"},
         "connectionError": {"font": "mainMenu-Small-font", "fontColor": "red"},
-        "inputLabel": {"font": "mainMenu-Small-font", "fontColor": "white"}
+        "inputLabel": {"font": "mainMenu-Small-font", "fontColor": "white"},
+        "helpTitle": {"font": "mainMenu-font", "fontColor": "black"},
+        "helpText": {"font": "mainMenu-Small-font", "fontColor": "black"}
     },
     "com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle": {
         "default": {"selection": "selection", "background": "textfield", "font": "default-font", "fontColor": "white", "cursor": "cursor"},

@@ -47,8 +47,6 @@
     "menu_bg_singleplayer": "data/images/menu/bg_join_game.png",
     "menu_bg_credits": "data/images/menu/bg_credits.png",
     "menu_bg_options": "data/images/menu/bg_options.png",
-    "menu_help_goal": "data/images/menu/goal.png",
-    "menu_help_legend": "data/images/menu/legend.png",
     "menu_gear1": "data/images/menu/gear1.png",
     "menu_gear2": "data/images/menu/gear2.png",
     "menu_gear3": "data/images/menu/gear3.png",
@@ -56,5 +54,14 @@
     "menu_gear5": "data/images/menu/gear5.png",
     "menu_slider_thumb": "data/images/menu/slider_thumb.png",
     "menu_textfield_bg": "data/images/menu/text_bg.png",
-    "menu_textfield_focus": "data/images/menu/text_focus.png"
+    "menu_textfield_focus": "data/images/menu/text_focus.png",
+    
+    "menu_legend_cookie_muffin": "data/images/menu/legend/cookie_muffin.png",
+    "menu_legend_banana": "data/images/menu/legend/banana.png",
+    "menu_legend_chili": "data/images/menu/legend/chili.png",
+    "menu_legend_gum": "data/images/menu/legend/gum.png",
+    "menu_legend_garlic": "data/images/menu/legend/garlic.png",
+    "menu_legend_cake": "data/images/menu/legend/cake.png",
+    "menu_legend_mushroom": "data/images/menu/legend/mushroom.png",
+    "menu_legend_pizza": "data/images/menu/legend/pizza.png"
 }

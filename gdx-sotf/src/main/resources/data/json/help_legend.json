@@ -1,0 +1,41 @@
+[
+    "images:menu_legend_cookie_muffin",
+    "title:Keks und Muffin",
+    "text:Diese beiden Items lassen dich dicker werden, haben jedoch keinerlei zusätzliche Effekte.",
+    
+    "text: ",
+    "images:menu_legend_banana",
+    "title:Banane",
+    "text:Frisst du eine Banane, wächst du minimal an und erhältst eine Bananenschale, die du jederzeit fallen lassen kannst. Bewegt sich ein anderer Spieler darüber hinweg, verliert er für kurze Zeit die Kontrolle und rutscht durchs Labyrinth.",
+    
+    "text: ",
+    "images:menu_legend_chili",
+    "title:Chili",
+    "text:Diese scharfe Schote lässt dich extrem schnell werden.. aber Vorsicht: Du verlierst dabei auch schnell an Größe!",
+    
+    "text: ",
+    "images:menu_legend_gum",
+    "title:Kaugummi",
+    "text:Sammelst du eine Packung ein, kannst du das gekaute Kaugummi fallen lassen. Andere Spieler bleiben eine Zeit lang dran kleben, sollten sie damit in Berührung kommen.",
+    
+    "text: ",
+    "images:menu_legend_garlic",
+    "title:Knoblauch",
+    "text:Frisst du Knoblauch, stinkst du so sehr, dass dich vorübergehend kein Gegner aufessen kann.",
+    
+    "text: ",
+    "images:menu_legend_cake",
+    "title:Kuchen und Kerze",
+    "text:Du wächst an und erhältst eine Kerze, die du an einer beliebigen Stelle ablegen kannst. Eine Zeit lang werden deine Gegner im Schein der Kerze für dich und dein Team sichtbar.",
+    
+    "text: ",
+    "images:menu_legend_mushroom",
+    "title:Pilz",
+    "text:Während der Pilzeffekt aktiv ist, siehst du alle Spieler im Spiel, kannst aber nicht mehr zwischen Freunden und Feinden unterscheiden. Dabei kann es dir passieren, dass du aus Versehen einen Freund isst.",
+    
+    "text: ",
+    "images:menu_legend_pizza",
+    "title:Pizza",
+    "text:Ein Pizzastück gibt dir viel Energie und zusätzlich ein Stück zur Pizzascheibe deines Teams. Hat dein Team die Pizzascheibe voll bestückt, verfallt ihr in einen Fressrausch und könnt jeden Gegner fressen, egal wie groß er ist."
+    
+]

@@ -12,8 +12,8 @@ public class MenuPageHelp extends MenuPage {
         int i = 0;
         int y = 370;
         int yStep = 55;
-        addPageEntry(menuManager, x, y - yStep * (i++), "Spiel und Ziel", new MenuPageHelpImageScroller(skin, menuManager, "menu_help_goal"));
-        addPageEntry(menuManager, x, y - yStep * (i++), "Items und Erklärung", new MenuPageHelpImageScroller(skin, menuManager, "menu_help_legend"));
+        addPageEntry(menuManager, x, y - yStep * (i++), "Spiel und Ziel", new MenuPageHelpImageScroller(skin, menuManager, "data/json/help_goal.json"));
+        addPageEntry(menuManager, x, y - yStep * (i++), "Items und Erklärung", new MenuPageHelpImageScroller(skin, menuManager, "data/json/help_legend.json"));
 
         addCenteredButton(menuManager.getWidth() - 100, 54, 100, 40, "Zurück", () -> menuManager.popPage());
     }
