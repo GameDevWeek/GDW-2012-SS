@@ -1,111 +1,74 @@
 package de.hochschuletrier.gdw.ss12.states;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import de.hochschuletrier.gdw.commons.gdx.menu.MenuManager;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.gdx.input.InputInterceptor;
 import de.hochschuletrier.gdw.commons.gdx.state.BaseGameState;
-import de.hochschuletrier.gdw.commons.gdx.state.transition.SplitHorizontalTransition;
 import de.hochschuletrier.gdw.commons.gdx.utils.DrawUtil;
 import de.hochschuletrier.gdw.ss12.Main;
-import de.hochschuletrier.gdw.ss12.game.Game;
+import de.hochschuletrier.gdw.commons.gdx.menu.widgets.DecoImage;
+import de.hochschuletrier.gdw.ss12.menu.MenuPageRoot;
 
 /**
  * Menu state
  *
  * @author Santo Pfingsten
  */
-public class MainMenuState extends BaseGameState implements InputProcessor {
+public class MainMenuState extends BaseGameState {
 
-    private final AssetManagerX assetManager;
-    private Music music;
+    private final Music music;
 
     InputInterceptor inputProcessor;
+    private final MenuManager menuManager;
 
     public MainMenuState(AssetManagerX assetManager) {
-        this.assetManager = assetManager;
+        menuManager = new MenuManager(Main.WINDOW_WIDTH, Main.WINDOW_HEIGHT);
         music = assetManager.getMusic("menu");
 
         music.setLooping(true);
 //        music.play();
 
-        inputProcessor = new InputInterceptor(this);
-        Main.inputMultiplexer.addProcessor(inputProcessor);
+        Main.inputMultiplexer.addProcessor(menuManager.getInputProcessor());
+        
+        Skin skin = Main.getInstance().getSkin();
+        final MenuPageRoot menuPageRoot = new MenuPageRoot(skin, menuManager, MenuPageRoot.Type.MAINMENU);
+        menuManager.addLayer(menuPageRoot);
+        
+        menuManager.addLayer(new DecoImage(assetManager.getTexture("menu_fg_border")));
+        menuManager.pushPage(menuPageRoot);
+//        menuManager.getStage().setDebugAll(true);
+        
+        Main.getInstance().addScreenListener(menuManager);
     }
 
     public void render() {
         Main.getInstance().screenCamera.bind();
         DrawUtil.fillRect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), Color.GRAY);
+        menuManager.render();
     }
 
     @Override
     public void update(float delta) {
+        menuManager.update(delta);
         render();
     }
 
     @Override
-    public void onEnter(BaseGameState previousState) {
-        inputProcessor.setActive(true);
-        inputProcessor.setBlocking(true);
+    public void onEnterComplete() {
+        menuManager.enableInput(true);
     }
 
     @Override
     public void onLeave(BaseGameState nextState) {
-        inputProcessor.setActive(false);
-        inputProcessor.setBlocking(false);
+        menuManager.enableInput(false);
     }
 
     @Override
     public void dispose() {
-    }
-
-    @Override
-    public boolean keyDown(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        Main main = Main.getInstance();
-        if(!main.isTransitioning()) {
-            Game game = new Game(assetManager);
-            game.loadMap("data/maps/HumpNRun.tmx");
-            GameplayState gameplayState = new GameplayState(assetManager, game);
-            main.changeState(gameplayState, new SplitHorizontalTransition(500), null);
-        }
-        return true;
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(int amount) {
-        return false;
+        menuManager.dispose();
     }
 }

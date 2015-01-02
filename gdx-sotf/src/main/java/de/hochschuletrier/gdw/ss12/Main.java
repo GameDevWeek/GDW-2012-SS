@@ -28,7 +28,6 @@ import de.hochschuletrier.gdw.commons.netcode.core.NetDatagramPool;
 import de.hochschuletrier.gdw.commons.resourcelocator.CurrentResourceLocator;
 import de.hochschuletrier.gdw.ss12.game.datagrams.DatagramType;
 import de.hochschuletrier.gdw.ss12.sandbox.SandboxCommand;
-import de.hochschuletrier.gdw.ss12.states.GameplayState;
 import de.hochschuletrier.gdw.ss12.states.LoadGameState;
 import de.hochschuletrier.gdw.ss12.states.MainMenuState;
 
@@ -39,8 +38,8 @@ import de.hochschuletrier.gdw.ss12.states.MainMenuState;
 public class Main extends StateBasedGame {
     public static final NetDatagramPool datagramPool = new NetDatagramPool(DatagramType.MAPPER);
 
-    public static final int WINDOW_HEIGHT = 600;
     public static final int WINDOW_WIDTH = 1024;
+    public static final int WINDOW_HEIGHT = 768;
 
     private final AssetManagerX assetManager = new AssetManagerX();
     private static Main instance;
@@ -59,6 +58,10 @@ public class Main extends StateBasedGame {
             instance = new Main();
         }
         return instance;
+    }
+
+    public Skin getSkin() {
+        return skin;
     }
 
     private void setupDummyLoader() {
@@ -111,6 +114,11 @@ public class Main extends StateBasedGame {
         changeState(mainMenuState, null, null);
         
         SandboxCommand.init(assetManager);
+    }
+    
+    public void disconnect() {
+        //fixme: disconnect netgame
+        changeState(getPersistentState(MainMenuState.class), null, null);
     }
 
     @Override
@@ -170,5 +178,9 @@ public class Main extends StateBasedGame {
         cfg.backgroundFPS = 60;
 
         new LwjglApplication(getInstance(), cfg);
+    }
+
+    public AssetManagerX getAssetManager() {
+        return assetManager;
     }
 }

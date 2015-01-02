@@ -35,7 +35,26 @@
     "hud_underlay_map": "data/images/interface/HUD_underlay_map.png",
     "hud_underlay_pizza": "data/images/interface/HUD_underlay_pizza.png",
     "hud_underlay_score": "data/images/interface/HUD_underlay_score.png",
-    "menu_ref_image": "data/images/menu/bg_root.png",
 
-    "menu_ref_image": "data/images/menu/bg_root.png"
+    "menu_fg_border": "data/images/menu/fg_border.png",
+    "menu_bg_root_top": "data/images/menu/bg_root_top.png",
+    "menu_bg_root_bottom": "data/images/menu/bg_root_bottom.png",
+    "menu_bg_controls": "data/images/menu/bg_help.png",
+    "menu_bg_help": "data/images/menu/bg_help.png",
+    "menu_bg_help_detail": "data/images/menu/bg_help.png",
+    "menu_bg_join_server": "data/images/menu/bg_join_game.png",
+    "menu_bg_create_server": "data/images/menu/bg_join_game.png",
+    "menu_bg_singleplayer": "data/images/menu/bg_join_game.png",
+    "menu_bg_credits": "data/images/menu/bg_credits.png",
+    "menu_bg_options": "data/images/menu/bg_options.png",
+    "menu_help_goal": "data/images/menu/goal.png",
+    "menu_help_legend": "data/images/menu/legend.png",
+    "menu_gear1": "data/images/menu/gear1.png",
+    "menu_gear2": "data/images/menu/gear2.png",
+    "menu_gear3": "data/images/menu/gear3.png",
+    "menu_gear4": "data/images/menu/gear4.png",
+    "menu_gear5": "data/images/menu/gear5.png",
+    "menu_slider_thumb": "data/images/menu/slider_thumb.png",
+    "menu_textfield_bg": "data/images/menu/text_bg.png",
+    "menu_textfield_focus": "data/images/menu/text_focus.png"
 }
