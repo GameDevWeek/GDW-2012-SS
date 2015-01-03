@@ -9,15 +9,14 @@ import de.hochschuletrier.gdw.commons.gdx.menu.MenuManager;
 import de.hochschuletrier.gdw.commons.gdx.menu.widgets.DecoImage;
 import de.hochschuletrier.gdw.commons.jackson.JacksonReader;
 import java.util.List;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MenuPageHelpImageScroller extends MenuPage {
+public class MenuPageHelpDetail extends MenuPage {
 
-    private static final Logger logger = LoggerFactory.getLogger(MenuPageHelpImageScroller.class);
+    private static final Logger logger = LoggerFactory.getLogger(MenuPageHelpDetail.class);
 
-    public MenuPageHelpImageScroller(Skin skin, MenuManager menuManager, String jsonFile) {
+    public MenuPageHelpDetail(Skin skin, MenuManager menuManager, String jsonFile) {
         super(skin, "menu_bg_help_detail");
 
         try {
