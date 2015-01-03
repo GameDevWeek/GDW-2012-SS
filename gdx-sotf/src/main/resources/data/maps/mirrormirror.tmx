@@ -1,18 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="50" height="100" tilewidth="24" tileheight="24">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="50" height="100" tilewidth="24" tileheight="24">
  <tileset firstgid="1" source="iron_tileset.tsx"/>
  <tileset firstgid="109" source="portal_tileset_2.tsx"/>
  <tileset firstgid="117" source="portal_tileset_4.tsx"/>
  <tileset firstgid="125" source="portal_tileset_6.tsx"/>
- <tileset firstgid="133" source="FlagsTileset.tsx"/>
+ <tileset firstgid="133" source="spawnpoints.tsx"/>
  <layer name="Kachelebene 1" width="50" height="100">
   <data encoding="base64" compression="gzip">
-   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
+   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
   </data>
  </layer>
- <layer name="unsichtbar" width="50" height="100">
-  <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC+3UyQkAIAwEQLv34cOW7UA88GTmGwLLQhICrBdPB7hAbwcjnekZAAAAAAAAeFE6HQCgkX8FsJ/fC/9z5wAAAAAAAEBNXrAzO4cdChOmQ+ogTgAA
-  </data>
- </layer>
+ <objectgroup name="spawnpoints">
+  <object gid="135" x="96" y="120"/>
+  <object gid="135" x="456" y="120"/>
+  <object gid="135" x="744" y="120"/>
+  <object gid="135" x="1056" y="120"/>
+  <object gid="136" x="120" y="2328"/>
+  <object gid="136" x="456" y="2328"/>
+  <object gid="136" x="720" y="2328"/>
+  <object gid="136" x="1056" y="2328"/>
+  <object gid="133" x="1080" y="816"/>
+  <object gid="133" x="1080" y="1560"/>
+  <object gid="133" x="744" y="1056"/>
+  <object gid="133" x="744" y="1320"/>
+ </objectgroup>
 </map>

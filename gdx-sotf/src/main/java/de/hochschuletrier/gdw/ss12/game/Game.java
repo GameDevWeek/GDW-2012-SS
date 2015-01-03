@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.utils.Array;
 import de.hochschuletrier.gdw.ss12.game.datagrams.WorldSetupDatagram;
 import de.hochschuletrier.gdw.commons.devcon.cvar.CVarBool;
 import de.hochschuletrier.gdw.commons.gdx.assets.AnimationExtended;
@@ -26,6 +27,7 @@ import de.hochschuletrier.gdw.commons.gdx.sound.SoundInstance;
 import de.hochschuletrier.gdw.commons.tiled.Layer;
 import de.hochschuletrier.gdw.commons.tiled.LayerObject;
 import de.hochschuletrier.gdw.commons.tiled.TileInfo;
+import de.hochschuletrier.gdw.commons.tiled.TileSet;
 import de.hochschuletrier.gdw.commons.tiled.TiledMap;
 import de.hochschuletrier.gdw.commons.tiled.utils.RectangleGenerator;
 import de.hochschuletrier.gdw.commons.utils.Rectangle;
@@ -57,6 +59,7 @@ import de.hochschuletrier.gdw.ss12.game.systems.rendering.RenderMiniMapSystem;
 import de.hochschuletrier.gdw.ss12.game.systems.rendering.RenderPlayerSystem;
 import de.hochschuletrier.gdw.ss12.game.systems.rendering.RenderShadowMapCleanupSystem;
 import de.hochschuletrier.gdw.ss12.game.systems.rendering.RenderShadowMapSystem;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
@@ -74,19 +77,20 @@ public class Game {
     protected final LimitedSmoothCamera camera = new LimitedSmoothCamera();
     protected TiledMap map;
     protected Entity localPlayer;
-    protected final Team[] teams = new Team[Constants.TEAM_COLOR_TABLE.length];
+    protected final Array<Team> teams = new Array();
     protected AssetManagerX assetManager;
 
     public Game(AssetManagerX assetManager) {
         this.assetManager = assetManager;
-        for(int i=0; i<teams.length; i++) {
-            teams[i] = new Team(i, "Team " + i, Constants.TEAM_COLOR_TABLE[i]);
-            HashMap<PlayerState, AnimationExtended> animations = teams[i].animations;
+        for (int i = 0; i < Constants.TEAM_COLOR_TABLE.length; i++) {
+            final Team team = new Team(i, "Team " + i, Constants.TEAM_COLOR_TABLE[i]);
+            HashMap<PlayerState, AnimationExtended> animations = team.animations;
             animations.put(PlayerState.PAUSED, assetManager.getAnimation("player_team" + i));
             animations.put(PlayerState.ALIVE, assetManager.getAnimation("player_team" + i));
             animations.put(PlayerState.SLIPPING, assetManager.getAnimation("player_team" + i));
             animations.put(PlayerState.DEAD, assetManager.getAnimation("player_wiggle"));
             animations.put(PlayerState.HALUCINATING, assetManager.getAnimation("player_halucinating"));
+            teams.add(team);
         }
         Main.getInstance().console.register(physixDebug);
         physixDebug.addListener((CVar) -> engine.getSystem(PhysixDebugRenderSystem.class).setProcessing(physixDebug.get()));
@@ -118,12 +122,12 @@ public class Game {
         ));
         engine.addSystem(new UpdatePositionSystem());
         engine.addSystem(new UpdateSoundEmitterSystem());
-        
+
         engine.addSystem(new EntitySpawnSystem());
         engine.addSystem(new PowerupSystem());
         engine.addSystem(new UpdatePlayerSystem());
         engine.addSystem(new UpdateLightSystem());
-        
+
         engine.addSystem(new RenderShadowMapSystem());
         engine.addSystem(new RenderMapSystem());
         engine.addSystem(new RenderItemSystem());
@@ -132,13 +136,12 @@ public class Game {
         engine.addSystem(new RenderMiniMapSystem());
         engine.addSystem(new PhysixDebugRenderSystem());
         engine.addSystem(new RenderPowerupHudSystem());
-        
-        
+
         ImmutableArray<EntitySystem> systems = engine.getSystems();
-        for(int i=0; i<systems.size(); i++) {
+        for (int i = 0; i < systems.size(); i++) {
             EntitySystem system = systems.get(i);
-            if(system instanceof SystemGameInitializer) {
-                SystemGameInitializer initializer = (SystemGameInitializer)system;
+            if (system instanceof SystemGameInitializer) {
+                SystemGameInitializer initializer = (SystemGameInitializer) system;
                 initializer.initGame(this, assetManager);
             }
         }
@@ -151,16 +154,14 @@ public class Game {
         contactListener.addListener(TriggerComponent.class, new TriggerContactListener());
         contactListener.addListener(PlayerComponent.class, new PlayerContactListener(engine, this));
     }
-    
+
     private static class TeleporterInfo extends Rectangle {
+
         public final String destination;
-        
-        public TeleporterInfo(LayerObject object) {
-            x = object.getX();
-            y = object.getY();
-            width = object.getWidth();
-            height = object.getHeight();
-            destination = object.getProperty("destination", null);
+
+        public TeleporterInfo(int x, int y, int width, int height, String destination) {
+            super(x, y, width, height);
+            this.destination = destination;
         }
     }
 
@@ -181,97 +182,131 @@ public class Game {
         camera.setBounds(0, 0, totalMapWidth, totalMapHeight);
         camera.updateForced();
         Main.getInstance().addScreenListener(camera);
-        
+
         setupTeleporters(physixSystem);
-        
-        for(EntitySystem system: engine.getSystems()) {
-            if(system instanceof SystemMapInitializer) {
-                SystemMapInitializer initializer = (SystemMapInitializer)system;
+
+        for (EntitySystem system : engine.getSystems()) {
+            if (system instanceof SystemMapInitializer) {
+                SystemMapInitializer initializer = (SystemMapInitializer) system;
                 initializer.initMap(map, teams);
             }
         }
-        
+
         // Setup local player
         localPlayer = acquireBotPlayer("Maximo");
-        if(localPlayer == null)
+        if (localPlayer == null) {
             throw new RuntimeException("No free player available");
+        }
     }
 
     private void setupTeleporters(PhysixSystem physixSystem) {
         HashMap<String, TeleporterInfo> teleporterMap = new HashMap();
-        
-        for(Layer layer: map.getLayers()) {
-            if(layer.isObjectLayer()) {
-                for(LayerObject object: layer.getObjects()) {
-                    if("teleporter".equalsIgnoreCase(object.getType())) {
-                        teleporterMap.put(object.getName(), new TeleporterInfo(object));
+
+        int tileWidth = map.getTileWidth();
+        int tileHeight = map.getTileHeight();
+        int mapWidth = map.getWidth();
+        int mapHeight = map.getHeight();
+        for (Layer layer : map.getLayers()) {
+            if (layer.isTileLayer()) {
+                TileInfo[][] tiles = layer.getTiles();
+                for (int x = 0; x < mapWidth; x++) {
+                    for (int y = 0; y < mapHeight; y++) {
+                        TileInfo info = tiles[x][y];
+                        if (info != null && info.getProperty("teleporter", null) != null) {
+                            TileInfo tileInfo = tiles[x][y];
+                            TileSet tileSet = map.findTileSet(tileInfo.globalId);
+                            assert (tileInfo != null);
+                            String name = tileInfo.getProperty("teleporter", null);
+                            assert (name != null);
+
+                            int width = tileSet.getTileWidth();
+                            int height = tileSet.getTileHeight();
+                            int x1 = x * tileWidth;
+                            int y1 = y * tileHeight - height + tileHeight;
+                            String destination = tileInfo.getProperty("destination", null);
+                            assert (destination != null);
+
+                            teleporterMap.put(name, new TeleporterInfo(x1, y1, width, height, destination));
+                        }
                     }
                 }
             }
         }
-        for(TeleporterInfo info: teleporterMap.values()) {
+        for (TeleporterInfo info : teleporterMap.values()) {
             TeleporterInfo destination = teleporterMap.get(info.destination);
-            if(destination == null) {
+            if (destination == null) {
                 throw new RuntimeException("Teleporter not linked correctly"); // fixme: more graceful
             }
-            
+
             createTeleporter(physixSystem, info, destination);
         }
     }
 
     private void createTeleporter(PhysixSystem physixSystem, TeleporterInfo start, TeleporterInfo destination) {
-        createTrigger(physixSystem, start.x + start.width/2, start.y + start.height/2, start.width, start.height, (Entity entity) -> {
+        createTrigger(physixSystem, start.x + start.width / 2, start.y + start.height / 2, start.width, start.height, (Entity entity) -> {
             PlayerComponent player = ComponentMappers.player.get(entity);
-            if(player != null && (player.lastTeleport + 500) < System.currentTimeMillis()) {
+            if (player != null && (player.lastTeleport + 500) < System.currentTimeMillis()) {
 
                 PhysixBodyComponent physix = ComponentMappers.physixBody.get(entity);
                 Vector2 position = physix.getPosition();
                 float x = destination.x;
                 float y = position.y + destination.y - start.y;
-                
+
                 playGlobalSound("player_teleport", start.x, start.y, false);
                 playGlobalSound("player_teleport", destination.x, destination.y, false);
-                
+
                 PhysixModifierComponent modifier = ComponentMappers.physixModifier.get(entity);
-                if(modifier == null) {
+                if (modifier == null) {
                     modifier = engine.createComponent(PhysixModifierComponent.class);
                     entity.add(modifier);
                 }
-                modifier.schedule(()-> {physix.setLinearVelocity(0, 0); physix.setPosition(x, y);});
+                modifier.schedule(() -> {
+                    physix.setLinearVelocity(0, 0);
+                    physix.setPosition(x, y);
+                });
                 player.lastTeleport = System.currentTimeMillis();
             }
         });
     }
-    
+
     public SoundInstance playGlobalSound(String name, float x, float y, boolean loop) {
         return SoundEmitter.playGlobal(assetManager.getSound(name), loop, x, y, 0);
     }
-    
+
     public SoundInstance playEntitySound(String name, Entity entity, boolean loop) {
         SoundEmitterComponent soundEmitter = ComponentMappers.soundEmitter.get(entity);
-        if(soundEmitter != null) {
+        if (soundEmitter != null) {
             return soundEmitter.emitter.play(assetManager.getSound(name), loop);
         } else {
             PositionComponent position = ComponentMappers.position.get(entity);
-            if(position != null) {
+            if (position != null) {
                 return playGlobalSound(name, position.x, position.y, loop);
             }
         }
         return null;
     }
-    
-    public Entity acquireBotPlayer(String name) {
-        Team bestTeam = teams[0];
-        for (int i = 1; i < teams.length; i++) {
-            if (!teams[i].isFull() && teams[i].numConnectedPlayers < bestTeam.numConnectedPlayers) {
-                bestTeam = teams[i];
-            }
+
+    final Comparator<Team> acquireTeamComparator = new Comparator<Team>() {
+        @Override
+        public int compare(Team a, Team b) {
+            return getWeight(a) - getWeight(b);
         }
-        if(bestTeam.isFull())
-            return null;
+
+        private int getWeight(Team team) {
+            int weight = team.numSlots == 0 ? 100 : 0;
+            if (team.isFull()) {
+                return weight + 50;
+            }
+            return weight - (team.numSlots - team.numConnectedPlayers);
+        }
+    };
+
+    public Entity acquireBotPlayer(String name) {
+        teams.sort(acquireTeamComparator);
+        Team bestTeam = teams.get(0);
 
         Entity entity = acquireBotPlayer(bestTeam);
-        if(entity != null) {
+        if (entity != null) {
             PlayerComponent player = ComponentMappers.player.get(entity);
             player.name = name;
             player.team.numConnectedPlayers++;
@@ -282,7 +317,7 @@ public class Game {
 
     private Entity acquireBotPlayer(Team team) {
         // try alive players first
-        for(Entity e: botPlayers) {
+        for (Entity e : botPlayers) {
             PlayerComponent p = ComponentMappers.player.get(e);
             if (!p.isDead() && p.team == team) {
                 return e;
@@ -308,8 +343,7 @@ public class Game {
             map = new TiledMap(filename, LayerObject.PolyMode.ABSOLUTE);
             setupPhysixWorld();
         } catch (Exception ex) {
-            throw new IllegalArgumentException(
-                    "Map konnte nicht geladen werden: " + filename);
+            throw new IllegalArgumentException("Map konnte nicht geladen werden: " + filename, ex);
         }
     }
 
@@ -320,11 +354,11 @@ public class Game {
         camera.bind();
         engine.update(delta);
     }
-    
+
     public void reset() {
         //fixme: remove all non-player items
     }
-    
+
     public void sendStartNotices() {
 //        if (SotfGame.isServer()) {
 //            if (firstFrame) {

@@ -112,7 +112,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
     }
     
     @Override
-    public void initMap(TiledMap map, Team teams[]) {
+    public void initMap(TiledMap map, Array<Team> teams) {
         int highestTeamID = -1;
 
         for (Layer layer : map.getLayers()) {
@@ -123,11 +123,11 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
                         if (id > highestTeamID) {
                             highestTeamID = id;
                         }
-                        if(id < 0 || id >= teams.length) {
+                        if(id < 0 || id >= teams.size) {
                             throw new RuntimeException("Map contains bad Team Id: " + id);
                         }
 
-                        createBotPlayer(obj.getX() + obj.getWidth()/2, obj.getY() + obj.getHeight()/2, teams[id], "[BOT] " + freeBotNames.pop());
+                        createBotPlayer(obj.getX() + obj.getWidth()/2, obj.getY() + obj.getHeight()/2, teams.get(id), "[BOT] " + freeBotNames.pop());
                     }
                 }
             }

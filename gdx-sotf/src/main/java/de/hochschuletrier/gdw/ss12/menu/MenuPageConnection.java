@@ -6,10 +6,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import de.hochschuletrier.gdw.commons.gdx.menu.MenuManager;
-import de.hochschuletrier.gdw.commons.gdx.state.transition.SplitHorizontalTransition;
-import de.hochschuletrier.gdw.ss12.game.Game;
-import de.hochschuletrier.gdw.ss12.states.GameplayState;
+import de.hochschuletrier.gdw.ss12.Settings;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +30,7 @@ public class MenuPageConnection extends MenuPage {
     private final TextField username;
     private final TextField server;
     private final Label errorLabel;
+    private final SelectBox<MapInfo> mapSelect;
 
     public enum Type {
 
@@ -47,15 +48,32 @@ public class MenuPageConnection extends MenuPage {
             this.title = title;
         }
     }
+    
+    private class MapInfo {
+        public final String name;
+        public final String mapFile;
+        public final String screenshotFile;
+
+        public MapInfo(String mapFile, String name) {
+            this.name = name;
+            this.mapFile = mapFile + ".tmx";
+            this.screenshotFile = mapFile + ".png";
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+        
+    }
 
     public MenuPageConnection(Skin skin, MenuManager menuManager, Type type) {
         super(skin, type.image);
         this.type = type;
 
-        
         int y = 470;
         int yStep = 50;
-        
+
         // Title
         titelLabel = new Label(type.title, skin, "connectionTitle"); // gray, verdana 46
         titelLabel.setBounds(LABEL_X, y, 600, 30);
@@ -85,17 +103,19 @@ public class MenuPageConnection extends MenuPage {
 
         if (type != Type.JOIN_SERVER) {
             createInputLabel(y, "Karte");
-            //fixme: mapnames from main
-            String[] maps = new String[100];
-            for (int i = 0; i < maps.length; i++) {
-                maps[i] = "HumpNRun " + i;
+            Array<MapInfo> maps = new Array();
+            for (Map.Entry<String, String> map : main.getMaps().entrySet()) {
+                maps.add(new MapInfo(map.getKey(), map.getValue()));
             }
-            SelectBox<String> selectBox = new SelectBox(skin);
-            selectBox.setItems(maps);
-            selectBox.setBounds(INPUT_X, y, INPUT_WIDTH, 30);
-            selectBox.setMaxListCount(10);
-            addActor(selectBox);
+            maps.sort((MapInfo a, MapInfo b)->a.name.compareToIgnoreCase(b.name));
+            mapSelect = new SelectBox(skin);
+            mapSelect.setItems(maps);
+            mapSelect.setBounds(INPUT_X, y, INPUT_WIDTH, 30);
+            mapSelect.setMaxListCount(10);
+            addActor(mapSelect);
             y -= yStep;
+        } else {
+            mapSelect = null;
         }
 
         TextButton button = addButton(INPUT_X, y, INPUT_WIDTH, 30, type.acceptText, this::onAccept, "default");
@@ -111,7 +131,6 @@ public class MenuPageConnection extends MenuPage {
         return label;
     }
 
-
     private TextField createTextField(int y, String label, String text) {
         createInputLabel(y, label);
         TextField textField = new TextField(text, skin); //font: verdana 32
@@ -121,65 +140,50 @@ public class MenuPageConnection extends MenuPage {
     }
 
     public void activate() {
-//        errorLabel.visible(false);
+        errorLabel.setVisible(false);
 
-        // Restore values
-//        SafeProperties properties = SotfGame.getSettings("settings");
-//        name.text(properties.getString("player_name", ""));
-//        server.text(properties.getString("last_host", "") + ":" + properties.getString("last_port", ""));
-//
-//        String lastMap = properties.getString("last_map", "");
-//        mapToggle.state(0);
-//        for (int i = 0; i < mapNames.length; i++) {
-//            if (mapNames[i].equalsIgnoreCase(lastMap)) {
-//                mapToggle.state(i);
-//                break;
-//            }
-//        }
+        restoreSettings();
+    }
+
+    private void restoreSettings() {
+        if(mapSelect != null) {
+//            Settings.MAP_FILE.get()
+//            selectBox.setSelected();
+        }
+        username.setText(Settings.PLAYER_NAME.get());
+        if(server != null) {
+            server.setText(Settings.LAST_HOST.get() + ":" + Settings.LAST_PORT.get());
+        }
+    }
+
+    private void storeSettings() {
+        if(mapSelect != null) {
+            Settings.MAP_FILE.set(mapSelect.getSelected().mapFile);
+        }
+        Settings.PLAYER_NAME.set(username.getText());
+        if(server != null) {
+            Settings.LAST_HOST.set(ip);
+            Settings.LAST_PORT.set(port);
+        }
+        Settings.flush();
     }
 
     private void onAccept() {
-        if(type == Type.SINGLEPLAYER) {
-            //fixme: move to Main, set username
-            if(!main.isTransitioning()) {
-                Game game = new Game(assetManager);
-                game.loadMap("data/maps/HumpNRun.tmx");
-                GameplayState gameplayState = new GameplayState(assetManager, game);
-                main.changeState(gameplayState, new SplitHorizontalTransition(500), null);
-            }
+        if (type == Type.SINGLEPLAYER) {
+            storeSettings();
+            main.startSingleplayer();
             return;
         }
-//        if(SotfGame.isClient() || SotfGame.isServer()) {
-//            errorLabel.visible(true);
-//            errorLabel.text("Error: Already connected");
-//            return;
-//        }
+
         parseServerString(server.getText());
         if (valid) {
-//            // Store values
-//            SafeProperties settings = SotfGame.getSettings("settings");
-//            settings.setString("player_name", name.getText());
-//            settings.setString("last_host", ip);
-//            settings.setString("last_port", "" + port);
-//            settings.setString("last_map", mapNames[mapToggle.getState()]);
-//            SotfGame.storeSettings();
+            storeSettings();
 
-            if (type != Type.JOIN_SERVER) {
-//                GameWorld world = GameWorld.getInstance();
-//                world.loadMap(mapNames[mapToggle.getState()]);
-//                world.setLocalPlayer(0, name.getText());
-            }
-
-            server.setStyle(skin.get(TextField.TextFieldStyle.class));
             try {
-                //fixme:
-                switch (type) {
-                    case SINGLEPLAYER:
-                        break;
-                    case CREATE_SERVER:
-                        break;
-                    case JOIN_SERVER:
-                        break;
+                if (type == Type.CREATE_SERVER) {
+                    main.createServer(ip, port);
+                } else {
+                    main.joinServer(ip, port);
                 }
             } catch (Throwable e) {
                 logger.error("Error creating game", e);
@@ -188,8 +192,6 @@ public class MenuPageConnection extends MenuPage {
                     errorLabel.setText("Error: " + e.getMessage());
                 }
             }
-        } else {
-            server.setStyle(skin.get("error", TextField.TextFieldStyle.class));
         }
     }
 
@@ -199,8 +201,10 @@ public class MenuPageConnection extends MenuPage {
             ip = parts[0];
             port = Integer.parseInt(parts[1]);
             valid = true;
+            server.setStyle(skin.get(TextField.TextFieldStyle.class));
         } catch (NumberFormatException e) {
             valid = false;
+            server.setStyle(skin.get("error", TextField.TextFieldStyle.class));
         }
     }
 }

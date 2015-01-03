@@ -1,53 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="62" height="74" tilewidth="24" tileheight="24">
  <tileset firstgid="1" source="iron_tileset.tsx"/>
- <tileset firstgid="109" source="FlagsTileset.tsx"/>
- <tileset firstgid="125" name="portal_tileset" tilewidth="24" tileheight="24">
-  <image source="portal_tileset.png" width="192" height="24"/>
- </tileset>
+ <tileset firstgid="109" source="portal_tileset_2.tsx"/>
+ <tileset firstgid="117" source="portal_tileset_4.tsx"/>
+ <tileset firstgid="125" source="spawnpoints.tsx"/>
  <layer name="Kachelebene 1" width="62" height="74">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC+2bP0/DMBDFPQJDy1D4CEgMsJQBiZF/QgJR4PO0EnzymgGpmPOdc/YlZ/qGtyX38kus+MUXz0MIc+iXrqJOOtWygvs46jbqoTM9Rs0quZ+injvTC7jBDW4191vUe4VWRrWsub/rHkQdKnSU1GxZawxubd20Zsta4Aa3l7q9cy+CLjefEtytallz34e6/HxnVAu5BdzgBreWO83UaUauzdxDak+Vz6mMXJO5pfwteVtzz5hjan05f8kb3NNwazOYlMc8c9dmMC6PeeYea46a8ruEGouW85jkbcmdjmNqLFrNY5K3JTf1PFcNfXP+ku8Y43z3eVJrhRbcku+Y77Xc9Vlxc77gBje4/yrX3y+dHz1y53LyMjl/HfTrdtT1Ub7XDONNwX0v5c7l5A1x/po4PyfJP+f7xXB/Ftz3Uu6crLlzOVXilnKqFbe2zyrlix+dMdznxPFSHhrap065LwnPIXnI43st931wofDtiRvzN7jBrefezSVSvmjJzflac1O5hMsXrfwlX2tuqVdjuY7suU9kvY7stU9kqanXkTlv63Vkr9zW/VDP3PvaF/yv3Fyvxrof6rVPZDmPTdkn8i5wgxvcem7sL8H+Em3NlrXADW4vdXvnxv4S7C/xInCDG9xl3K+h3droWPqo5M79D9CDSvr7+6gtIzs7grBHAAA=
+   H4sIAAAAAAAAC+2bvU7EMBCEXQLFHQXwCEgU0BwFEiV/QgJxwJOABM+PrzvM/ji211lzc9J08U6+xIon3ssyhLCEfuky6nhQrSq4D6Nuou4H00PUopL7MeppMD2DG9zgLuZ+jXqr0NqoljX3pu5e1H6BDpKaLWv14C6tm9ZsWQvc4PZSd3Tuo1CWm08I7la1rLnvQl1+vjWqhdwCbnCDu5Q7zdRpRq7N3FNqz5XPqYxck7m1/K15W3MvhGNqfSV/zRvc83CXZjAtj3nmrs1gUh7zzN1rjZrzvYSai5brmOZtyZ3OY2ouWq1jmrclN3U/1w19OX/Nt8c8376f1F6hBbfm2/O5xp2fFbfkC25wg/uvuP5+7vrokZvLyatk/OZXum9HnR/leyUwXmdc91xuLicHYnwgxnPS/CVfjjvnuudyc7Lm5nLqp8D9wYyR8lAL7q8M3ynznMqppwL3GXG8loem9qm/k/EXhOeUPOTxuca9H5wX+I7EjfUb3OAu597OJVq+aMkt+VpzU7lEyhet/DVfa26tV2O5j+y5T2S9j+y1T2SpufeRJW/rfWSv3Nb9UM/cu9oX/K/cUq/Guh/qtU9kuY7N2SfyLnCDG9zl3Pi+BN+XlNZsWQvc4PZSd3RufF+C70u8CNzgBnce90totzfaS++V3Nz/AUZQTn9/F/UDZ80BmLBHAAA=
   </data>
  </layer>
- <objectgroup name="teleporters">
-  <object name="outer_a" type="teleporter" x="48" y="840" width="24" height="96">
-   <properties>
-    <property name="destination" value="outer_b"/>
-   </properties>
-  </object>
-  <object name="middle_a" type="teleporter" x="648" y="864" width="24" height="48">
-   <properties>
-    <property name="destination" value="middle_b"/>
-   </properties>
-  </object>
-  <object name="middle_b" type="teleporter" x="816" y="864" width="24" height="48">
-   <properties>
-    <property name="destination" value="middle_a"/>
-   </properties>
-  </object>
-  <object name="outer_b" type="teleporter" x="1416" y="840" width="24" height="96">
-   <properties>
-    <property name="destination" value="outer_a"/>
-   </properties>
-  </object>
- </objectgroup>
  <objectgroup name="spawnpoints">
-  <object gid="109" x="240" y="120"/>
-  <object gid="109" x="528" y="120"/>
-  <object gid="109" x="240" y="408"/>
-  <object gid="109" x="528" y="408"/>
-  <object gid="113" x="936" y="120"/>
-  <object gid="113" x="1224" y="120"/>
-  <object gid="113" x="936" y="408"/>
-  <object gid="113" x="1224" y="408"/>
-  <object gid="121" x="240" y="1392"/>
-  <object gid="121" x="528" y="1392"/>
-  <object gid="121" x="240" y="1680"/>
-  <object gid="121" x="528" y="1680"/>
-  <object gid="117" x="936" y="1392"/>
-  <object gid="117" x="1224" y="1392"/>
-  <object gid="117" x="936" y="1680"/>
-  <object gid="117" x="1224" y="1680"/>
+  <object gid="125" x="240" y="120"/>
+  <object gid="125" x="240" y="408"/>
+  <object gid="125" x="528" y="408"/>
+  <object gid="125" x="528" y="120"/>
+  <object gid="126" x="936" y="120"/>
+  <object gid="126" x="1224" y="120"/>
+  <object gid="126" x="1224" y="408"/>
+  <object gid="126" x="936" y="408"/>
+  <object gid="128" x="1224" y="1392"/>
+  <object gid="128" x="936" y="1392"/>
+  <object gid="128" x="936" y="1680"/>
+  <object gid="128" x="1224" y="1680"/>
+  <object gid="127" x="240" y="1392"/>
+  <object gid="127" x="528" y="1392"/>
+  <object gid="127" x="528" y="1680"/>
+  <object gid="127" x="240" y="1680"/>
  </objectgroup>
 </map>

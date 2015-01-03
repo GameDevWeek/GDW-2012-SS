@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.gdx.cameras.orthogonal.LimitedSmoothCamera;
 import de.hochschuletrier.gdw.commons.gdx.cameras.orthogonal.ScreenCamera;
@@ -67,7 +68,7 @@ public class RenderMiniMapSystem extends EntitySystem implements SystemGameIniti
     }
 
     @Override
-    public void initMap(TiledMap map, Team[] teams) {
+    public void initMap(TiledMap map, Array<Team> teams) {
         int mapWidth = map.getTileWidth() * map.getWidth();
         int mapHeight = map.getTileHeight() * map.getHeight();
         float ratio = mapWidth / (float) mapHeight;

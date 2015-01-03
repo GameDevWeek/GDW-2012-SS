@@ -21,21 +21,31 @@ import de.hochschuletrier.gdw.commons.gdx.assets.loaders.AnimationExtendedLoader
 import de.hochschuletrier.gdw.commons.gdx.devcon.DevConsoleView;
 import de.hochschuletrier.gdw.commons.gdx.state.BaseGameState;
 import de.hochschuletrier.gdw.commons.gdx.state.StateBasedGame;
+import de.hochschuletrier.gdw.commons.gdx.state.transition.SplitHorizontalTransition;
 import de.hochschuletrier.gdw.commons.gdx.utils.DrawUtil;
 import de.hochschuletrier.gdw.commons.gdx.utils.GdxResourceLocator;
 import de.hochschuletrier.gdw.commons.gdx.utils.KeyUtil;
+import de.hochschuletrier.gdw.commons.jackson.JacksonReader;
 import de.hochschuletrier.gdw.commons.netcode.core.NetDatagramPool;
 import de.hochschuletrier.gdw.commons.resourcelocator.CurrentResourceLocator;
+import de.hochschuletrier.gdw.ss12.game.Game;
 import de.hochschuletrier.gdw.ss12.game.datagrams.DatagramType;
 import de.hochschuletrier.gdw.ss12.sandbox.SandboxCommand;
+import de.hochschuletrier.gdw.ss12.states.GameplayState;
 import de.hochschuletrier.gdw.ss12.states.LoadGameState;
 import de.hochschuletrier.gdw.ss12.states.MainMenuState;
+import java.util.HashMap;
+import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
  * @author Santo Pfingsten
  */
 public class Main extends StateBasedGame {
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+
     public static final NetDatagramPool datagramPool = new NetDatagramPool(DatagramType.MAPPER);
 
     public static final int WINDOW_WIDTH = 1024;
@@ -48,6 +58,7 @@ public class Main extends StateBasedGame {
     private final DevConsoleView consoleView = new DevConsoleView(console);
     private Skin skin;
     public static final InputMultiplexer inputMultiplexer = new InputMultiplexer();
+    private HashMap<String, String> maps;
 
     public Main() {
         super(new BaseGameState());
@@ -62,6 +73,10 @@ public class Main extends StateBasedGame {
 
     public Skin getSkin() {
         return skin;
+    }
+
+    public HashMap<String, String> getMaps() {
+        return maps;
     }
 
     private void setupDummyLoader() {
@@ -82,6 +97,12 @@ public class Main extends StateBasedGame {
                 fontParam);
         assetManager.loadAssetList("data/json/fonts_truetype.json", TrueTypeFont.class,
                 null);
+        
+        try {
+            maps = JacksonReader.readMap("data/json/maps.json", String.class);
+        } catch (Exception e) {
+            logger.error("Error loading maplist", e);
+        }
     }
 
     private void setupGdx() {
@@ -112,10 +133,10 @@ public class Main extends StateBasedGame {
         final MainMenuState mainMenuState = new MainMenuState(assetManager);
         addPersistentState(mainMenuState);
         changeState(mainMenuState, null, null);
-        
+
         SandboxCommand.init(assetManager);
     }
-    
+
     public void disconnect() {
         //fixme: disconnect netgame
         changeState(getPersistentState(MainMenuState.class), null, null);
@@ -182,5 +203,41 @@ public class Main extends StateBasedGame {
 
     public AssetManagerX getAssetManager() {
         return assetManager;
+    }
+
+    private boolean beforeConnect() {
+        if (isTransitioning()) {
+            return false;
+        }
+//        if(SotfGame.isClient() || SotfGame.isServer()) {
+//            errorLabel.visible(true);
+//            errorLabel.text("Error: Already connected");
+//            return false;
+//        }
+        return true;
+    }
+
+    public void startSingleplayer() {
+        if (beforeConnect()) {
+            //fixme: set username
+            Game game = new Game(assetManager);
+            game.loadMap(Settings.MAP_FILE.get());
+            GameplayState gameplayState = new GameplayState(assetManager, game);
+            changeState(gameplayState, new SplitHorizontalTransition(500), null);
+        }
+    }
+
+    public void createServer(String ip, int port) {
+        if (beforeConnect()) {
+//            GameWorld world = GameWorld.getInstance();
+//            world.loadMap(Settings.MAP_FILE.get());
+//            world.setLocalPlayer(0, name.getText());
+        }
+    }
+
+    public void joinServer(String ip, int port) {
+        if (beforeConnect()) {
+
+        }
     }
 }

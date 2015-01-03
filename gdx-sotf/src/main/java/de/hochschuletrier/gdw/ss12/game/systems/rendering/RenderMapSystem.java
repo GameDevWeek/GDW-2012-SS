@@ -3,6 +3,7 @@ package de.hochschuletrier.gdw.ss12.game.systems.rendering;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.utils.Array;
 import de.hochschuletrier.gdw.commons.gdx.tiled.TiledMapRendererGdx;
 import de.hochschuletrier.gdw.commons.resourcelocator.CurrentResourceLocator;
 import de.hochschuletrier.gdw.commons.tiled.Layer;
@@ -30,7 +31,7 @@ public class RenderMapSystem extends EntitySystem implements SystemMapInitialize
     }
 
     @Override
-    public void initMap(TiledMap map, Team[] teams) {
+    public void initMap(TiledMap map, Array<Team> teams) {
         this.map = map;
         HashMap<TileSet, Texture> tilesetImages = new HashMap();
         for (TileSet tileset : map.getTileSets()) {

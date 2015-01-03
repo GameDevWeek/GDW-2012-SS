@@ -75,7 +75,7 @@ public class Constants {
      * Spawnrate wenn mehr als 24 Items auf der Map.
      */
     public static final float CHANCE_FOR_NEW_ITEM_REDUCED = 0.3f;
-    public static final Color[] TEAM_COLOR_TABLE = {Color.BLUE, Color.RED, Color.YELLOW, Color.GREEN, Color.PINK, Color.CYAN};
+    public static final Color[] TEAM_COLOR_TABLE = {Color.BLUE, Color.RED, Color.YELLOW, Color.GREEN};
 
     // PooledEngine parameters
     public static final int ENTITY_POOL_INITIAL_SIZE = 32;
