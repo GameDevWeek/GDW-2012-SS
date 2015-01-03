@@ -180,7 +180,6 @@ public class Game {
         float totalMapWidth = map.getWidth() * map.getTileWidth();
         float totalMapHeight = map.getHeight() * map.getTileHeight();
         camera.setBounds(0, 0, totalMapWidth, totalMapHeight);
-        camera.updateForced();
         Main.getInstance().addScreenListener(camera);
 
         setupTeleporters(physixSystem);
@@ -197,6 +196,15 @@ public class Game {
         if (localPlayer == null) {
             throw new RuntimeException("No free player available");
         }
+        
+        updateCameraForced();
+    }
+
+    public void updateCameraForced() {
+        engine.getSystem(UpdatePositionSystem.class).update(0);
+        PositionComponent position = ComponentMappers.position.get(localPlayer);
+        camera.setDestination(position.x, position.y);
+        camera.updateForced();
     }
 
     private void setupTeleporters(PhysixSystem physixSystem) {
@@ -263,6 +271,7 @@ public class Game {
                 modifier.schedule(() -> {
                     physix.setLinearVelocity(0, 0);
                     physix.setPosition(x, y);
+                    updateCameraForced();
                 });
                 player.lastTeleport = System.currentTimeMillis();
             }
