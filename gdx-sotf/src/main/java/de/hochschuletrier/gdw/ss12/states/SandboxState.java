@@ -29,7 +29,7 @@ public class SandboxState extends BaseGameState implements InputProcessor {
     BitmapFont font;
 
     public SandboxState(AssetManagerX assetManager, SandboxGame game) {
-        font = assetManager.getFont("verdana", 32);
+        font = assetManager.getFont("verdana_32");
         this.game = game;
     }
 

@@ -31,7 +31,7 @@ public class RenderPlayerSystem extends SortedIteratingSystem implements SystemG
     @Override
     public void initGame(Game game, AssetManagerX assetManager) {
         this.game = game;
-        font = assetManager.getFont("verdana", 24);
+        font = assetManager.getFont("verdana_24");
     }
     
 	@Override

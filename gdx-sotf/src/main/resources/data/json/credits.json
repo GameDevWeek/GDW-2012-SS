@@ -1,25 +1,18 @@
 {
     "textStyles" : {
-        "credit_titel": { "color": "F8BB08", "font": "verdana", "size": 32, "align": "center" },
-        "credit_titel_l": { "color": "F8BB08", "font": "verdana", "size": 32, "align": "right" },
-        "credit_titel_r": { "color": "F8BB08", "font": "verdana", "size": 32, "align": "left" },
-        "teilnehmer": { "color": "FFFFFF", "font": "verdana", "size": 32, "align": "center" },
-        "teilnehmer_l": { "color": "FFFFFF", "font": "verdana", "size": 32, "align": "right" },
-        "teilnehmer_r": { "color": "FFFFFF", "font": "verdana", "size": 32, "align": "left" }
+        "credit_titel": { "color": "F8BB08", "font": "mainMenu-Small-font", "align": "center" },
+        "credit_titel_l": { "color": "F8BB08", "font": "mainMenu-Small-font", "align": "right" },
+        "credit_titel_r": { "color": "F8BB08", "font": "mainMenu-Small-font", "align": "left" },
+        "teilnehmer": { "color": "FFFFFF", "font": "mainMenu-Small-font", "align": "center" },
+        "teilnehmer_l": { "color": "FFFFFF", "font": "mainMenu-Small-font", "align": "right" },
+        "teilnehmer_r": { "color": "FFFFFF", "font": "mainMenu-Small-font", "align": "left" }
     },
     "paths" : {
         "text_path": {
             "type": "linear",
             "destinations": [
-                {"x": 640, "y": 600, "speed": 40 },
-                {"x": 640, "y": -100, "speed": 40 }
-            ]
-        },
-        "cat_path": {
-            "type": "linear",
-            "destinations": [
-                {"x": 500, "y": 800, "speed": -1 },
-                {"x": 500, "y": -100, "speed": 80 }
+                {"x": 400, "y": 50, "speed": 40 },
+                {"x": 400, "y": 868, "speed": 40 }
             ]
         }
     },
@@ -27,7 +20,6 @@
         "text": {
             "time": 0,
             "path" : "text_path",
-            "next": "cat",
             "items" : [
                 { "type": "text", "group" : "title", "style" : "credit_titel", "text": "Organisation", "delay": "2200" },
                 { "type": "text", "style" : "teilnehmer_l", "text": "Santo Pfingsten  ", "delay": "900" },
@@ -162,17 +154,6 @@
                 },
                 { "time": 12000, "animation": "fade_out", "animationTime": 2000 },
                 { "time": 12000, "animation": "fade_out", "animationTime": 2000, "group": "title" }
-            ]
-        },
-        "cat": {
-            "time": 0,
-            "path" : "cat_path",
-            "finalNext": "reset",
-            "items" : [
-                { "type": "sprite", "animation": "astronaut_walking", "scale" : "0.5", "angle": 0, "oriented" : true }
-            ],
-            "animations": [
-                { "time": 0, "animation": "astronaut_walking", "frametime": 100 }
             ]
         }
     }

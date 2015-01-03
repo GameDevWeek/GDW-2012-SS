@@ -29,7 +29,7 @@ public class RenderNoticeSystem extends IteratingSystem implements SystemGameIni
     @Override
     public void initGame(Game game, AssetManagerX assetManager) {
         this.game = game;
-        font = assetManager.getFont("quartz", 50);
+        font = assetManager.getFont("quartz_50");
     }
 
     @Override

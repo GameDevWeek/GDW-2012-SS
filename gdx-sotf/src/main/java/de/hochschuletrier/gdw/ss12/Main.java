@@ -16,7 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import de.hochschuletrier.gdw.commons.devcon.DevConsole;
 import de.hochschuletrier.gdw.commons.gdx.assets.AnimationExtended;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
-import de.hochschuletrier.gdw.commons.gdx.assets.TrueTypeFont;
 import de.hochschuletrier.gdw.commons.gdx.assets.loaders.AnimationExtendedLoader;
 import de.hochschuletrier.gdw.commons.gdx.devcon.DevConsoleView;
 import de.hochschuletrier.gdw.commons.gdx.state.BaseGameState;
@@ -35,7 +34,6 @@ import de.hochschuletrier.gdw.ss12.states.GameplayState;
 import de.hochschuletrier.gdw.ss12.states.LoadGameState;
 import de.hochschuletrier.gdw.ss12.states.MainMenuState;
 import java.util.HashMap;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,10 +91,7 @@ public class Main extends StateBasedGame {
                 AnimationExtendedLoader.AnimationExtendedParameter.class);
         BitmapFontParameter fontParam = new BitmapFontParameter();
         fontParam.flip = true;
-        assetManager.loadAssetList("data/json/fonts_bitmap.json", BitmapFont.class,
-                fontParam);
-        assetManager.loadAssetList("data/json/fonts_truetype.json", TrueTypeFont.class,
-                null);
+        assetManager.loadAssetList("data/json/fonts.json", BitmapFont.class, fontParam);
         
         try {
             maps = JacksonReader.readMap("data/json/maps.json", String.class);

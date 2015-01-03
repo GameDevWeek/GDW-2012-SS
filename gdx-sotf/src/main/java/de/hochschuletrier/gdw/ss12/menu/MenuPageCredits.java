@@ -17,7 +17,7 @@ public class MenuPageCredits extends MenuPage {
         super(skin, "menu_bg_credits");
 
         try {
-            sceneAnimator = new SceneAnimator(assetManager, "data/json/credits.json");
+            sceneAnimator = new SceneAnimator(skin::getFont, "data/json/credits.json");
             addActor(new SceneAnimatorActor(sceneAnimator));
         } catch (Exception ex) {
             logger.error("Error loading credits", ex);

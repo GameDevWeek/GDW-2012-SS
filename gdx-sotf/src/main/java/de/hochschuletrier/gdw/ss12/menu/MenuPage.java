@@ -27,6 +27,13 @@ public class MenuPage extends Group {
     }
 
     @Override
+    public void act(float delta) {
+        if(isVisible()) {
+            super.act(delta);
+        }
+    }
+
+    @Override
     protected void drawChildren(Batch batch, float parentAlpha) {
         if (clipBegin(0, 0, getWidth(), getHeight())) {
             super.drawChildren(batch, parentAlpha);

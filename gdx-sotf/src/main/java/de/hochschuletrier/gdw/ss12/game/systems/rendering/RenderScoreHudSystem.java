@@ -28,7 +28,7 @@ public class RenderScoreHudSystem extends EntitySystem implements SystemGameInit
     public void initGame(Game game, AssetManagerX assetManager) {
         this.game = game;
         underlay = assetManager.getTexture("hud_underlay_score");
-        font = assetManager.getFont("quartz", 50);
+        font = assetManager.getFont("quartz_50");
         rect.set(25, 0, 50, 50);
     }
 
