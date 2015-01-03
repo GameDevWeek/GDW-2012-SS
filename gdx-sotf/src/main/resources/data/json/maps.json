@@ -1,9 +1,9 @@
 {
-    "data/maps/HumpNRun": "HumpNRun",
-    "data/maps/arena": "Arena",
-    "data/maps/awesomo": "Awesomo",
-    "data/maps/crossmap": "CrossMap",
-    "data/maps/mirrormirror": "MirrorMirror",
-    "data/maps/necropolis": "Necropolis",
-    "data/maps/quadro_uno": "Quadro Uno"
+    "data/maps/HumpNRun.tmx": "HumpNRun",
+    "data/maps/arena.tmx": "Arena",
+    "data/maps/awesomo.tmx": "Awesomo",
+    "data/maps/crossmap.tmx": "CrossMap",
+    "data/maps/mirrormirror.tmx": "MirrorMirror",
+    "data/maps/necropolis.tmx": "Necropolis",
+    "data/maps/quadro_uno.tmx": "Quadro Uno"
 }

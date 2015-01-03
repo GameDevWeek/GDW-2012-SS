@@ -63,5 +63,13 @@
     "menu_legend_garlic": "data/images/menu/legend/garlic.png",
     "menu_legend_cake": "data/images/menu/legend/cake.png",
     "menu_legend_mushroom": "data/images/menu/legend/mushroom.png",
-    "menu_legend_pizza": "data/images/menu/legend/pizza.png"
+    "menu_legend_pizza": "data/images/menu/legend/pizza.png",
+    
+    "data/maps/HumpNRun.tmx": "data/maps/HumpNRun.png",
+    "data/maps/arena.tmx": "data/maps/arena.png",
+    "data/maps/awesomo.tmx": "data/maps/awesomo.png",
+    "data/maps/crossmap.tmx": "data/maps/crossmap.png",
+    "data/maps/mirrormirror.tmx": "data/maps/mirrormirror.png",
+    "data/maps/necropolis.tmx": "data/maps/necropolis.png",
+    "data/maps/quadro_uno.tmx": "data/maps/quadro_uno.png"
 }

@@ -1,13 +1,23 @@
 package de.hochschuletrier.gdw.ss12.menu;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.glutils.FileTextureData;
+import com.badlogic.gdx.graphics.glutils.PixmapTextureData;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import de.hochschuletrier.gdw.commons.gdx.menu.MenuManager;
+import de.hochschuletrier.gdw.commons.gdx.menu.widgets.DecoImage;
 import de.hochschuletrier.gdw.ss12.Settings;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -31,6 +41,7 @@ public class MenuPageConnection extends MenuPage {
     private final TextField server;
     private final Label errorLabel;
     private final SelectBox<MapInfo> mapSelect;
+    private final DecoImage previewImage;
 
     public enum Type {
 
@@ -52,12 +63,10 @@ public class MenuPageConnection extends MenuPage {
     private class MapInfo {
         public final String name;
         public final String mapFile;
-        public final String screenshotFile;
 
         public MapInfo(String mapFile, String name) {
             this.name = name;
-            this.mapFile = mapFile + ".tmx";
-            this.screenshotFile = mapFile + ".png";
+            this.mapFile = mapFile;
         }
 
         @Override
@@ -112,6 +121,12 @@ public class MenuPageConnection extends MenuPage {
             mapSelect.setItems(maps);
             mapSelect.setBounds(INPUT_X, y, INPUT_WIDTH, 30);
             mapSelect.setMaxListCount(10);
+            mapSelect.addListener(new ChangeListener() {
+                @Override
+                public void changed (ChangeEvent event, Actor actor) {
+                    previewImage.setTexture(assetManager.getTexture(mapSelect.getSelected().mapFile));
+                }
+            });
             addActor(mapSelect);
             y -= yStep;
         } else {
@@ -122,6 +137,15 @@ public class MenuPageConnection extends MenuPage {
         button.getLabel().setAlignment(Align.left);
 
         addCenteredButton(menuManager.getWidth() - 100, 54, 100, 40, "Zurück", () -> menuManager.popPage());
+        
+        if(mapSelect != null) {
+            previewImage = new DecoImage(assetManager.getTexture(mapSelect.getSelected().mapFile));
+            previewImage.setBounds(600, 470 - 256, 256, 256);
+            addActor(previewImage);
+        } else {
+            previewImage = null;
+        }
+        restoreSettings();
     }
 
     private Label createInputLabel(int y, String text) {
@@ -147,8 +171,14 @@ public class MenuPageConnection extends MenuPage {
 
     private void restoreSettings() {
         if(mapSelect != null) {
-//            Settings.MAP_FILE.get()
-//            selectBox.setSelected();
+            String mapFile = Settings.MAP_FILE.get();
+            Array<MapInfo> maps = mapSelect.getItems();
+            for (MapInfo map : maps) {
+                if(map.mapFile.equals(mapFile)) {
+                    mapSelect.setSelected(map);
+                    break;
+                }
+            }
         }
         username.setText(Settings.PLAYER_NAME.get());
         if(server != null) {
