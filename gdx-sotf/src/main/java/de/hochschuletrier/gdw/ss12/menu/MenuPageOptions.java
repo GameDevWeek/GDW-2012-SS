@@ -25,6 +25,7 @@ public class MenuPageOptions extends MenuPage {
         createLabel(100, y).setText("Vollbild Modus:");
         fullscreenButton = createToggleButton(440, y, "Aus", this::onFullscreenChanged);
         y -= 50;
+
         createLabel(100, y).setText("Sound:");
         soundSlider = createSlider(170, y, this::onSoundVolumeChanged);
         soundLabel = createLabel(380, y);
@@ -32,6 +33,7 @@ public class MenuPageOptions extends MenuPage {
         soundMuteButton.setChecked(true);
         soundSlider.setValue(1.0f);
         y -= 50;
+
         createLabel(100, y).setText("Musik:");
         musicSlider = createSlider(170, y, this::onMusicVolumeChanged);
         musicLabel = createLabel(380, y);

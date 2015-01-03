@@ -1,13 +1,6 @@
 package de.hochschuletrier.gdw.ss12.menu;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.glutils.FileTextureData;
-import com.badlogic.gdx.graphics.glutils.PixmapTextureData;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -59,8 +52,9 @@ public class MenuPageConnection extends MenuPage {
             this.title = title;
         }
     }
-    
+
     private class MapInfo {
+
         public final String name;
         public final String mapFile;
 
@@ -73,7 +67,7 @@ public class MenuPageConnection extends MenuPage {
         public String toString() {
             return name;
         }
-        
+
     }
 
     public MenuPageConnection(Skin skin, MenuManager menuManager, Type type) {
@@ -84,14 +78,14 @@ public class MenuPageConnection extends MenuPage {
         int yStep = 50;
 
         // Title
-        titelLabel = new Label(type.title, skin, "connectionTitle"); // gray, verdana 46
+        titelLabel = new Label(type.title, skin, "connectionTitle");
         titelLabel.setBounds(LABEL_X, y, 600, 30);
         addActor(titelLabel);
         y -= 70;
 
+        // Error label
         if (type != Type.SINGLEPLAYER) {
-            // errorLabel
-            errorLabel = new Label(type.title, skin, "connectionError"); // red, verdana 32
+            errorLabel = new Label(type.title, skin, "connectionError");
             errorLabel.setBounds(50, 50, 600, 20);
             errorLabel.setVisible(false);
             addActor(errorLabel);
@@ -110,20 +104,21 @@ public class MenuPageConnection extends MenuPage {
             server = null;
         }
 
+        // Map selection
         if (type != Type.JOIN_SERVER) {
             createInputLabel(y, "Karte");
             Array<MapInfo> maps = new Array();
             for (Map.Entry<String, String> map : main.getMaps().entrySet()) {
                 maps.add(new MapInfo(map.getKey(), map.getValue()));
             }
-            maps.sort((MapInfo a, MapInfo b)->a.name.compareToIgnoreCase(b.name));
+            maps.sort((MapInfo a, MapInfo b) -> a.name.compareToIgnoreCase(b.name));
             mapSelect = new SelectBox(skin);
             mapSelect.setItems(maps);
             mapSelect.setBounds(INPUT_X, y, INPUT_WIDTH, 30);
             mapSelect.setMaxListCount(10);
             mapSelect.addListener(new ChangeListener() {
                 @Override
-                public void changed (ChangeEvent event, Actor actor) {
+                public void changed(ChangeEvent event, Actor actor) {
                     previewImage.setTexture(assetManager.getTexture(mapSelect.getSelected().mapFile));
                 }
             });
@@ -133,12 +128,14 @@ public class MenuPageConnection extends MenuPage {
             mapSelect = null;
         }
 
+        // Accept button
         TextButton button = addButton(INPUT_X, y, INPUT_WIDTH, 30, type.acceptText, this::onAccept, "default");
         button.getLabel().setAlignment(Align.left);
 
         addCenteredButton(menuManager.getWidth() - 100, 54, 100, 40, "Zurück", () -> menuManager.popPage());
-        
-        if(mapSelect != null) {
+
+        // Map preview
+        if (mapSelect != null) {
             previewImage = new DecoImage(assetManager.getTexture(mapSelect.getSelected().mapFile));
             previewImage.setBounds(600, 470 - 256, 256, 256);
             addActor(previewImage);
@@ -157,7 +154,7 @@ public class MenuPageConnection extends MenuPage {
 
     private TextField createTextField(int y, String label, String text) {
         createInputLabel(y, label);
-        TextField textField = new TextField(text, skin); //font: verdana 32
+        TextField textField = new TextField(text, skin);
         textField.setBounds(INPUT_X, y, INPUT_WIDTH, 30);
         addActor(textField);
         return textField;
@@ -170,28 +167,28 @@ public class MenuPageConnection extends MenuPage {
     }
 
     private void restoreSettings() {
-        if(mapSelect != null) {
+        if (mapSelect != null) {
             String mapFile = Settings.MAP_FILE.get();
             Array<MapInfo> maps = mapSelect.getItems();
             for (MapInfo map : maps) {
-                if(map.mapFile.equals(mapFile)) {
+                if (map.mapFile.equals(mapFile)) {
                     mapSelect.setSelected(map);
                     break;
                 }
             }
         }
         username.setText(Settings.PLAYER_NAME.get());
-        if(server != null) {
+        if (server != null) {
             server.setText(Settings.LAST_HOST.get() + ":" + Settings.LAST_PORT.get());
         }
     }
 
     private void storeSettings() {
-        if(mapSelect != null) {
+        if (mapSelect != null) {
             Settings.MAP_FILE.set(mapSelect.getSelected().mapFile);
         }
         Settings.PLAYER_NAME.set(username.getText());
-        if(server != null) {
+        if (server != null) {
             Settings.LAST_HOST.set(ip);
             Settings.LAST_PORT.set(port);
         }
