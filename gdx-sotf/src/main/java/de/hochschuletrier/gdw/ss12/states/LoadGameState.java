@@ -19,7 +19,7 @@ public class LoadGameState extends BaseGameState {
     public LoadGameState(AssetManagerX assetManager, Runnable completeFunc) {
         this.assetManager = assetManager;
         this.completeFunc = completeFunc;
-        loadscreen = new Texture(Gdx.files.internal("data/images/LoadScreen/titlescreen.png"));
+        loadscreen = new Texture(Gdx.files.internal("data/images/splash/splashscreen.png"));
     }
 
     public void render() {
