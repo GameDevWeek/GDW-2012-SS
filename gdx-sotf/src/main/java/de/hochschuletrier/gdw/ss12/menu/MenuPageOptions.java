@@ -1,7 +1,6 @@
 package de.hochschuletrier.gdw.ss12.menu;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -10,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import de.hochschuletrier.gdw.commons.gdx.menu.MenuManager;
 import de.hochschuletrier.gdw.commons.gdx.utils.ScreenUtil;
+import de.hochschuletrier.gdw.ss12.Settings;
 
 public class MenuPageOptions extends MenuPage {
 
@@ -116,26 +116,33 @@ public class MenuPageOptions extends MenuPage {
 //        }
     }
 
-//    @Override
-//    public void activate() {
-////        float soundValue = SoundStore.get().getMusicVolume();
-////        boolean soundOn = SoundStore.get().soundsOn();
-////        volumeSlider.value(soundValue);
-////        volumeValue.text(pctToString(soundValue));
-////        volumeToggle.state(soundOn ? 1 : 0);
-//        fullscreenToggle.state(Gdx.graphics.isFullscreen() ? 1 : 0);
-//    }
-//
-//    @Override
-//    public void close() {
-////        // Store values
-////        SafeProperties settings = SotfGame.getSettings("settings");
-////        settings.setFloat("sound_volume", volumeSlider.getValue());
-////        settings.setBoolean("sound_enabled", volumeToggle.getState() != 0);
-////        settings.setBoolean("fullscreen", fullscreenToggle.getState() != 0);
-////
-////        SotfGame.storeSettings();
-//
-//        super.close();
-//    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        if(soundSlider != null && isVisible() != visible) {
+            if(visible) {
+                restoreSettings();
+            } else {
+                storeSettings();
+            }
+        }
+        super.setVisible(visible);
+    }
+    
+    private void restoreSettings() {
+        soundSlider.setValue(Settings.SOUND_VOLUME.get());
+        soundMuteButton.setChecked(Settings.SOUND_MUTE.get());
+        musicSlider.setValue(Settings.MUSIC_VOLUME.get());
+        musicMuteButton.setChecked(Settings.MUSIC_MUTE.get());
+        fullscreenButton.setChecked(Gdx.graphics.isFullscreen());
+    }
+
+    private void storeSettings() {
+        Settings.SOUND_VOLUME.set(soundSlider.getValue());
+        Settings.SOUND_MUTE.set(soundMuteButton.isChecked());
+        Settings.MUSIC_VOLUME.set(musicSlider.getValue());
+        Settings.MUSIC_MUTE.set(musicMuteButton.isChecked());
+        Settings.FULLSCREEN.set(Gdx.graphics.isFullscreen());
+        Settings.flush();
+    }
 }

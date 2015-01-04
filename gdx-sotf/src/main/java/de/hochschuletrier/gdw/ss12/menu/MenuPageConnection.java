@@ -25,11 +25,11 @@ public class MenuPageConnection extends MenuPage {
     private static final int INPUT_X = 250;
     private static final int INPUT_WIDTH = 300;
 
-    private String ip = "localhost";
-    private int port = 49999;
+    private String ip;
+    private int port;
     private boolean valid = true;
     private final Type type;
-    private final Label titelLabel;
+    private final Label titleLabel;
     private final TextField username;
     private final TextField server;
     private final Label errorLabel;
@@ -78,9 +78,9 @@ public class MenuPageConnection extends MenuPage {
         int yStep = 50;
 
         // Title
-        titelLabel = new Label(type.title, skin, "connectionTitle");
-        titelLabel.setBounds(LABEL_X, y, 600, 30);
-        addActor(titelLabel);
+        titleLabel = new Label(type.title, skin, "connectionTitle");
+        titleLabel.setBounds(LABEL_X, y, 600, 30);
+        addActor(titleLabel);
         y -= 70;
 
         // Error label
@@ -98,7 +98,7 @@ public class MenuPageConnection extends MenuPage {
         y -= yStep;
 
         if (type != Type.SINGLEPLAYER) {
-            server = createTextField(y, "Server:Port", ip + ":" + port);
+            server = createTextField(y, "Server:Port", "");
             y -= yStep;
         } else {
             server = null;
@@ -142,7 +142,6 @@ public class MenuPageConnection extends MenuPage {
         } else {
             previewImage = null;
         }
-        restoreSettings();
     }
 
     private Label createInputLabel(int y, String text) {
@@ -160,10 +159,17 @@ public class MenuPageConnection extends MenuPage {
         return textField;
     }
 
-    public void activate() {
-        errorLabel.setVisible(false);
-
-        restoreSettings();
+    @Override
+    public void setVisible(boolean visible) {
+        if (titleLabel != null && isVisible() != visible) {
+            if (visible) {
+                if (errorLabel != null) {
+                    errorLabel.setVisible(false);
+                }
+                restoreSettings();
+            }
+        }
+        super.setVisible(visible);
     }
 
     private void restoreSettings() {
