@@ -196,7 +196,7 @@ public class Game {
         if (localPlayer == null) {
             throw new RuntimeException("No free player available");
         }
-        
+
         updateCameraForced();
     }
 
@@ -271,7 +271,9 @@ public class Game {
                 modifier.schedule(() -> {
                     physix.setLinearVelocity(0, 0);
                     physix.setPosition(x, y);
-                    updateCameraForced();
+                    if (entity == localPlayer) {
+                        updateCameraForced();
+                    }
                 });
                 player.lastTeleport = System.currentTimeMillis();
             }
