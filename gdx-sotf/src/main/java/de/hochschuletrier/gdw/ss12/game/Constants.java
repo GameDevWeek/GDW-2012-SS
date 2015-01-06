@@ -33,12 +33,6 @@ public class Constants {
     public static final int TEAMDEATHMATCH_FRAG_LIMIT = 10;
     public static final int TEAMDEATHMATCH_TIME_LIMIT = 30;
     /**
-     * Teambuff
-     */
-    public static final float PIZZABUFF_SPEED = 0.2f; // wieviel Speed seines Anfangsspeeds wird beim Spieler pro Sekunde hinzumultipliziert
-    public static final float PIZZABUFF_ADD_SIZE = 1f; // wieviel Zusatzsize erhält Spieler pro Sekunde
-    public static final float PIZZABUFF_DURATION = 15f; // wie lange hält Teambuff
-    /**
      * Minimap Constants
      */
     public static final int MINIMAP_WIDTH = 150;

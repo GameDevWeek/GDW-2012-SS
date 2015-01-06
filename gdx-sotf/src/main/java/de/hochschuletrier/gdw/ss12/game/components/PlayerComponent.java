@@ -2,7 +2,6 @@ package de.hochschuletrier.gdw.ss12.game.components;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.math.Vector2;
@@ -34,6 +33,7 @@ public class PlayerComponent extends Component implements Pool.Poolable {
     public Entity killer;
     public long lastSequenceId;
     public float lastSpawnShapeSize;
+    public boolean hasPizzaPowerup;
     
     public PlayerComponent() {
         particleEffect = new ParticleEffect(Main.getInstance().getAssetManager().getParticleEffect("player"));

@@ -20,7 +20,6 @@ public class GameStateSystem extends EntitySystem implements SystemGameInitializ
 
     @Override
     public void update(float deltaTime) {
-        checkTeambuff();
 
         // Gucken, ob ein Team tot ist und wenn, dann der Welt Bescheid
         // geben, dass eine neue Runde beginnen muss
@@ -63,31 +62,6 @@ public class GameStateSystem extends EntitySystem implements SystemGameInitializ
 //                    }
 //                }
 //                resetGame();
-//            }
-//        }
-    }
-
-    protected void checkTeambuff() {
-//        for (Team team : world.getTeams()) {
-//            if (team.pizzaCount == 8) {
-//                for (IPlayer p : team.getAlivePlayers()) {
-//                    p.getPowerups().add(
-//                            new Powerup(PowerupType.SPEED_OVER_TIME,
-//                                    Constants.PIZZABUFF_SPEED,
-//                                    Constants.PIZZABUFF_DURATION_IN_MS));
-//                    p.getPowerups().add(
-//                            new Powerup(PowerupType.SIZE,
-//                                    Constants.PIZZABUFF_ADD_SIZE,
-//                                    Constants.PIZZABUFF_DURATION_IN_MS));
-//                    p.getPowerups().add(
-//                            new Powerup(PowerupType.IMMUNITY, 0,
-//                                    Constants.PIZZABUFF_DURATION_IN_MS));
-//                }
-//                GameEventManager.fireGameEvent(
-//                        GameEventManager.PIZZABUFF_ACTIVATED, 0,
-//                        team.getPlayers());
-//                team.pizzaCount = 0;
-//                GameWorld.stateChanged = true;
 //            }
 //        }
     }

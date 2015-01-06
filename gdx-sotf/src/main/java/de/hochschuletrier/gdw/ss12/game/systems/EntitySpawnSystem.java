@@ -28,7 +28,6 @@ import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Constants;
 import de.hochschuletrier.gdw.ss12.game.Game;
 import de.hochschuletrier.gdw.ss12.game.components.data.PlayerState;
-import de.hochschuletrier.gdw.ss12.game.components.data.Powerup;
 import de.hochschuletrier.gdw.ss12.game.components.data.Team;
 import de.hochschuletrier.gdw.ss12.game.components.BotComponent;
 import de.hochschuletrier.gdw.ss12.game.components.EatableComponent;
@@ -41,7 +40,6 @@ import de.hochschuletrier.gdw.ss12.game.components.RenderComponent;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemMapInitializer;
 import de.hochschuletrier.gdw.ss12.game.json.EntityJson;
-import de.hochschuletrier.gdw.ss12.game.json.PowerupJson;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -55,13 +53,12 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
     private static final Logger logger = LoggerFactory.getLogger(EntitySystem.class);
     
     private ImmutableArray<Entity> eatables;
-    private Stack<String> nextEatables = new Stack<String>();
-    private Stack<String> usedEatables = new Stack<String>();
+    private Stack<String> nextEatables = new Stack();
+    private Stack<String> usedEatables = new Stack();
 
     private PooledEngine engine;
     private PhysixSystem physixSystem;
     private HashMap<String, EntityJson> entityJsonMap;
-    private HashMap<String, PowerupJson> powerupJsonMap;
     private AssetManagerX assetManager;
     private final SpawnPositionPool spawnPositionPool = new SpawnPositionPool(256, 512);
     private final Array<SpawnPosition> spawnPositions = new Array();
@@ -98,13 +95,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
             }
             Collections.shuffle(nextEatables);
         } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        try {
-            powerupJsonMap = JacksonReader.readMap("data/json/powerups.json", PowerupJson.class);
-        } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error reading entities.json", e);
         }
 
         Collections.addAll(freeBotNames, botNamesOrdered);
@@ -359,8 +350,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
                     String powerupName = config.get("powerup");
                     if(powerupName != null) {
                         PowerupSystem powerupSystem = engine.getSystem(PowerupSystem.class);
-                        PowerupJson powerupJson = powerupJsonMap.get(powerupName);
-                        component.powerup = powerupSystem.createPowerup(powerupJson);
+                        component.powerup = powerupSystem.createPowerup(powerupName);
                     }
                     return component;
                 }

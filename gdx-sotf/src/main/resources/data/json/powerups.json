@@ -38,5 +38,15 @@
         "modifiers": [
             { "type": "slipped", "value": 1, "lifetime": 2 }
         ]
+    },
+    "pizza":  {
+        "image": "pizza_icon",
+        "isTransferable": false,
+        "effect": "pizza",
+        "modifiers": [
+            { "type": "speed_over_time", "value": 0.2, "lifetime": 15 },
+            { "type": "size", "value": 1, "lifetime": 15 },
+            { "type": "immunity", "value": 0, "lifetime": 15 }
+        ]
     }
 }
