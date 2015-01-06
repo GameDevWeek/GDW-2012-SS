@@ -20,7 +20,7 @@ public class RenderPizzaHudSystem extends EntitySystem implements SystemGameInit
     private Texture underlay;
     private float stateTime;
     private Game game;
-    
+
     public RenderPizzaHudSystem() {
         super(0);
     }
@@ -28,29 +28,26 @@ public class RenderPizzaHudSystem extends EntitySystem implements SystemGameInit
     @Override
     public void initGame(Game game, AssetManagerX assetManager) {
         this.game = game;
-    }
-    
-    public void init(AssetManagerX assetManagerX) {
-        underlay = assetManagerX.getTexture("hud_underlay_pizza");
+        underlay = assetManager.getTexture("hud_underlay_pizza");
 
         for (int i = 0; i < 8; i++) {
-            pizza[i] = assetManagerX.getTexture("teambuff_pizza_" + (i + 1));
+            pizza[i] = assetManager.getTexture("teambuff_pizza_" + (i + 1));
         }
 
-        pizzaAnimation = assetManagerX.getAnimation("teambuff_pizza");
+        pizzaAnimation = assetManager.getAnimation("teambuff_pizza");
     }
 
     @Override
     public void update(float deltaTime) {
         Entity localPlayer = game.getLocalPlayer();
-        stateTime += deltaTime;
         PlayerComponent player = ComponentMappers.player.get(localPlayer);
-        int numSlices = player.team.pizzaCount;
+        int numSlices = Math.max(8, player.team.pizzaCount);
         DrawUtil.draw(underlay, (Gdx.graphics.getWidth() / 2 - pizza[0].getWidth() / 2) - 34, Constants.HUD_PIZZA_OFFSET_Y - 28);
-        if (numSlices > 0 && numSlices <= 8) {
+        if (numSlices > 0) {
             float x = (Gdx.graphics.getWidth() / 2) - (pizza[numSlices - 1].getWidth() / 2);
             float y = Constants.HUD_PIZZA_OFFSET_Y;
             if (numSlices == 8) {
+                stateTime += deltaTime;
                 DrawUtil.batch.draw(pizzaAnimation.getKeyFrame(stateTime), x, y);
             } else {
                 DrawUtil.draw(pizza[numSlices - 1], x, y);
