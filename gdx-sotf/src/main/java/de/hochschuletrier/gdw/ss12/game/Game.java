@@ -158,10 +158,12 @@ public class Game {
     private static class TeleporterInfo extends Rectangle {
 
         public final String destination;
+        public final float maxSize;
 
         public TeleporterInfo(int x, int y, int width, int height, String destination) {
             super(x, y, width, height);
             this.destination = destination;
+            this.maxSize = Math.max(width, height) * 0.6f;
         }
     }
 
@@ -253,7 +255,7 @@ public class Game {
     private void createTeleporter(PhysixSystem physixSystem, TeleporterInfo start, TeleporterInfo destination) {
         createTrigger(physixSystem, start.x + start.width / 2, start.y + start.height / 2, start.width, start.height, (Entity entity) -> {
             PlayerComponent player = ComponentMappers.player.get(entity);
-            if (player != null && (player.lastTeleport + 500) < System.currentTimeMillis()) {
+            if (player != null && (player.lastTeleport + 500) < System.currentTimeMillis() && player.radius <= start.maxSize) {
 
                 PhysixBodyComponent physix = ComponentMappers.physixBody.get(entity);
                 Vector2 position = physix.getPosition();
