@@ -25,7 +25,7 @@ public class MainMenuState extends BaseGameState {
     private final Music music;
 
     private final MenuManager menuManager = new MenuManager(Main.WINDOW_WIDTH, Main.WINDOW_HEIGHT, null);
-    private final InputForwarder inputProcessor;
+    private final InputForwarder inputForwarder;
 
     public MainMenuState(AssetManagerX assetManager) {
         music = assetManager.getMusic("menu");
@@ -43,7 +43,7 @@ public class MainMenuState extends BaseGameState {
 
         Main.getInstance().addScreenListener(menuManager);
 
-        inputProcessor = new InputForwarder() {
+        inputForwarder = new InputForwarder() {
             @Override
             public boolean keyUp(int keycode) {
                 if (mainProcessor != null && keycode == Input.Keys.ESCAPE) {
@@ -54,7 +54,7 @@ public class MainMenuState extends BaseGameState {
             }
         };
 
-        Main.inputMultiplexer.addProcessor(inputProcessor);
+        Main.inputMultiplexer.addProcessor(inputForwarder);
     }
 
     public void render() {
@@ -71,12 +71,12 @@ public class MainMenuState extends BaseGameState {
 
     @Override
     public void onEnterComplete() {
-        inputProcessor.set(menuManager.getInputProcessor());
+        inputForwarder.set(menuManager.getInputProcessor());
     }
 
     @Override
     public void onLeave(BaseGameState nextState) {
-        inputProcessor.set(null);
+        inputForwarder.set(null);
     }
 
     @Override

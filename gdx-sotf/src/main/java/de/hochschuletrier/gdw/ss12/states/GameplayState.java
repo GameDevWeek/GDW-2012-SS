@@ -61,7 +61,6 @@ public class GameplayState extends BaseGameState {
                 return super.keyUp(keycode);
             }
         };
-        Main.inputMultiplexer.addProcessor(inputForwarder);
     }
     
     private void onMenuEmptyPop() {
@@ -81,12 +80,13 @@ public class GameplayState extends BaseGameState {
     
     @Override
     public void onEnterComplete() {
+        Main.inputMultiplexer.addProcessor(inputForwarder);
         inputForwarder.set(gameInputProcessor);
     }
     
     @Override
     public void onLeave(BaseGameState nextState) {
-        inputForwarder.set(null);
+        Main.inputMultiplexer.removeProcessor(inputForwarder);
     }
     
     @Override
