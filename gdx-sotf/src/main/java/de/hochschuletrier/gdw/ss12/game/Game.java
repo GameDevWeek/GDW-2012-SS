@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -48,17 +49,17 @@ import de.hochschuletrier.gdw.ss12.game.systems.rendering.*;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.function.Consumer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Game {
+    private static final float TELEPORTER_SCALE = 0.4f;
 
-    protected static final Logger logger = LoggerFactory.getLogger(Game.class);
     protected final CVarBool physixDebug = new CVarBool("physix_debug", true, 0, "Draw physix debug");
     protected final CVarBool botsEnabled = new CVarBool("bots_enable", true, 0, "Enable bots");
 
     protected final CustomPooledEngine engine = new CustomPooledEngine();
-    ImmutableArray<Entity> botPlayers = engine.getEntitiesFor(Family.all(PlayerComponent.class, BotComponent.class).get());
+    private ImmutableArray<Entity> botPlayers = engine.getEntitiesFor(Family.all(PlayerComponent.class, BotComponent.class).get());
+    private ImmutableArray<Entity> playerEntities = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
+    private ImmutableArray<Entity> entitiesToRemove = engine.getEntitiesFor(Family.exclude(PlayerComponent.class, TriggerComponent.class).get());
 
     protected final LimitedSmoothCamera camera = new LimitedSmoothCamera();
     protected TiledMap map;
@@ -73,7 +74,6 @@ public class Game {
             HashMap<PlayerState, AnimationExtended> animations = team.animations;
             animations.put(PlayerState.PAUSED, assetManager.getAnimation("player_team" + i));
             animations.put(PlayerState.ALIVE, assetManager.getAnimation("player_team" + i));
-            animations.put(PlayerState.SLIPPING, assetManager.getAnimation("player_team" + i));
             animations.put(PlayerState.DEAD, assetManager.getAnimation("player_wiggle"));
             animations.put(PlayerState.HALUCINATING, assetManager.getAnimation("player_halucinating"));
             teams.add(team);
@@ -113,6 +113,7 @@ public class Game {
         engine.addSystem(new PowerupSystem());
         engine.addSystem(new UpdatePlayerSystem());
         engine.addSystem(new UpdateLightSystem());
+        engine.addSystem(new GameStateSystem());
 
         engine.addSystem(new RenderShadowMapSystem());
         engine.addSystem(new RenderMapSystem());
@@ -240,7 +241,7 @@ public class Game {
     }
 
     private void createTeleporter(PhysixSystem physixSystem, TeleporterInfo start, TeleporterInfo destination) {
-        createTrigger(physixSystem, start.x + start.width / 2, start.y + start.height / 2, start.width, start.height, (Entity entity) -> {
+        createTrigger(physixSystem, start.x + start.width / 2, start.y + start.height / 2, start.width * TELEPORTER_SCALE, start.height, (Entity entity) -> {
             PlayerComponent player = ComponentMappers.player.get(entity);
             if (player != null && (player.lastTeleport + 500) < System.currentTimeMillis() && player.radius <= start.maxSize) {
 
@@ -356,6 +357,36 @@ public class Game {
     }
 
     public void reset() {
+        for (Entity entity : entitiesToRemove) {
+            engine.removeEntity(entity);
+        }
+        for (Entity entity : playerEntities) {
+            PlayerComponent player = ComponentMappers.player.get(entity);
+            
+            for (ParticleEmitter emitter : player.particleEmitters) {
+                if (emitter != null) {
+                    emitter.duration = 0;
+                    emitter.durationTimer = 0;
+                }
+            }
+            player.newPowerups.clear(); //fixme: pooling
+            player.powerups.clear(); //fixme: pooling
+            player.radius = Constants.PLAYER_DEFAULT_SIZE;
+            player.state = PlayerState.ALIVE;
+            player.lastTeleport = 0;
+            player.killer = null;
+            player.hasPizzaPowerup = false;
+            ComponentMappers.light.get(entity).radius = player.radius;
+            ComponentMappers.position.get(entity).ignorePhysix = false;
+            
+            PhysixModifierComponent modifyComponent = engine.createComponent(PhysixModifierComponent.class);
+            entity.add(modifyComponent);
+            modifyComponent.schedule(() -> {
+                PhysixBodyComponent bodyComponent = ComponentMappers.physixBody.get(entity);
+                bodyComponent.setPosition(player.startPosition);
+                bodyComponent.setActive(true);
+            });
+        }
         //fixme: remove all non-player items
     }
 

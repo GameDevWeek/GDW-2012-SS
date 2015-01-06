@@ -5,6 +5,5 @@ public enum PlayerState {
     PAUSED,
     ALIVE,
     HALUCINATING,
-    SLIPPING,
     DEAD,
 }

@@ -32,6 +32,7 @@ public class CustomPooledEngine extends PooledEngine {
         ORDER.put(PowerupSystem.class, priority++);
         ORDER.put(UpdatePlayerSystem.class, priority++);
         ORDER.put(UpdateLightSystem.class, priority++);
+        ORDER.put(GameStateSystem.class, priority++);
         
         // Network
         ORDER.put(NetServerSendSystem.class, priority++);

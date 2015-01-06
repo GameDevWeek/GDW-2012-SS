@@ -17,6 +17,7 @@ import de.hochschuletrier.gdw.ss12.game.components.data.Powerup.Modifier;
 import de.hochschuletrier.gdw.ss12.game.components.InputComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.data.PlayerEffect;
+import de.hochschuletrier.gdw.ss12.game.components.data.PlayerState;
 import de.hochschuletrier.gdw.ss12.game.components.data.Team;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemMapInitializer;
@@ -62,7 +63,7 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
         initializePowerups(player, input);
         updatePowerups(player, deltaTime);
         input.speed = calculateSpeed(player);
-        tickPowerups(player, deltaTime);
+        removeExpiredPowerups(player, deltaTime);
     }
 
     @Override
@@ -90,27 +91,36 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
 
     private void initializePowerups(PlayerComponent player, InputComponent input) {
         for (Powerup powerup : player.newPowerups) {
-            // Turn on effect and update shape size
-            if (powerup.effect != null) {
-                ParticleEmitter emitter = player.particleEmitters[powerup.effect.ordinal()];
-                if (emitter != null) {
-                    setParticleSpawnShapeSize(emitter, player.radius * powerup.effect.shapeScale);
-                }
-            }
-            for (Modifier modifier : powerup.modifiers) {
-                switch (modifier.type) {
-                    case SLIPPED:
-                        // Slip at random direction, but not within 60° of the current movement direction
-                        float oldAngle = input.moveDirection.angle();
-                        input.moveDirection.set(1, 0).setAngle(oldAngle - 30 + random.nextFloat() * 300);
-                        break;
-                    case HALUCINATION:
-                        break;
-                }
-            }
-            player.powerups.add(powerup);
+            initializePowerup(powerup, player, input);
         }
         player.newPowerups.clear();
+    }
+
+    void initializePowerup(Powerup powerup, PlayerComponent player, InputComponent input) {
+        for (Modifier modifier : powerup.modifiers) {
+            switch (modifier.type) {
+                case SLIPPED:
+                    if(player.isSlipping) {
+                        return; // Avoid slipping twice
+                    }
+                    // Slip at random direction, but not within 60° of the current movement direction
+                    float oldAngle = input.moveDirection.angle();
+                    input.moveDirection.set(1, 0).setAngle(oldAngle - 30 + random.nextFloat() * 300);
+                    player.isSlipping = true;
+                    break;
+                case HALUCINATION:
+                    player.state = PlayerState.HALUCINATING;
+                    break;
+            }
+        }
+        // Turn on effect and update shape size
+        if (powerup.effect != null) {
+            ParticleEmitter emitter = player.particleEmitters[powerup.effect.ordinal()];
+            if (emitter != null) {
+                setParticleSpawnShapeSize(emitter, player.radius * powerup.effect.shapeScale);
+            }
+        }
+        player.powerups.add(powerup);
     }
 
     private void updatePowerups(PlayerComponent player, float deltaTime) {
@@ -188,8 +198,9 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
         return speed;
     }
 
-    private void tickPowerups(PlayerComponent player, float deltaTime) {
+    private void removeExpiredPowerups(PlayerComponent player, float deltaTime) {
         Iterator<Powerup> iterator = player.powerups.iterator();
+        boolean checkPowerups = false;
         while (iterator.hasNext()) {
             Powerup powerup = iterator.next();
             powerup.expiredTime += deltaTime;
@@ -203,11 +214,29 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
                         emitter.duration = 0;
                         emitter.durationTimer = 0;
                     }
-                    if(powerup.effect == PlayerEffect.PIZZA) {
-                        player.hasPizzaPowerup = false;
+                    
+                    switch(powerup.effect) {
+                        case BANANA:
+                            player.isSlipping = false;
+                            break;
+                        case HALUCINATION:
+                            player.state = PlayerState.ALIVE;
+                            checkPowerups = true;
+                            break;
+                        case PIZZA:
+                            player.hasPizzaPowerup = false;
+                            break;
                     }
                 }
                 iterator.remove();
+            }
+        }
+        if(checkPowerups) {
+            for (Powerup powerup : player.powerups) {
+                if(powerup.effect == PlayerEffect.HALUCINATION) {
+                    player.state = PlayerState.HALUCINATING;
+                    break;
+                }
             }
         }
     }

@@ -34,6 +34,7 @@ public class PlayerComponent extends Component implements Pool.Poolable {
     public long lastSequenceId;
     public float lastSpawnShapeSize;
     public boolean hasPizzaPowerup;
+    public boolean isSlipping;
     
     public PlayerComponent() {
         particleEffect = new ParticleEffect(Main.getInstance().getAssetManager().getParticleEffect("player"));
@@ -83,9 +84,5 @@ public class PlayerComponent extends Component implements Pool.Poolable {
     
     public boolean isHalucinating() {
         return state == PlayerState.HALUCINATING;
-    }
-
-    public boolean isSlipping() {
-        return state == PlayerState.SLIPPING;
     }
 }

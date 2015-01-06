@@ -37,6 +37,7 @@ public class RenderShadowMapSystem extends EntitySystem implements SystemGameIni
     public final float ambientIntensity = 1.0f;
     public final Vector3 ambientColor = new Vector3(0.0f, 0.0f, 0.0f);
     private Game game;
+    private boolean activeFrame;
 
     public RenderShadowMapSystem() {
         super(0);
@@ -89,7 +90,8 @@ public class RenderShadowMapSystem extends EntitySystem implements SystemGameIni
         Entity localPlayer = game.getLocalPlayer();
         PlayerComponent player = ComponentMappers.player.get(localPlayer);
         Team team = player.team;
-        if (!player.isHalucinating()) {
+        activeFrame = !player.isHalucinating();
+        if (activeFrame) {
             DrawUtil.batch.end();
             //draw the light to the FBO
             fbo.begin();
@@ -130,9 +132,11 @@ public class RenderShadowMapSystem extends EntitySystem implements SystemGameIni
     }
 
     void finish() {
-        DrawUtil.batch.end();
-        DrawUtil.batch.begin();
-        game.getCamera().bind();
-        DrawUtil.batch.setShader(defaultShader);
+        if (activeFrame) {
+            DrawUtil.batch.end();
+            DrawUtil.batch.begin();
+            game.getCamera().bind();
+            DrawUtil.batch.setShader(defaultShader);
+        }
     }
 }

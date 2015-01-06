@@ -47,7 +47,7 @@ public class RenderPlayerSystem extends SortedIteratingSystem implements SystemG
         PositionComponent position = ComponentMappers.position.get(entity);
         PlayerComponent player = ComponentMappers.player.get(entity);
 
-        if (!player.isSlipping()) {
+        if (!player.isSlipping) {
             render.stateTime += deltaTime;
         }
 

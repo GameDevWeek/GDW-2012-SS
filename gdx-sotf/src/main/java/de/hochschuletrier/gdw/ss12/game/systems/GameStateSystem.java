@@ -50,6 +50,12 @@ public class GameStateSystem extends EntitySystem implements SystemGameInitializ
 
     @Override
     public void update(float deltaTime) {
+//        if (firstFrame) {
+//            GameEventManager.fireGameEvent(GameEventManager.THREE, 0, getPlayers());
+//            GameEventManager.fireGameEvent(GameEventManager.TWO, 1000, getPlayers());
+//            GameEventManager.fireGameEvent(GameEventManager.ONE, 2000, getPlayers());
+//            GameEventManager.fireGameEvent(GameEventManager.GO, 3000, getPlayers());
+//        }
 
         // Update alive players
         for (Team team : teams) {
@@ -67,7 +73,7 @@ public class GameStateSystem extends EntitySystem implements SystemGameInitializ
         int numberAliveTeams = 0;
         Team aliveTeam = null;
         for (Team team : teams) {
-            if (team.alivePlayers <= 0) {
+            if (team.alivePlayers > 0) {
                 numberAliveTeams++;
                 aliveTeam = team;
             }

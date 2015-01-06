@@ -64,7 +64,6 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
     private final Array<SpawnPosition> spawnPositions = new Array();
     private float timeSincelastItemSpawnTry;
     private final Random random = new Random();
-    private boolean paused = false;
     private final LinkedList<String> freeBotNames = new LinkedList();
     private final String[] botNamesOrdered = {
         "Stan", "Kyle", "Cartman", "Kenny",
@@ -163,31 +162,11 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         if (numItemSpawns == 0) {
             throw new RuntimeException("Map contains no space for item spawns");
         }
-
-//        if (teamSpawns.isEmpty()) {
-//            echoNoTeamsInMapWarning();
-//        } else {
-//            // Make sure all teams are used
-//            for (int i = 0; i < teamSpawns.size(); i++) {
-//                if (!teamSpawns.containsKey(i)) {
-//                    echoIncompleteTeamsInMapWarning();
-//                    break;
-//                }
-//            }
-//        }
     }
 
     @Override
     public void update(float deltaTime) {
-//        if (firstFrame) {
-//            GameEventManager.fireGameEvent(GameEventManager.THREE, 0, getPlayers());
-//            GameEventManager.fireGameEvent(GameEventManager.TWO, 1000, getPlayers());
-//            GameEventManager.fireGameEvent(GameEventManager.ONE, 2000, getPlayers());
-//            GameEventManager.fireGameEvent(GameEventManager.GO, 3000, getPlayers());
-//        }
-        if (!paused) {
-            spawnRandomItems(deltaTime);
-        }
+        spawnRandomItems(deltaTime);
     }
 
     private void spawnRandomItems(float deltaTime) {
@@ -284,7 +263,6 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         entity.add(light);
 
         RenderComponent render = engine.createComponent(RenderComponent.class);
-//        renderEffects = assetLoader.createNewParticleRenderEffectMap();
         entity.add(render);
 
         modifyComponent.schedule(() -> {

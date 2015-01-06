@@ -62,9 +62,6 @@ public class UpdatePlayerSystem extends IteratingSystem {
     }
     
     private void triggerPlayerDeath(Entity entity, PlayerComponent player) {
-//        for (IPlayerRenderEffect r : player.renderEffects.values()) {
-//            r.deactivate();
-//        }
         player.powerups.clear();
         player.state = PlayerState.DEAD;
         player.radius = Constants.PLAYER_DEFAULT_SIZE;

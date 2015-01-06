@@ -71,7 +71,7 @@ public class PlayerContactListener extends PhysixContactAdapter {
         
         // Powerup hinzufügen (Effekt wird in PowerupSystem abgehandelt)
         if (eatable.powerup != null) {
-            eater.powerups.add(eatable.powerup);
+            eater.newPowerups.add(eatable.powerup);
         }
 
         engine.removeEntity(eatableEntity);
