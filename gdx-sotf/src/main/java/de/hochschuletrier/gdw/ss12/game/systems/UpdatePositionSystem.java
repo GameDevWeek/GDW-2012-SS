@@ -5,12 +5,13 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import de.hochschuletrier.gdw.commons.gdx.physix.components.PhysixBodyComponent;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
+import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 
 public class UpdatePositionSystem extends IteratingSystem {
 
     public UpdatePositionSystem() {
-        super(Family.all(PositionComponent.class, PhysixBodyComponent.class).get(), 0);
+        super(Family.all(PositionComponent.class, PhysixBodyComponent.class, PlayerComponent.class).get(), 0);
     }
 
     @Override
