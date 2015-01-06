@@ -14,6 +14,7 @@ public class Team {
     public int numConnectedPlayers = 0;
     public int numSlots = 0;
     public HashMap<PlayerState, AnimationExtended> animations = new HashMap();
+    public int alivePlayers;
     
     public Team(int id, String teamname, Color color) {
         this.teamname = teamname;
