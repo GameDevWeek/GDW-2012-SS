@@ -5,6 +5,8 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -15,6 +17,7 @@ import de.hochschuletrier.gdw.commons.devcon.cvar.CVarBool;
 import de.hochschuletrier.gdw.commons.gdx.assets.AnimationExtended;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.gdx.cameras.orthogonal.LimitedSmoothCamera;
+import de.hochschuletrier.gdw.commons.gdx.input.InputForwarder;
 import de.hochschuletrier.gdw.commons.gdx.physix.PhysixBodyDef;
 import de.hochschuletrier.gdw.commons.gdx.physix.PhysixComponentAwareContactListener;
 import de.hochschuletrier.gdw.commons.gdx.physix.PhysixFixtureDef;
@@ -66,6 +69,7 @@ public class Game {
     protected Entity localPlayer;
     protected final Array<Team> teams = new Array();
     protected AssetManagerX assetManager;
+    private InputForwarder inputForwarder = new InputForwarder();
 
     public Game(AssetManagerX assetManager) {
         this.assetManager = assetManager;
@@ -133,6 +137,8 @@ public class Game {
                 initializer.initGame(this, assetManager);
             }
         }
+        
+        inputForwarder.set(engine.getSystem(KeyboardInputSystem.class));
     }
 
     private void addContactListeners() {
@@ -141,6 +147,10 @@ public class Game {
         physixSystem.getWorld().setContactListener(contactListener);
         contactListener.addListener(TriggerComponent.class, new TriggerContactListener());
         contactListener.addListener(PlayerComponent.class, new PlayerContactListener(engine, this));
+    }
+
+    public InputProcessor getInputProcessor() {
+        return inputForwarder;
     }
 
     private static class TeleporterInfo extends Rectangle {

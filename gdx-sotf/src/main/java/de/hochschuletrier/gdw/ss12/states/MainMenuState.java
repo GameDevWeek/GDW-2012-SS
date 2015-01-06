@@ -1,11 +1,13 @@
 package de.hochschuletrier.gdw.ss12.states;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import de.hochschuletrier.gdw.commons.gdx.menu.MenuManager;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
+import de.hochschuletrier.gdw.commons.gdx.input.InputForwarder;
 import de.hochschuletrier.gdw.commons.gdx.input.InputInterceptor;
 import de.hochschuletrier.gdw.commons.gdx.state.BaseGameState;
 import de.hochschuletrier.gdw.commons.gdx.utils.DrawUtil;
@@ -22,32 +24,42 @@ public class MainMenuState extends BaseGameState {
 
     private final Music music;
 
-    InputInterceptor inputProcessor;
-    private final MenuManager menuManager;
+    private final MenuManager menuManager = new MenuManager(Main.WINDOW_WIDTH, Main.WINDOW_HEIGHT, null);
+    private final InputForwarder inputProcessor;
 
     public MainMenuState(AssetManagerX assetManager) {
-        menuManager = new MenuManager(Main.WINDOW_WIDTH, Main.WINDOW_HEIGHT);
         music = assetManager.getMusic("menu");
 
         music.setLooping(true);
 //        music.play();
 
-        Main.inputMultiplexer.addProcessor(menuManager.getInputProcessor());
-        
         Skin skin = Main.getInstance().getSkin();
         final MenuPageRoot menuPageRoot = new MenuPageRoot(skin, menuManager, MenuPageRoot.Type.MAINMENU);
         menuManager.addLayer(menuPageRoot);
-        
+
         menuManager.addLayer(new DecoImage(assetManager.getTexture("menu_fg_border")));
         menuManager.pushPage(menuPageRoot);
 //        menuManager.getStage().setDebugAll(true);
-        
+
         Main.getInstance().addScreenListener(menuManager);
+
+        inputProcessor = new InputForwarder() {
+            @Override
+            public boolean keyUp(int keycode) {
+                if (mainProcessor != null && keycode == Input.Keys.ESCAPE) {
+                    menuManager.popPage();
+                    return true;
+                }
+                return super.keyUp(keycode);
+            }
+        };
+
+        Main.inputMultiplexer.addProcessor(inputProcessor);
     }
 
     public void render() {
         Main.getInstance().screenCamera.bind();
-        DrawUtil.fillRect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), Color.GRAY);
+        DrawUtil.fillRect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), Color.BLACK);
         menuManager.render();
     }
 
@@ -59,12 +71,12 @@ public class MainMenuState extends BaseGameState {
 
     @Override
     public void onEnterComplete() {
-        menuManager.enableInput(true);
+        inputProcessor.set(menuManager.getInputProcessor());
     }
 
     @Override
     public void onLeave(BaseGameState nextState) {
-        menuManager.enableInput(false);
+        inputProcessor.set(null);
     }
 
     @Override
