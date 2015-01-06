@@ -14,7 +14,7 @@ public class BotComponent extends Component implements Pool.Poolable {
     public float nextBotUpdate = 0;
     public float lastDelta;
     public Entity followEatable;
-    public final HashMap<Entity, IgnoreEatable> ignoreEatables = new HashMap<Entity, IgnoreEatable>();
+    public final HashMap<Entity, IgnoreEatable> ignoreEatables = new HashMap();
 
     @Override
     public void reset() {

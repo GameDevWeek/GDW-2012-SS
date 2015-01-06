@@ -2,7 +2,6 @@ package de.hochschuletrier.gdw.ss12.game.systems.input;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;

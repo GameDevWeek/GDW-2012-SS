@@ -137,7 +137,7 @@ public class RenderMiniMapSystem extends EntitySystem implements SystemGameIniti
         }
     }
 
-    void drawCamera(float mapX, float mapY, PlayerComponent localPlayer) {
+    private void drawCamera(float mapX, float mapY, PlayerComponent localPlayer) {
         LimitedSmoothCamera camera = game.getCamera();
         final float x = mapX + camera.getLeftOffset() * renderScale;
         final float y = mapY + camera.getTopOffset() * renderScale;

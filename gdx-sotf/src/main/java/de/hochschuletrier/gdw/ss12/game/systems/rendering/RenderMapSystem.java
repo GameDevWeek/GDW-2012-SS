@@ -23,14 +23,6 @@ public class RenderMapSystem extends EntitySystem implements SystemMapInitialize
     }
 
     @Override
-	public void addedToEngine(Engine engine) {
-    }
-    
-    @Override
-	public void removedFromEngine(Engine engine) {
-    }
-
-    @Override
     public void initMap(TiledMap map, Array<Team> teams) {
         this.map = map;
         HashMap<TileSet, Texture> tilesetImages = new HashMap();

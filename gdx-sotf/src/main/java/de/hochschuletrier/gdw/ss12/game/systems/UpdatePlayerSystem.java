@@ -80,23 +80,4 @@ public class UpdatePlayerSystem extends IteratingSystem {
         float distance = Constants.PLAYER_DEFAULT_SIGHTDISTANCE * Math.max(1, m);
         ComponentMappers.light.get(entity).radius = distance;
     }
-
-    public void resetPlayer(PlayerComponent player) {
-//        getPosition().set(startPosition);
-//        moveSpeed = Constants.PLAYER_MOVEMENT_SPEED;
-//        setRadius(Constants.START_SIZE);
-//        setAnimState(PlayerState.CHOMPING);
-
-//        for (IPlayerRenderEffect e : player.renderEffects.values()) {
-//            e.deactivate();
-//        }
-
-//        for (int i = 0; i < inventory.length; i++) {
-//            inventory[i] = null;
-//        }
-
-//        setSightDistance(Constants.PLAYER_DEFAULT_SIGHTDISTANCE);
-
-        player.powerups.clear();
-    }
 }
