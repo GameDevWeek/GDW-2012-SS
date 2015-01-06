@@ -20,6 +20,7 @@ import de.hochschuletrier.gdw.ss12.game.components.RenderComponent;
 import java.util.Comparator;
 
 public class RenderPlayerSystem extends SortedIteratingSystem implements SystemGameInitializer {
+
     private BitmapFont font;
     private Color ghostFilter = new Color(0.3f, 1.0f, 0.3f, 0.5f);
     private Game game;
@@ -33,9 +34,9 @@ public class RenderPlayerSystem extends SortedIteratingSystem implements SystemG
         this.game = game;
         font = assetManager.getFont("verdana_24");
     }
-    
-	@Override
-	public void update(float deltaTime) {
+
+    @Override
+    public void update(float deltaTime) {
         forceSort();
         super.update(deltaTime);
     }
@@ -46,51 +47,44 @@ public class RenderPlayerSystem extends SortedIteratingSystem implements SystemG
         PositionComponent position = ComponentMappers.position.get(entity);
         PlayerComponent player = ComponentMappers.player.get(entity);
 
-        if(!player.isSlipping())
+        if (!player.isSlipping()) {
             render.stateTime += deltaTime;
-        
-        if(player.isDead()) {
-            if(entity != game.getLocalPlayer())
+        }
+
+        if (player.isDead()) {
+            if (entity != game.getLocalPlayer()) {
                 return;
+            }
         } else {
-//            GraphicsX.pushTransform();
-//            for (IPlayerRenderEffect fx : renderEffects.values()) {
-//                if (fx.isActive()) {
-//                    if (fx instanceof AnimationRenderEffect) {
-//                        curAnimation = ((AnimationRenderEffect) fx).getAnimation();
-//                    } else {
-//                        fx.render(this);
-//                    }
-//                }
-//            }
-//            GraphicsX.popTransform();
+            player.particleEffect.setPosition(position.x, position.y);
+            player.particleEffect.draw(DrawUtil.batch, deltaTime);
         }
         Entity localPlayer = game.getLocalPlayer();
         PlayerComponent localPlayerComponent = ComponentMappers.player.get(localPlayer);
-        
+
         AnimationExtended animation;
-        if(localPlayerComponent.isHalucinating()) {
+        if (localPlayerComponent.isHalucinating()) {
             animation = player.team.animations.get(PlayerState.HALUCINATING);
         } else {
             animation = player.team.animations.get(player.state);
         }
-        
+
         if (animation != null) {
-            DrawUtil.batch.setColor( player.isDead() ? ghostFilter : Color.WHITE);
+            DrawUtil.batch.setColor(player.isDead() ? ghostFilter : Color.WHITE);
             TextureRegion keyFrame = animation.getKeyFrame(render.stateTime);
             int width = keyFrame.getRegionWidth();
             int height = keyFrame.getRegionHeight();
-            float scale = Constants.PLAYER_RENDER_SCALE * (player.radius*2)/width;
+            float scale = Constants.PLAYER_RENDER_SCALE * (player.radius * 2) / width;
             float halfWidth = width * 0.5f;
             float halfHeight = height * 0.5f;
-            
-            DrawUtil.batch.draw(keyFrame, position.x-halfWidth, position.y-halfHeight, halfWidth, halfHeight, width, height, scale, scale, render.angle);
-            
+
+            DrawUtil.batch.draw(keyFrame, position.x - halfWidth, position.y - halfHeight, halfWidth, halfHeight, width, height, scale, scale, render.angle);
+
             // render name
             if (player.name != null && !player.isDead() && !localPlayerComponent.isHalucinating()) {
                 font.setColor(entity == localPlayer ? Color.WHITE : player.team.color);
                 float xOffset = font.getBounds(player.name).width / 2.0f;
-                font.draw(DrawUtil.batch, player.name, position.x-xOffset, position.y-50);
+                font.draw(DrawUtil.batch, player.name, position.x - xOffset, position.y - 50);
             }
         }
     }
@@ -108,9 +102,9 @@ public class RenderPlayerSystem extends SortedIteratingSystem implements SystemG
                     return 1;
                 }
                 return (int) (pa.radius - pb.radius);
-            } else if(pa != null) {
+            } else if (pa != null) {
                 return 1;
-            } else if(pb != null) {
+            } else if (pb != null) {
                 return -1;
             }
             return 0;

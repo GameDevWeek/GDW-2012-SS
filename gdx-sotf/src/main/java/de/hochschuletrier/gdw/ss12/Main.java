@@ -4,6 +4,7 @@ import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.loaders.BitmapFontLoader.BitmapFontParameter;
+import com.badlogic.gdx.assets.loaders.ParticleEffectLoader.ParticleEffectParameter;
 import com.badlogic.gdx.assets.loaders.TextureLoader.TextureParameter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import de.hochschuletrier.gdw.commons.devcon.DevConsole;
 import de.hochschuletrier.gdw.commons.gdx.assets.AnimationExtended;
@@ -92,6 +94,12 @@ public class Main extends StateBasedGame {
         BitmapFontParameter fontParam = new BitmapFontParameter();
         fontParam.flip = true;
         assetManager.loadAssetList("data/json/fonts.json", BitmapFont.class, fontParam);
+        
+        
+        ParticleEffectParameter particleParam = new ParticleEffectParameter();
+        particleParam.imagesDir = Gdx.files.internal("data/particles");
+
+        assetManager.loadAssetList("data/json/particle_effects.json", ParticleEffect.class, particleParam);
         
         try {
             maps = JacksonReader.readMap("data/json/maps.json", String.class);

@@ -9,6 +9,7 @@ public class Powerup {
     public Texture image;
     public ArrayList<Modifier> modifiers = new ArrayList();
     public boolean isTransferable;
+    public PlayerEffect effect;
 
     public static class Modifier {
         public float value;

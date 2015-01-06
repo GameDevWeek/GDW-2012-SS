@@ -3,6 +3,7 @@ package de.hochschuletrier.gdw.ss12.game.systems;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Constants;
@@ -30,7 +31,6 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
         this.assetManager = assetManager;
     }
 
-
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         InputComponent input = ComponentMappers.input.get(entity);
@@ -43,11 +43,14 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
 
     private void initializePowerups(PlayerComponent player, InputComponent input) {
         for (Powerup powerup : player.newPowerups) {
-            // Rendereffekt
-//            if (powerup.effect != null) {
-//                player.renderEffects.get(powerup.getEffect()).activate();
-//            }
-            for(Modifier modifier: powerup.modifiers) {
+            // Turn on effect and update shape size
+            if (powerup.effect != null) {
+                ParticleEmitter emitter = player.particleEmitters[powerup.effect.ordinal()];
+                if (emitter != null) {
+                    setParticleSpawnShapeSize(emitter, player.radius * powerup.effect.shapeScale);
+                }
+            }
+            for (Modifier modifier : powerup.modifiers) {
                 switch (modifier.type) {
                     case SLIPPED:
                         // Slip at random direction, but not within 60° of the current movement direction
@@ -65,7 +68,16 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
 
     private void updatePowerups(PlayerComponent player, float deltaTime) {
         for (Powerup powerup : player.powerups) {
-            for(Modifier modifier: powerup.modifiers) {
+            if (powerup.effect != null) {
+                ParticleEmitter emitter = player.particleEmitters[powerup.effect.ordinal()];
+                if (emitter != null) {
+                    // Reset duration timer
+                    emitter.duration = Integer.MAX_VALUE;
+                    emitter.durationTimer = 0;
+                }
+            }
+
+            for (Modifier modifier : powerup.modifiers) {
                 switch (modifier.type) {
                     case SIZE:
                         float addSize = modifier.value * deltaTime;
@@ -75,15 +87,39 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
                 }
             }
         }
+
+        // Update spawn shape size
+        if (Math.abs(player.radius - player.lastSpawnShapeSize) > 5) {
+            player.lastSpawnShapeSize = player.radius;
+
+            for (Powerup powerup : player.powerups) {
+                if (powerup.effect != null) {
+                    ParticleEmitter emitter = player.particleEmitters[powerup.effect.ordinal()];
+                    if (emitter != null) {
+                        setParticleSpawnShapeSize(emitter, player.radius * powerup.effect.shapeScale);
+                    }
+                }
+            }
+        }
+    }
+
+    private void setParticleSpawnShapeSize(ParticleEmitter emitter, float size) {
+        final ParticleEmitter.ScaledNumericValue spawnWidth = emitter.getSpawnWidth();
+        spawnWidth.setHigh(size);
+        spawnWidth.setLow(size);
+        final ParticleEmitter.ScaledNumericValue spawnHeight = emitter.getSpawnHeight();
+        spawnHeight.setHigh(size);
+        spawnHeight.setLow(size);
+        emitter.start();
     }
 
     private float calculateSpeed(PlayerComponent player) {
-        if(player.isDead()) {
+        if (player.isDead()) {
             return Constants.PLAYER_DEAD_MOVEMENT_SPEED;
         }
         float speed = Constants.PLAYER_MOVEMENT_SPEED;
         for (Powerup powerup : player.powerups) {
-            for(Modifier modifier: powerup.modifiers) {
+            for (Modifier modifier : powerup.modifiers) {
                 switch (modifier.type) {
                     case SLIPPED:
                         if (powerup.expiredTime < (modifier.lifetime * 0.3f)) {
@@ -107,15 +143,20 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
 
     private void tickPowerups(PlayerComponent player, float deltaTime) {
         Iterator<Powerup> iterator = player.powerups.iterator();
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             Powerup powerup = iterator.next();
             powerup.expiredTime += deltaTime;
 
             // abgelaufene Powerups entfernen
             if (powerup.expiredTime >= powerup.lifetime) {
-//                if (powerup.effect != null) {
-//                    player.renderEffects.get(powerup.effect).deactivate();
-//                }
+                // Turn off effect
+                if (powerup.effect != null) {
+                    ParticleEmitter emitter = player.particleEmitters[powerup.effect.ordinal()];
+                    if (emitter != null) {
+                        emitter.duration = 0;
+                        emitter.durationTimer = 0;
+                    }
+                }
                 iterator.remove();
             }
         }
@@ -125,13 +166,15 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
         Powerup powerup = new Powerup();//fixme: pooling
         powerup.image = assetManager.getTexture(powerupJson.image);
         powerup.isTransferable = powerupJson.isTransferable;
-        for(PowerupJson.Modifier modifierJson: powerupJson.modifiers) {
+        powerup.effect = powerupJson.effect;
+        for (PowerupJson.Modifier modifierJson : powerupJson.modifiers) {
             Modifier modifier = new Modifier();//fixme: pooling
             modifier.type = modifierJson.type;
             modifier.value = modifierJson.value;
             modifier.lifetime = modifierJson.lifetime;
-            if(modifier.lifetime > powerup.lifetime)
+            if (modifier.lifetime > powerup.lifetime) {
                 powerup.lifetime = modifier.lifetime;
+            }
             powerup.modifiers.add(modifier);
         }
         return powerup;
