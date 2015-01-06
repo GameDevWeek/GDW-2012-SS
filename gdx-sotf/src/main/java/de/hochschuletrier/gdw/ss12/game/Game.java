@@ -246,8 +246,9 @@ public class Game {
             if (player != null && (player.lastTeleport + 500) < System.currentTimeMillis() && player.radius <= start.maxSize) {
 
                 PhysixBodyComponent physix = ComponentMappers.physixBody.get(entity);
+                float velX = physix.getLinearVelocity().x;
                 Vector2 position = physix.getPosition();
-                float x = destination.x;
+                float x = destination.x + ((velX < 0) ? -player.radius : player.radius);
                 float y = position.y + destination.y - start.y;
 
                 playGlobalSound("player_teleport", start.x, start.y, false);
