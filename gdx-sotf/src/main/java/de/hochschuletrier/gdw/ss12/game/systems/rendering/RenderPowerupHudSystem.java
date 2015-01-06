@@ -5,7 +5,7 @@ import com.badlogic.gdx.Gdx;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.gdx.utils.DrawUtil;
 import de.hochschuletrier.gdw.ss12.Main;
-import de.hochschuletrier.gdw.ss12.game.CircularProgressRenderer;
+import de.hochschuletrier.gdw.commons.gdx.utils.CircularProgressRenderer;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Constants;
 import de.hochschuletrier.gdw.ss12.game.Game;

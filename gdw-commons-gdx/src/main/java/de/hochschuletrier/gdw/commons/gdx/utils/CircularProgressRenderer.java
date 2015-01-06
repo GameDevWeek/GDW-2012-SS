@@ -1,4 +1,4 @@
-package de.hochschuletrier.gdw.ss12.game;
+package de.hochschuletrier.gdw.commons.gdx.utils;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
