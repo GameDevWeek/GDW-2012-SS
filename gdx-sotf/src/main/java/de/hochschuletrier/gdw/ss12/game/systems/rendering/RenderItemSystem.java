@@ -8,14 +8,14 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.hochschuletrier.gdw.commons.gdx.assets.AnimationExtended;
 import de.hochschuletrier.gdw.commons.gdx.utils.DrawUtil;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
-import de.hochschuletrier.gdw.ss12.game.components.EatableComponent;
+import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 import de.hochschuletrier.gdw.ss12.game.components.RenderComponent;
 
 public class RenderItemSystem extends IteratingSystem {
 
     public RenderItemSystem() {
-        super(Family.all(PositionComponent.class, RenderComponent.class, EatableComponent.class).get(), 0);
+        super(Family.all(PositionComponent.class, RenderComponent.class).exclude(PlayerComponent.class).get(), 0);
     }
 
     @Override

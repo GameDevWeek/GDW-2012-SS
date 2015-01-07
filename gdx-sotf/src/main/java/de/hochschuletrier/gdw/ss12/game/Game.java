@@ -5,7 +5,6 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.math.Vector2;
@@ -127,6 +126,7 @@ public class Game {
         engine.addSystem(new RenderMiniMapSystem());
         engine.addSystem(new PhysixDebugRenderSystem());
         engine.addSystem(new RenderPowerupHudSystem());
+        engine.addSystem(new RenderDropableHudSystem());
         engine.addSystem(new RenderPizzaHudSystem());
 
         ImmutableArray<EntitySystem> systems = engine.getSystems();

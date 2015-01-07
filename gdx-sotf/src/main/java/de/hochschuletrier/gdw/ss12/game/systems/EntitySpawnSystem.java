@@ -32,11 +32,13 @@ import de.hochschuletrier.gdw.ss12.game.components.data.Team;
 import de.hochschuletrier.gdw.ss12.game.components.BotComponent;
 import de.hochschuletrier.gdw.ss12.game.components.EatableComponent;
 import de.hochschuletrier.gdw.ss12.game.components.InputComponent;
+import de.hochschuletrier.gdw.ss12.game.components.ItemTrapComponent;
 import de.hochschuletrier.gdw.ss12.game.components.LightComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PizzaSliceComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 import de.hochschuletrier.gdw.ss12.game.components.RenderComponent;
+import de.hochschuletrier.gdw.ss12.game.components.DropableComponent;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemMapInitializer;
 import de.hochschuletrier.gdw.ss12.game.json.EntityJson;
@@ -351,10 +353,27 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
                     component.shrinkPixelPerSecond = Float.parseFloat(config.get("shrinkPixelPerSecond"));
                     return component;
                 }
-                case "ItemTrapComponent":
-                    break;
+                case "ItemTrapComponent": {
+                    ItemTrapComponent component = engine.createComponent(ItemTrapComponent.class);
+                    component.sound = config.get("sound");
+                    String powerupName = config.get("powerup");
+                    if(powerupName != null) {
+                        PowerupSystem powerupSystem = engine.getSystem(PowerupSystem.class);
+                        component.powerup = powerupSystem.createPowerup(powerupName);
+                    }
+                    return component;
+                }
                 case "PizzaSliceComponent":
                     return engine.createComponent(PizzaSliceComponent.class);
+                case "DropableComponent": {
+                    DropableComponent component = engine.createComponent(DropableComponent.class);
+                    component.item = config.get("item");
+                    component.sound = config.get("sound");
+                    component.texture = assetManager.getTexture(config.get("texture"));
+                    return component;
+                }
+                default:
+                    logger.error("Uknown component {}", type);
             }
         } catch(NumberFormatException e) {
             logger.error("Error creating component with config", e);

@@ -49,6 +49,7 @@ public class CustomPooledEngine extends PooledEngine {
         ORDER.put(PhysixDebugRenderSystem.class, priority++);
         ORDER.put(RenderMiniMapSystem.class, priority++);
         ORDER.put(RenderPowerupHudSystem.class, priority++);
+        ORDER.put(RenderDropableHudSystem.class, priority++);
         ORDER.put(RenderPizzaHudSystem.class, priority++);
         ORDER.put(RenderNoticeSystem.class, priority++);
     }

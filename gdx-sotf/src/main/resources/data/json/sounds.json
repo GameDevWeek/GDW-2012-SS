@@ -7,5 +7,6 @@
     "countdown_two": "data/sounds/countdown/two.ogg",
     "countdown_one": "data/sounds/countdown/one.ogg",
     "countdown_go": "data/sounds/countdown/go.ogg",
-    "player_teleport": "data/sounds/player/swallow.ogg"
+    "player_teleport": "data/sounds/player/swallow.ogg",
+    "drop_item": "data/sounds/player/swallow.ogg"
 }

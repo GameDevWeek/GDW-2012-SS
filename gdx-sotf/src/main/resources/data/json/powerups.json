@@ -25,14 +25,14 @@
         ]
     },
     "trap_bubblegum":  {
-        "image": "usable_bubblegum",
+        "image": "dropable_bubblegum",
         "isTransferable": false,
         "modifiers": [
             { "type": "speed", "value": 0.3, "lifetime": 2 }
         ]
     },
     "trap_bananapeel":  {
-        "image": "usable_banana",
+        "image": "dropable_banana",
         "effect": "banana",
         "isTransferable": false,
         "modifiers": [

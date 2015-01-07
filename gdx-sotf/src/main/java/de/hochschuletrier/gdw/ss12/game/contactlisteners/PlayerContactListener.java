@@ -10,8 +10,9 @@ import de.hochschuletrier.gdw.ss12.game.Constants;
 import de.hochschuletrier.gdw.ss12.game.Game;
 import de.hochschuletrier.gdw.ss12.game.components.data.Powerup;
 import de.hochschuletrier.gdw.ss12.game.components.EatableComponent;
+import de.hochschuletrier.gdw.ss12.game.components.ItemTrapComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
-import de.hochschuletrier.gdw.ss12.game.components.UseableComponent;
+import de.hochschuletrier.gdw.ss12.game.components.DropableComponent;
 
 public class PlayerContactListener extends PhysixContactAdapter {
 
@@ -53,6 +54,11 @@ public class PlayerContactListener extends PhysixContactAdapter {
             EatableComponent otherEatable = ComponentMappers.eatable.get(otherEntity);
             if (otherEatable != null) {
                 eatEatable(myPlayer, myEntity, otherEatable, otherEntity);
+            } else {
+                ItemTrapComponent otherTrap = ComponentMappers.itemTrap.get(otherEntity);
+                if (otherTrap != null && otherTrap.team != myPlayer.team) {
+                    stepOnTrap(myPlayer, otherTrap, otherEntity);
+                }
             }
         }
     }
@@ -67,7 +73,7 @@ public class PlayerContactListener extends PhysixContactAdapter {
             eater.team.pizzaCount++;
         }
         
-        copyUseable(eaterEntity, eaterEntity);
+        copyDropable(eaterEntity, eatableEntity);
         
         // Powerup hinzufügen (Effekt wird in PowerupSystem abgehandelt)
         if (eatable.powerup != null) {
@@ -77,13 +83,22 @@ public class PlayerContactListener extends PhysixContactAdapter {
         engine.removeEntity(eatableEntity);
     }
 
+    private void stepOnTrap(PlayerComponent victim, ItemTrapComponent trap, Entity trapEntity) {
+        // Powerup hinzufügen (Effekt wird in PowerupSystem abgehandelt)
+        if (trap.powerup != null) {
+            victim.newPowerups.add(trap.powerup);
+        }
+
+        engine.removeEntity(trapEntity);
+    }
+
     private void eatPlayer(PlayerComponent killer, Entity killerEntity, PlayerComponent victim, Entity victimEntity) {
         game.playEntitySound("player_eat_player", killerEntity, false);
 
         // Wachsen des Spielers
         killer.radius += victim.radius * Constants.PLAYER_GROW_FACTOR;
 
-        copyUseable(killerEntity, victimEntity);
+        copyDropable(killerEntity, victimEntity);
 
         // Powerups hinzufügen (Effekt wird in PowerupSystem abgehandelt)
         if (!victim.powerups.isEmpty()) {
@@ -97,17 +112,17 @@ public class PlayerContactListener extends PhysixContactAdapter {
         victim.killer = killerEntity;
     }
     
-    private void copyUseable(Entity eater, Entity eatable) {
-        if(!ComponentMappers.useable.has(eater)) {
-            UseableComponent useable = ComponentMappers.useable.get(eatable);
-            if(useable != null) {
-                UseableComponent newUseable = engine.createComponent(UseableComponent.class);
-                newUseable.actionType = useable.actionType;
-                newUseable.actionValue = useable.actionValue;
-                newUseable.sound = useable.sound;
-                newUseable.texture = useable.texture;
-                eater.add(useable);
+    private void copyDropable(Entity eater, Entity eatable) {
+        DropableComponent dropable = ComponentMappers.dropable.get(eatable);
+        if(dropable != null) {
+            DropableComponent destinationDropable = ComponentMappers.dropable.get(eater);
+            if(destinationDropable == null) {
+                destinationDropable = engine.createComponent(DropableComponent.class);
+                eater.add(destinationDropable);
             }
+            destinationDropable.item = dropable.item;
+            destinationDropable.sound = dropable.sound;
+            destinationDropable.texture = dropable.texture;
         }
     }
 }

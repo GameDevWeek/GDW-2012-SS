@@ -54,25 +54,33 @@ public class KeyboardInputSystem extends EntitySystem implements SystemGameIniti
 
     @Override
     public boolean keyUp(int keycode) {
-        keyUpDown(keycode, false);
+        if(!keyUpDown(keycode, false)) {
+            if(keycode == Input.Keys.SPACE) {
+                Entity localPlayer = game.getLocalPlayer();
+                InputComponent input = ComponentMappers.input.get(localPlayer);
+                input.dropItem = true;
+            }
+        }
+        
         return true;
     }
 
-    void keyUpDown(int keycode, final boolean value) {
+    private boolean keyUpDown(int keycode, final boolean value) {
         switch(keycode) {
             case Input.Keys.LEFT:
                 leftDown = value;
-                break;
+                return true;
             case Input.Keys.RIGHT:
                 rightDown = value;
-                break;
+                return true;
             case Input.Keys.UP:
                 upDown = value;
-                break;
+                return true;
             case Input.Keys.DOWN:
                 downDown = value;
-                break;
+                return true;
         }
+        return false;
     }
 
     @Override

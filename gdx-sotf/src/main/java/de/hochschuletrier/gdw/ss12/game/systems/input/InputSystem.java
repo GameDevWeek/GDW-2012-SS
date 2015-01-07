@@ -1,20 +1,48 @@
 package de.hochschuletrier.gdw.ss12.game.systems.input;
 
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.gdx.physix.components.PhysixBodyComponent;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
+import de.hochschuletrier.gdw.ss12.game.Constants;
+import de.hochschuletrier.gdw.ss12.game.Game;
 import de.hochschuletrier.gdw.ss12.game.components.InputComponent;
+import de.hochschuletrier.gdw.ss12.game.components.ItemTrapComponent;
+import de.hochschuletrier.gdw.ss12.game.components.LightComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 import de.hochschuletrier.gdw.ss12.game.components.RenderComponent;
-import de.hochschuletrier.gdw.ss12.game.components.UseableComponent;
+import de.hochschuletrier.gdw.ss12.game.components.DropableComponent;
+import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
+import de.hochschuletrier.gdw.ss12.game.systems.EntitySpawnSystem;
 
-public class InputSystem extends IteratingSystem {
+public class InputSystem extends IteratingSystem implements SystemGameInitializer {
+
+    private Engine engine;
+    private Game game;
 
     public InputSystem() {
         super(Family.all(InputComponent.class).get(), 0);
+    }
+
+    @Override
+    public void addedToEngine(Engine engine) {
+        super.addedToEngine(engine);
+        this.engine = engine;
+    }
+
+    @Override
+    public void removedFromEngine(Engine engine) {
+        super.removedFromEngine(engine);
+        engine = null;
+    }
+
+    @Override
+    public void initGame(Game game, AssetManagerX assetManager) {
+        this.game = game;
     }
 
     @Override
@@ -22,24 +50,25 @@ public class InputSystem extends IteratingSystem {
         InputComponent input = ComponentMappers.input.get(entity);
         if (input.speed > 0) {
             PlayerComponent player = ComponentMappers.player.get(entity);
-            if(player.isDead())
+            if (player.isDead()) {
                 handleDeadMovement(entity, input, deltaTime);
-            else
+            } else {
                 handleMovement(entity, input);
+            }
         }
-        if(input.dropItem) {
+        if (input.dropItem) {
             drop(entity);
             input.dropItem = false;
         }
     }
-    
+
     private void handleDeadMovement(Entity entity, InputComponent input, float deltaTime) {
         if (!input.moveDirection.isZero()) {
             input.lastMoveDirection.set(input.moveDirection);
 
             RenderComponent render = ComponentMappers.render.get(entity);
             render.angle = input.lastMoveDirection.angle() - 90;
-            
+
             PositionComponent position = ComponentMappers.position.get(entity);
             position.x += input.moveDirection.x * input.speed * deltaTime;
             position.y += input.moveDirection.y * input.speed * deltaTime;
@@ -59,19 +88,21 @@ public class InputSystem extends IteratingSystem {
 
     public void drop(Entity entity) {
         PlayerComponent player = ComponentMappers.player.get(entity);
-        UseableComponent useable = ComponentMappers.useable.get(entity);
-        if (!player.isDead() && useable != null) {
-            String actionType = useable.actionType;
-//            if ("drop".equals(actionType)) {
-//                String value = useable.actionValue;
-//                IEatable eatable = EntityFactory.createEatable(value, position, getTeam());
-//                world.addItem(eatable);
-//            } else if ("candle".equals(actionType)) {
-//                ICandle candle = EntityFactory.createCandle(position, team);
-//                world.addItem(candle);
-//            }
-//
-//            GameWorld.playNetSound(useable.sound, position);
+        DropableComponent dropable = ComponentMappers.dropable.get(entity);
+        if (!player.isDead() && dropable != null) {
+            PositionComponent position = ComponentMappers.position.get(entity);
+            EntitySpawnSystem spawnSystem = engine.getSystem(EntitySpawnSystem.class);
+            Entity droppedEntity = spawnSystem.createStaticEntity(dropable.item, position.x, position.y, Constants.ITEM_RADIUS);
+            LightComponent light = ComponentMappers.light.get(droppedEntity);
+            if (light != null) {
+                light.team = player.team;
+            }
+            ItemTrapComponent trap = ComponentMappers.itemTrap.get(droppedEntity);
+            if (trap != null) {
+                trap.team = player.team;
+            }
+            game.playEntitySound(dropable.sound, entity, false);
+            entity.remove(DropableComponent.class);
         }
     }
 }

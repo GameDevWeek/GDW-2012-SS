@@ -44,7 +44,7 @@ public class Constants {
      */
     public static final int HUD_INVENTORY_WIDTH = 40;
     public static final int HUD_INVENTORY_HEIGHT = 40;
-    public static final int HUD_INVENTORY_OFFSET_X = 250;
+    public static final int HUD_INVENTORY_OFFSET_X = 30;
     public static final int HUD_INVENTORY_OFFSET_Y = 30;
     /**
      * Aktive Powerups im HUD

@@ -28,11 +28,15 @@
         "components": {
             "EatableComponent" : {
                 "energy": 20,
-                "sound": "eatable_generic",
-                "dropable": "candle"
+                "sound": "eatable_generic"
             },
             "RenderComponent": {
                 "image": "eatable_cake"
+            },
+            "DropableComponent": {
+                "item": "candle",
+                "sound": "drop_item",
+                "texture": "dropable_candle_icon"
             }
         }
     },
@@ -67,11 +71,15 @@
         "components": {
             "EatableComponent" : {
                 "energy": 5,
-                "sound": "eatable_generic",
-                "dropable": "trap_bubblegum"
+                "sound": "eatable_generic"
             },
             "RenderComponent": {
                 "image": "eatable_bubblegum"
+            },
+            "DropableComponent": {
+                "item": "trap_bubblegum",
+                "sound": "drop_item",
+                "texture": "dropable_bubblegum_icon"
             }
         }
     },
@@ -80,11 +88,15 @@
         "components": {
             "EatableComponent" : {
                 "energy": 5,
-                "sound": "eatable_generic",
-                "dropable": "trap_bananapeel"
+                "sound": "eatable_generic"
             },
             "RenderComponent": {
                 "image": "eatable_banana"
+            },
+            "DropableComponent": {
+                "item": "trap_bananapeel",
+                "sound": "drop_item",
+                "texture": "dropable_banana_icon"
             }
         }
     },
@@ -119,7 +131,7 @@
         "frequency": 0,
         "components": {
             "RenderComponent": {
-                "image": "candle"
+                "image": "dropable_candle"
             },
             "LightComponent": {
                 "radius": "400",
@@ -131,12 +143,11 @@
         "frequency": 0,
         "components": {
             "ItemTrapComponent" : {
-                "energy": 0,
                 "sound": "eatable_generic",
                 "powerup": "trap_bubblegum"
             },
             "RenderComponent": {
-                "image": "usable_bubblegum"
+                "image": "dropable_bubblegum"
             }
         }
     },
@@ -148,7 +159,7 @@
                 "powerup": "trap_bananapeel"
             },
             "RenderComponent": {
-                "image": "usable_banana"
+                "image": "dropable_banana"
             }
         }
     }

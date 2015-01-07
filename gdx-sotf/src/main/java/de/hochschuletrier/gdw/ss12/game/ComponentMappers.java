@@ -14,7 +14,7 @@ public class ComponentMappers {
     public static final ComponentMapper<PositionComponent> position = ComponentMapper.getFor(PositionComponent.class);
     public static final ComponentMapper<RenderComponent> render = ComponentMapper.getFor(RenderComponent.class);
     public static final ComponentMapper<TriggerComponent> trigger = ComponentMapper.getFor(TriggerComponent.class);
-    public static final ComponentMapper<UseableComponent> useable = ComponentMapper.getFor(UseableComponent.class);
+    public static final ComponentMapper<DropableComponent> dropable = ComponentMapper.getFor(DropableComponent.class);
     public static final ComponentMapper<PhysixBodyComponent> physixBody = ComponentMapper.getFor(PhysixBodyComponent.class);
     public static final ComponentMapper<PhysixModifierComponent> physixModifier = ComponentMapper.getFor(PhysixModifierComponent.class);
     public static final ComponentMapper<SoundEmitterComponent> soundEmitter = ComponentMapper.getFor(SoundEmitterComponent.class);
