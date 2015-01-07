@@ -15,6 +15,7 @@ import de.hochschuletrier.gdw.ss12.game.interfaces.SystemMapInitializer;
 import java.util.HashMap;
 
 public class RenderMapSystem extends EntitySystem implements SystemMapInitializer {
+
     private TiledMapRendererGdx mapRenderer;
     private TiledMap map;
 

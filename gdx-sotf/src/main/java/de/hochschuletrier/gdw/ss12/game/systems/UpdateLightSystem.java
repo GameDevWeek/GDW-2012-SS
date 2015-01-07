@@ -15,27 +15,26 @@ public class UpdateLightSystem extends IteratingSystem {
     public UpdateLightSystem() {
         super(Family.all(LightComponent.class).exclude(PlayerComponent.class).get(), 0);
     }
-		
-	@Override
-	public void addedToEngine(Engine engine) {
+
+    @Override
+    public void addedToEngine(Engine engine) {
         super.addedToEngine(engine);
         this.engine = engine;
-	}
+    }
 
-	@Override
-	public void removedFromEngine(Engine engine) {
+    @Override
+    public void removedFromEngine(Engine engine) {
         super.removedFromEngine(engine);
         this.engine = null;
-	}
+    }
 
     @Override
     public void processEntity(Entity entity, float deltaTime) {
         LightComponent light = ComponentMappers.light.get(entity);
-        
+
         light.radius -= light.shrinkPixelPerSecond * deltaTime;
         if (light.radius < 60.0f) {
             engine.removeEntity(entity);
         }
     }
-
 }

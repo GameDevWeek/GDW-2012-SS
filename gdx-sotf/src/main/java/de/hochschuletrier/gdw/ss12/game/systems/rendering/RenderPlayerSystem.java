@@ -22,7 +22,6 @@ import java.util.Comparator;
 public class RenderPlayerSystem extends SortedIteratingSystem implements SystemGameInitializer {
 
     private BitmapFont font;
-    private Color ghostFilter = new Color(0.3f, 1.0f, 0.3f, 0.5f);
     private Game game;
 
     public RenderPlayerSystem() {
@@ -70,7 +69,7 @@ public class RenderPlayerSystem extends SortedIteratingSystem implements SystemG
         }
 
         if (animation != null) {
-            DrawUtil.batch.setColor(player.isDead() ? ghostFilter : Color.WHITE);
+            DrawUtil.batch.setColor(player.isDead() ? Constants.PLAYER_GHOST_FILTER : Color.WHITE);
             TextureRegion keyFrame = animation.getKeyFrame(render.stateTime);
             int width = keyFrame.getRegionWidth();
             int height = keyFrame.getRegionHeight();

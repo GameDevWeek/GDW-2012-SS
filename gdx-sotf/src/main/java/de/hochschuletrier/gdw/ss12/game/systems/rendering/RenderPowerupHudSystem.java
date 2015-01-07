@@ -39,9 +39,8 @@ public class RenderPowerupHudSystem extends EntitySystem implements SystemGameIn
             float x = Gdx.graphics.getWidth() - Constants.HUD_POWERUPS_ICON_OFFSET_X - (150 - (col * Constants.HUD_POWERUPS_ICON_SIZE));
             float y = Constants.HUD_POWERUPS_ICON_OFFSET_Y + (row * Constants.HUD_POWERUPS_ICON_SIZE);
 
-            DrawUtil.draw(powerup.image, x, y-42);
-            
-            // Mit einem Dreisatz die groesse des Kreises bestimmen.
+            DrawUtil.draw(powerup.image, x, y - 42);
+
             float progress = powerup.expiredTime / (float) powerup.lifetime;
             float angle = 360 * progress;
             progressRenderer.draw(DrawUtil.batch, x, y, angle);

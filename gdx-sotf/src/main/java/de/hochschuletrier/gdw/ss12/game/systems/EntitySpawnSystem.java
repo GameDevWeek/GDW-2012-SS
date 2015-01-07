@@ -52,8 +52,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EntitySpawnSystem extends EntitySystem implements SystemGameInitializer, SystemMapInitializer, EntityListener {
+
     private static final Logger logger = LoggerFactory.getLogger(EntitySystem.class);
-    
+
     private ImmutableArray<Entity> eatables;
     private Stack<String> nextEatables = new Stack();
     private Stack<String> usedEatables = new Stack();
@@ -86,7 +87,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
 
         nextEatables.clear();
         usedEatables.clear();
-        
+
         try {
             entityJsonMap = JacksonReader.readMap("data/json/entities.json", EntityJson.class);
             for (Map.Entry<String, EntityJson> entry : entityJsonMap.entrySet()) {
@@ -102,24 +103,24 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         Collections.addAll(freeBotNames, botNamesOrdered);
         Collections.shuffle(freeBotNames);
     }
-    
+
     @Override
     public void initMap(TiledMap map, Array<Team> teams) {
         int highestTeamID = -1;
 
         for (Layer layer : map.getLayers()) {
             if (layer.isObjectLayer()) {
-                for(LayerObject obj: layer.getObjects()) {
+                for (LayerObject obj : layer.getObjects()) {
                     int id = obj.getIntProperty("team", -1);
                     if (id >= 0) {
                         if (id > highestTeamID) {
                             highestTeamID = id;
                         }
-                        if(id < 0 || id >= teams.size) {
+                        if (id < 0 || id >= teams.size) {
                             throw new RuntimeException("Map contains bad Team Id: " + id);
                         }
 
-                        createBotPlayer(obj.getX() + obj.getWidth()/2, obj.getY() + obj.getHeight()/2, teams.get(id), "[BOT] " + freeBotNames.pop());
+                        createBotPlayer(obj.getX() + obj.getWidth() / 2, obj.getY() + obj.getHeight() / 2, teams.get(id), "[BOT] " + freeBotNames.pop());
                     }
                 }
             }
@@ -127,16 +128,16 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
 
         int width = map.getWidth();
         int height = map.getHeight();
-        
-        
+
         boolean available[][] = new boolean[width][height];
         for (Layer layer : map.getLayers()) {
             if (layer.isTileLayer()) {
                 for (int x = 0; x < width; x++) {
                     for (int y = 0; y < height; y++) {
                         TileInfo tile = layer.getTiles()[x][y];
-                        if (tile != null && tile.getBooleanProperty("itemspawn", false))
+                        if (tile != null && tile.getBooleanProperty("itemspawn", false)) {
                             available[x][y] = true;
+                        }
                     }
                 }
             }
@@ -153,7 +154,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
                         && available[x - 1][y + 1] && available[x][y + 1] && available[x + 1][y + 1]) {
                     available[x][y] = false;
                     SpawnPosition pos = spawnPositionPool.obtain();
-                    pos.set(x * tileWidth, y*tileHeight);
+                    pos.set(x * tileWidth, y * tileHeight);
                     spawnPositions.add(pos);
                     numItemSpawns++;
                     x++;
@@ -191,7 +192,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
             timeSincelastItemSpawnTry -= Constants.TIME_TO_NEXT_ITEM_CHANCE;
         }
     }
-    
+
     private void createRandomEatable(Vector2 position) {
         if (nextEatables.empty()) {
             Stack<String> t = nextEatables;
@@ -236,7 +237,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
 
     private Entity createBotPlayer(float x, float y, Team team, String name) {
         team.numSlots++;
-        
+
         Entity entity = engine.createEntity();
         PositionComponent position = engine.createComponent(PositionComponent.class);
         position.x = x;
@@ -252,13 +253,13 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         player.name = name;
         player.startPosition.set(x, y);
         entity.add(player);
-        
+
         entity.add(engine.createComponent(BotComponent.class));
-        
+
         InputComponent input = engine.createComponent(InputComponent.class);
         input.speed = Constants.PLAYER_MOVEMENT_SPEED;
         entity.add(input);
-        
+
         LightComponent light = engine.createComponent(LightComponent.class);
         light.team = team;
         light.radius = Constants.PLAYER_DEFAULT_SIGHTDISTANCE;
@@ -272,7 +273,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
             PhysixBodyDef bodyDef = new PhysixBodyDef(BodyDef.BodyType.DynamicBody, physixSystem)
                     .position(player.startPosition).fixedRotation(true);//.linearDamping(20);
             bodyComponent.init(bodyDef, physixSystem, entity);
-            PhysixFixtureDef fixtureDef = new PhysixFixtureDef(physixSystem).groupIndex((short)-1)
+            PhysixFixtureDef fixtureDef = new PhysixFixtureDef(physixSystem).groupIndex((short) -1)
                     .density(5).friction(0).shapeCircle(player.radius);
             Fixture fixture = bodyComponent.createFixture(fixtureDef);
             fixture.setUserData("body");
@@ -293,7 +294,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         entity.add(position);
         position.x = x;
         position.y = y;
-        
+
         PhysixModifierComponent modifyComponent = engine.createComponent(PhysixModifierComponent.class);
         entity.add(modifyComponent);
 
@@ -302,7 +303,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         for (Map.Entry<String, Map<String, String>> entry : entityJson.components.entrySet()) {
             Map<String, String> config = entry.getValue();
             Component component = createComponentFromConfig(entry.getKey(), config);
-            if(component != null) {
+            if (component != null) {
                 entity.add(component);
             }
         }
@@ -328,7 +329,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
                     component.energy = Float.parseFloat(config.get("energy"));
                     component.sound = config.get("sound");
                     String powerupName = config.get("powerup");
-                    if(powerupName != null) {
+                    if (powerupName != null) {
                         PowerupSystem powerupSystem = engine.getSystem(PowerupSystem.class);
                         component.powerup = powerupSystem.createPowerup(powerupName);
                     }
@@ -337,11 +338,11 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
                 case "RenderComponent": {
                     RenderComponent component = engine.createComponent(RenderComponent.class);
                     String image = config.get("image");
-                    if(image != null) {
+                    if (image != null) {
                         component.renderables.add(assetManager.getTexture(image));
                     } else {
                         String animation = config.get("animation");
-                        if(animation != null) {
+                        if (animation != null) {
                             component.renderables.add(assetManager.getAnimation(animation));
                         }
                     }
@@ -357,7 +358,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
                     ItemTrapComponent component = engine.createComponent(ItemTrapComponent.class);
                     component.sound = config.get("sound");
                     String powerupName = config.get("powerup");
-                    if(powerupName != null) {
+                    if (powerupName != null) {
                         PowerupSystem powerupSystem = engine.getSystem(PowerupSystem.class);
                         component.powerup = powerupSystem.createPowerup(powerupName);
                     }
@@ -375,7 +376,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
                 default:
                     logger.error("Uknown component {}", type);
             }
-        } catch(NumberFormatException e) {
+        } catch (NumberFormatException e) {
             logger.error("Error creating component with config", e);
         }
         return null;
@@ -400,5 +401,4 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
             return new SpawnPosition();
         }
     }
-
 }

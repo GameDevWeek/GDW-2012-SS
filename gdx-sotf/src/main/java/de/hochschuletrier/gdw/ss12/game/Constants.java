@@ -26,6 +26,7 @@ public class Constants {
     public static final int ITEM_RADIUS = 18;
     public static final float PLAYER_RENDER_SCALE = 1.2f;
     public static final float BOT_DETECTION_RADIUS = 600;
+    public static final Color PLAYER_GHOST_FILTER = new Color(0.3F, 1.0F, 0.3F, 0.5F);
     /**
      * Rundenkonstanten
      */

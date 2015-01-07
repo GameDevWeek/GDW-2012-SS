@@ -5,6 +5,7 @@ import de.hochschuletrier.gdw.commons.gdx.physix.components.*;
 import de.hochschuletrier.gdw.ss12.game.components.*;
 
 public class ComponentMappers {
+
     public static final ComponentMapper<BotComponent> bot = ComponentMapper.getFor(BotComponent.class);
     public static final ComponentMapper<EatableComponent> eatable = ComponentMapper.getFor(EatableComponent.class);
     public static final ComponentMapper<InputComponent> input = ComponentMapper.getFor(InputComponent.class);

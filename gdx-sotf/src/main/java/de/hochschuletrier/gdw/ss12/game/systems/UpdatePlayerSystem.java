@@ -18,29 +18,28 @@ public class UpdatePlayerSystem extends IteratingSystem {
     public UpdatePlayerSystem() {
         super(Family.all(PlayerComponent.class).get(), 0);
     }
-		
-	@Override
-	public void addedToEngine(Engine engine) {
+
+    @Override
+    public void addedToEngine(Engine engine) {
         super.addedToEngine(engine);
         physixSystem = engine.getSystem(PhysixSystem.class);
-	}
+    }
 
-	@Override
-	public void removedFromEngine(Engine engine) {
+    @Override
+    public void removedFromEngine(Engine engine) {
         super.removedFromEngine(engine);
         physixSystem = null;
-	}
+    }
 
     @Override
     public void processEntity(Entity entity, float deltaTime) {
         PlayerComponent player = ComponentMappers.player.get(entity);
         PhysixBodyComponent physix = ComponentMappers.physixBody.get(entity);
-        
-        if(player.killer != null) {
+
+        if (player.killer != null) {
             triggerPlayerDeath(entity, player);
             player.killer = null;//fixme: use?
-        }
-        else if(!player.isDead()) {
+        } else if (!player.isDead()) {
             float shrinkPixelThisFrame = Constants.PLAYER_SHRINK_PIXEL_PER_SECOND * deltaTime;
             player.radius -= shrinkPixelThisFrame * (player.radius / Constants.PLAYER_MAX_SIZE);
 
@@ -48,19 +47,19 @@ public class UpdatePlayerSystem extends IteratingSystem {
             if (player.radius < Constants.PLAYER_MIN_SIZE) {
                 triggerPlayerDeath(entity, player);
             } else {
-                if(player.radius > Constants.PLAYER_MAX_SIZE) {
+                if (player.radius > Constants.PLAYER_MAX_SIZE) {
                     player.radius = Constants.PLAYER_MAX_SIZE;
                 }
                 setSightDistance(entity, player.radius);
             }
-            
+
             // Adjust body and sensor size
             float radius = physixSystem.toBox2D(player.radius);
             physix.getFixtureByUserData("body").getShape().setRadius(radius);
             physix.getFixtureByUserData("sensor").getShape().setRadius(radius);
         }
     }
-    
+
     private void triggerPlayerDeath(Entity entity, PlayerComponent player) {
         player.powerups.clear();
         player.state = PlayerState.DEAD;
@@ -69,7 +68,7 @@ public class UpdatePlayerSystem extends IteratingSystem {
         ComponentMappers.position.get(entity).ignorePhysix = true;
         ComponentMappers.physixBody.get(entity).setActive(false);
     }
-    
+
     private void setSightDistance(Entity entity, float radius) {
         float m = (2 * radius) / (float) Constants.PLAYER_DEFAULT_SIZE;
         if (m > 1f) {

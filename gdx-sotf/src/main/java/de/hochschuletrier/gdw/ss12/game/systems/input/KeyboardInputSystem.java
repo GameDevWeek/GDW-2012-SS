@@ -11,6 +11,7 @@ import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.components.InputComponent;
 
 public class KeyboardInputSystem extends EntitySystem implements SystemGameInitializer, InputProcessor {
+
     private Game game;
     private boolean leftDown;
     private boolean rightDown;
@@ -54,19 +55,19 @@ public class KeyboardInputSystem extends EntitySystem implements SystemGameIniti
 
     @Override
     public boolean keyUp(int keycode) {
-        if(!keyUpDown(keycode, false)) {
-            if(keycode == Input.Keys.SPACE) {
+        if (!keyUpDown(keycode, false)) {
+            if (keycode == Input.Keys.SPACE) {
                 Entity localPlayer = game.getLocalPlayer();
                 InputComponent input = ComponentMappers.input.get(localPlayer);
                 input.dropItem = true;
             }
         }
-        
+
         return true;
     }
 
     private boolean keyUpDown(int keycode, final boolean value) {
-        switch(keycode) {
+        switch (keycode) {
             case Input.Keys.LEFT:
                 leftDown = value;
                 return true;

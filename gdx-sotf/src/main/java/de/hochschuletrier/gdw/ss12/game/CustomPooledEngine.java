@@ -15,9 +15,9 @@ import java.util.HashMap;
  * @author Santo Pfingsten
  */
 public class CustomPooledEngine extends PooledEngine {
-    
+
     private static final HashMap<Class, Integer> ORDER = new HashMap();
-    
+
     static {
         // System priorities are set here:
         int priority = 0;
@@ -33,13 +33,13 @@ public class CustomPooledEngine extends PooledEngine {
         ORDER.put(UpdatePlayerSystem.class, priority++);
         ORDER.put(UpdateLightSystem.class, priority++);
         ORDER.put(GameStateSystem.class, priority++);
-        
+
         // Network
         ORDER.put(NetServerSendSystem.class, priority++);
         ORDER.put(NetServerUpdateSystem.class, priority++);
         ORDER.put(NetClientSendControlSystem.class, priority++);
         ORDER.put(NetClientUpdateSystem.class, priority++);
-        
+
         // Rendering
         ORDER.put(RenderShadowMapSystem.class, priority++);
         ORDER.put(RenderMapSystem.class, priority++);
@@ -56,7 +56,7 @@ public class CustomPooledEngine extends PooledEngine {
 
     public CustomPooledEngine() {
         super(Constants.ENTITY_POOL_INITIAL_SIZE, Constants.ENTITY_POOL_MAX_SIZE,
-            Constants.COMPONENT_POOL_INITIAL_SIZE, Constants.COMPONENT_POOL_MAX_SIZE);
+                Constants.COMPONENT_POOL_INITIAL_SIZE, Constants.COMPONENT_POOL_MAX_SIZE);
     }
 
     @Override
@@ -64,5 +64,4 @@ public class CustomPooledEngine extends PooledEngine {
         system.priority = ORDER.get(system.getClass());
         super.addSystem(system);
     }
-    
 }

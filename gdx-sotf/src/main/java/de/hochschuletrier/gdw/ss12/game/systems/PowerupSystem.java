@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PowerupSystem extends IteratingSystem implements SystemGameInitializer, SystemMapInitializer {
+
     private static final Logger logger = LoggerFactory.getLogger(PowerupSystem.class);
 
     private HashMap<String, PowerupJson> powerupJsonMap;
@@ -43,7 +44,7 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
     @Override
     public void initGame(Game game, AssetManagerX assetManager) {
         this.assetManager = assetManager;
-        
+
         try {
             powerupJsonMap = JacksonReader.readMap("data/json/powerups.json", PowerupJson.class);
         } catch (Exception e) {
@@ -71,11 +72,11 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
         for (Team team : teams) {
             if (team.pizzaCount >= 8) {
                 team.pizzaCount -= 8;
-                
+
                 // Add Powerups to all team members alive
                 for (Entity entity : getEntities()) {
                     PlayerComponent player = ComponentMappers.player.get(entity);
-                    if(!player.isDead() && player.team == team) {
+                    if (!player.isDead() && player.team == team) {
                         player.newPowerups.add(createPowerup("pizza"));
                         player.hasPizzaPowerup = true;
                     }
@@ -100,7 +101,7 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
         for (Modifier modifier : powerup.modifiers) {
             switch (modifier.type) {
                 case SLIPPED:
-                    if(player.isSlipping) {
+                    if (player.isSlipping) {
                         return; // Avoid slipping twice
                     }
                     // Slip at random direction, but not within 60° of the current movement direction
@@ -214,8 +215,8 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
                         emitter.duration = 0;
                         emitter.durationTimer = 0;
                     }
-                    
-                    switch(powerup.effect) {
+
+                    switch (powerup.effect) {
                         case BANANA:
                             player.isSlipping = false;
                             break;
@@ -231,9 +232,9 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
                 iterator.remove();
             }
         }
-        if(checkPowerups) {
+        if (checkPowerups) {
             for (Powerup powerup : player.powerups) {
-                if(powerup.effect == PlayerEffect.HALUCINATION) {
+                if (powerup.effect == PlayerEffect.HALUCINATION) {
                     player.state = PlayerState.HALUCINATING;
                     break;
                 }

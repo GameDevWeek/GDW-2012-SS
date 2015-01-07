@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.EntitySystem;
 
 public class RenderShadowMapCleanupSystem extends EntitySystem {
+
     private RenderShadowMapSystem shadowMap;
 
     public RenderShadowMapCleanupSystem() {
@@ -11,12 +12,12 @@ public class RenderShadowMapCleanupSystem extends EntitySystem {
     }
 
     @Override
-	public void addedToEngine(Engine engine) {
+    public void addedToEngine(Engine engine) {
         shadowMap = engine.getSystem(RenderShadowMapSystem.class);
     }
-    
+
     @Override
-	public void removedFromEngine(Engine engine) {
+    public void removedFromEngine(Engine engine) {
         shadowMap = null;
     }
 

@@ -53,6 +53,7 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 
 public class Game {
+
     private static final float TELEPORTER_SCALE = 0.4f;
 
     protected final CVarBool physixDebug = new CVarBool("physix_debug", true, 0, "Draw physix debug");
@@ -137,7 +138,7 @@ public class Game {
                 initializer.initGame(this, assetManager);
             }
         }
-        
+
         inputForwarder.set(engine.getSystem(KeyboardInputSystem.class));
     }
 
@@ -373,7 +374,7 @@ public class Game {
         }
         for (Entity entity : playerEntities) {
             PlayerComponent player = ComponentMappers.player.get(entity);
-            
+
             for (ParticleEmitter emitter : player.particleEmitters) {
                 if (emitter != null) {
                     emitter.duration = 0;
@@ -389,7 +390,7 @@ public class Game {
             player.hasPizzaPowerup = false;
             ComponentMappers.light.get(entity).radius = player.radius;
             ComponentMappers.position.get(entity).ignorePhysix = false;
-            
+
             PhysixModifierComponent modifyComponent = engine.createComponent(PhysixModifierComponent.class);
             entity.add(modifyComponent);
             modifyComponent.schedule(() -> {
@@ -431,5 +432,4 @@ public class Game {
         });
         engine.addEntity(entity);
     }
-
 }

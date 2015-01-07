@@ -19,37 +19,39 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class BotSystem extends EntitySystem implements EntityListener {
+
     private ImmutableArray<Entity> bots, players, eatables;
 
     protected final Vector2 position = new Vector2();
-    
+
     private final BotProcessor botProcessor = new BotProcessor();
 
     public BotSystem() {
         super(0);
     }
 
-	@Override
-	public void addedToEngine(Engine engine) {
-		super.addedToEngine(engine);
+    @Override
+    public void addedToEngine(Engine engine) {
+        super.addedToEngine(engine);
         bots = engine.getEntitiesFor(Family.all(BotComponent.class).get());
         players = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
         eatables = engine.getEntitiesFor(Family.all(EatableComponent.class).get());
         engine.addEntityListener(this);
-	}
+    }
 
-	@Override
-	public void removedFromEngine(Engine engine) {
+    @Override
+    public void removedFromEngine(Engine engine) {
         super.removedFromEngine(engine);
         bots = players = eatables = null;
         engine.removeEntityListener(this);
-	}
+    }
 
-	@Override
-	public void update(float deltaTime) {
-        for(Entity bot: bots)
+    @Override
+    public void update(float deltaTime) {
+        for (Entity bot : bots) {
             botProcessor.process(bot, deltaTime);
-	}
+        }
+    }
 
     @Override
     public void entityAdded(Entity entity) {
@@ -57,12 +59,13 @@ public class BotSystem extends EntitySystem implements EntityListener {
 
     @Override
     public void entityRemoved(Entity entity) {
-        if(ComponentMappers.eatable.has(entity)) {
-            for(Entity bot: bots)
+        if (ComponentMappers.eatable.has(entity)) {
+            for (Entity bot : bots) {
                 processBotEatableRemoved(bot, entity);
+            }
         }
     }
-    
+
     public void processBotEatableRemoved(Entity entity, Entity eatable) {
         BotComponent bot = ComponentMappers.bot.get(entity);
         if (bot.followEatable == eatable) {
@@ -71,29 +74,30 @@ public class BotSystem extends EntitySystem implements EntityListener {
         }
         bot.ignoreEatables.remove(eatable);
     }
-    
+
     private class BotProcessor {
+
         private Entity entity;
         private BotComponent bot;
         private PlayerComponent player;
         private PhysixBodyComponent physix;
         private InputComponent input;
-        
+
         public void process(Entity entity, float deltaTime) {
             this.entity = entity;
             bot = ComponentMappers.bot.get(entity);
             player = ComponentMappers.player.get(entity);
             physix = ComponentMappers.physixBody.get(entity);
             input = ComponentMappers.input.get(entity);
-            
-            if(player.isDead()) {
+
+            if (player.isDead()) {
                 input.moveDirection.setZero();
                 return;
             }
-            
-            Iterator<Map.Entry<Entity,IgnoreEatable>> iter = bot.ignoreEatables.entrySet().iterator();
+
+            Iterator<Map.Entry<Entity, IgnoreEatable>> iter = bot.ignoreEatables.entrySet().iterator();
             while (iter.hasNext()) {
-                Map.Entry<Entity,IgnoreEatable> entry = iter.next();
+                Map.Entry<Entity, IgnoreEatable> entry = iter.next();
                 IgnoreEatable value = entry.getValue();
                 value.delay -= deltaTime;
                 if (value.delay < 0) {
@@ -125,7 +129,7 @@ public class BotSystem extends EntitySystem implements EntityListener {
                 input.moveDirection.set(dir).nor();
             }
         }
-        
+
         boolean continueToFollow() {
             if (bot.followEatable == null) {
                 return false;
@@ -171,7 +175,7 @@ public class BotSystem extends EntitySystem implements EntityListener {
             }
 
             PlayerComponent otherPlayer = ComponentMappers.player.get(other);
-            if(otherPlayer != null && !player.canEat(otherPlayer)) {
+            if (otherPlayer != null && !player.canEat(otherPlayer)) {
                 return false;
             }
 
@@ -184,7 +188,7 @@ public class BotSystem extends EntitySystem implements EntityListener {
             float closestDistance = 0;
             Entity closestEntity = null;
 
-            for(Entity e: entities) {
+            for (Entity e : entities) {
                 if (!entityOfInterest(e)) {
                     continue;
                 }

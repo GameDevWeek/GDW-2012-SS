@@ -13,8 +13,9 @@ import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.DropableComponent;
 
 public class RenderDropableHudSystem extends EntitySystem implements SystemGameInitializer {
+
     private Game game;
-    
+
     public RenderDropableHudSystem() {
         super(0);
     }
@@ -30,7 +31,7 @@ public class RenderDropableHudSystem extends EntitySystem implements SystemGameI
         PlayerComponent player = ComponentMappers.player.get(localPlayer);
         if (!player.isDead()) {
             DropableComponent dropable = ComponentMappers.dropable.get(localPlayer);
-            if(dropable != null) {
+            if (dropable != null) {
                 DrawUtil.draw(dropable.texture,
                         Constants.HUD_INVENTORY_OFFSET_X, Gdx.graphics.getHeight() - (Constants.HUD_INVENTORY_OFFSET_Y + Constants.HUD_INVENTORY_HEIGHT),
                         Constants.HUD_INVENTORY_WIDTH, Constants.HUD_INVENTORY_HEIGHT);

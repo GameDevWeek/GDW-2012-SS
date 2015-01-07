@@ -74,6 +74,7 @@ public class RenderMiniMapSystem extends EntitySystem implements SystemGameIniti
         float ratio = mapWidth / (float) mapHeight;
         int mapWidthScaled;
         int mapHeightScaled;
+
         if (mapWidth > mapHeight) {
             renderScale = Constants.MINIMAP_WIDTH / (float) mapWidth;
             mapWidthScaled = Constants.MINIMAP_WIDTH;
@@ -91,6 +92,7 @@ public class RenderMiniMapSystem extends EntitySystem implements SystemGameIniti
         if (fbo != null) {
             fbo.dispose();
         }
+
         fbo = new FrameBuffer(Format.RGB888, mapWidthScaled, mapHeightScaled, false);
         RenderMapSystem renderMapSystem = engine.getSystem(RenderMapSystem.class);
         fbo.begin();

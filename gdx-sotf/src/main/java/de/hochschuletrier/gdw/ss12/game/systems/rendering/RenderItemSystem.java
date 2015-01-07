@@ -24,14 +24,14 @@ public class RenderItemSystem extends IteratingSystem {
         PositionComponent position = ComponentMappers.position.get(entity);
 
         render.stateTime += deltaTime;
-        for(Object obj: render.renderables) {
-            if(obj instanceof Texture) {
-                Texture texture = (Texture)obj;
+        for (Object obj : render.renderables) {
+            if (obj instanceof Texture) {
+                Texture texture = (Texture) obj;
                 int w = texture.getWidth();
                 int h = texture.getHeight();
                 DrawUtil.draw(texture, position.x - w * 0.5f, position.y - h * 0.5f);
-            } else if(obj instanceof AnimationExtended) {
-                AnimationExtended animation = (AnimationExtended)obj;
+            } else if (obj instanceof AnimationExtended) {
+                AnimationExtended animation = (AnimationExtended) obj;
                 TextureRegion keyFrame = animation.getKeyFrame(render.stateTime);
                 int w = keyFrame.getRegionWidth();
                 int h = keyFrame.getRegionHeight();

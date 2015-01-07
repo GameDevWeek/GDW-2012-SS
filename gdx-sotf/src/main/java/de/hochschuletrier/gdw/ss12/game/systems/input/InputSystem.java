@@ -37,7 +37,7 @@ public class InputSystem extends IteratingSystem implements SystemGameInitialize
     @Override
     public void removedFromEngine(Engine engine) {
         super.removedFromEngine(engine);
-        engine = null;
+        this.engine = null;
     }
 
     @Override
@@ -93,14 +93,17 @@ public class InputSystem extends IteratingSystem implements SystemGameInitialize
             PositionComponent position = ComponentMappers.position.get(entity);
             EntitySpawnSystem spawnSystem = engine.getSystem(EntitySpawnSystem.class);
             Entity droppedEntity = spawnSystem.createStaticEntity(dropable.item, position.x, position.y, Constants.ITEM_RADIUS);
+
             LightComponent light = ComponentMappers.light.get(droppedEntity);
             if (light != null) {
                 light.team = player.team;
             }
+
             ItemTrapComponent trap = ComponentMappers.itemTrap.get(droppedEntity);
             if (trap != null) {
                 trap.team = player.team;
             }
+
             game.playEntitySound(dropable.sound, entity, false);
             entity.remove(DropableComponent.class);
         }

@@ -24,16 +24,14 @@ import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 
 public class RenderShadowMapSystem extends EntitySystem implements SystemGameInitializer {
+
     private ImmutableArray<Entity> lights;
     private Texture alphaMapPlayer;
     private FrameBuffer fbo;
 
-    //out different shaders. currentShader is just a pointer to the 4 others
-    private ShaderProgram currentShader;
     private ShaderProgram defaultShader;
     private ShaderProgram finalShader;
 
-    //values passed to the shader
     public final float ambientIntensity = 1.0f;
     public final Vector3 ambientColor = new Vector3(0.0f, 0.0f, 0.0f);
     private Game game;
@@ -44,12 +42,12 @@ public class RenderShadowMapSystem extends EntitySystem implements SystemGameIni
     }
 
     @Override
-	public void addedToEngine(Engine engine) {
+    public void addedToEngine(Engine engine) {
         lights = engine.getEntitiesFor(Family.all(LightComponent.class).get());
     }
-    
+
     @Override
-	public void removedFromEngine(Engine engine) {
+    public void removedFromEngine(Engine engine) {
         lights = null;
     }
 
@@ -63,7 +61,6 @@ public class RenderShadowMapSystem extends EntitySystem implements SystemGameIni
         ShaderProgram.pedantic = false;
         defaultShader = new ShaderProgram(vertexShader, defaultPixelShader);
         finalShader = new ShaderProgram(vertexShader, finalPixelShader);
-        currentShader = finalShader;
 
         finalShader.begin();
         finalShader.setUniformi("u_lightmap", 1);
@@ -99,7 +96,7 @@ public class RenderShadowMapSystem extends EntitySystem implements SystemGameIni
             DrawUtil.batch.setShader(defaultShader);
             DrawUtil.clear();
             DrawUtil.batch.begin();
-            for(Entity e: lights) {
+            for (Entity e : lights) {
                 drawLight(e, team);
             }
             if (player.isDead()) {
@@ -112,7 +109,7 @@ public class RenderShadowMapSystem extends EntitySystem implements SystemGameIni
             //draw the actual scene
             DrawUtil.clear();
             game.getCamera().bind();
-            DrawUtil.batch.setShader(currentShader);
+            DrawUtil.batch.setShader(finalShader);
             DrawUtil.batch.begin();
             fbo.getColorBufferTexture().bind(1);
             alphaMapPlayer.bind(0);
@@ -128,7 +125,7 @@ public class RenderShadowMapSystem extends EntitySystem implements SystemGameIni
     }
 
     private void drawLight(float x, float y, float lightRadius) {
-        DrawUtil.draw(alphaMapPlayer, x + 0.5f - lightRadius, y + 0.5f - lightRadius, lightRadius*2, lightRadius*2);
+        DrawUtil.draw(alphaMapPlayer, x + 0.5f - lightRadius, y + 0.5f - lightRadius, lightRadius * 2, lightRadius * 2);
     }
 
     void finish() {
