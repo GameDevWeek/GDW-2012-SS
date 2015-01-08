@@ -37,6 +37,7 @@ import de.hochschuletrier.gdw.ss12.Main;
 import de.hochschuletrier.gdw.ss12.game.components.data.PlayerState;
 import de.hochschuletrier.gdw.ss12.game.components.data.Team;
 import de.hochschuletrier.gdw.ss12.game.components.BotComponent;
+import de.hochschuletrier.gdw.ss12.game.components.DropableComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 import de.hochschuletrier.gdw.ss12.game.components.SoundEmitterComponent;
@@ -390,6 +391,7 @@ public class Game {
             player.hasPizzaPowerup = false;
             ComponentMappers.light.get(entity).radius = player.radius;
             ComponentMappers.position.get(entity).ignorePhysix = false;
+            entity.remove(DropableComponent.class);
 
             PhysixModifierComponent modifyComponent = engine.createComponent(PhysixModifierComponent.class);
             entity.add(modifyComponent);
