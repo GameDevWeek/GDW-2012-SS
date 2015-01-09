@@ -8,21 +8,21 @@ public class Team {
 
     public int id;
     public Color color;
-    public String teamname;
+    public String teamName;
     public int pizzaCount = 0;
     public int wins = 0;
     public int numConnectedPlayers = 0;
-    public int numSlots = 0;
+    public int numPlayers = 0;
     public HashMap<PlayerState, AnimationExtended> animations = new HashMap();
     public int alivePlayers;
     
-    public Team(int id, String teamname, Color color) {
-        this.teamname = teamname;
+    public Team(int id, String teamName, Color color) {
+        this.teamName = teamName;
         this.id = id;
         this.color = color;
     }
     
     public boolean isFull() {
-        return numConnectedPlayers == numSlots;
+        return numConnectedPlayers == numPlayers;
     }
 }

@@ -237,7 +237,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
     }
 
     private Entity createBotPlayer(float x, float y, Team team, String name) {
-        team.numSlots++;
+        team.numPlayers++;
 
         Entity entity = engine.createEntity();
         PositionComponent position = engine.createComponent(PositionComponent.class);

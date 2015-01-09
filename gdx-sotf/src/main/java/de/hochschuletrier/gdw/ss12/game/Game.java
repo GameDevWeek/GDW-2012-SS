@@ -132,6 +132,7 @@ public class Game {
         engine.addSystem(new RenderPowerupHudSystem());
         engine.addSystem(new RenderDropableHudSystem());
         engine.addSystem(new RenderPizzaHudSystem());
+        engine.addSystem(new RenderScoreHudSystem());
 
         ImmutableArray<EntitySystem> systems = engine.getSystems();
         for (int i = 0; i < systems.size(); i++) {
@@ -309,11 +310,11 @@ public class Game {
         }
 
         private int getWeight(Team team) {
-            int weight = team.numSlots == 0 ? 100 : 0;
+            int weight = team.numPlayers == 0 ? 100 : 0;
             if (team.isFull()) {
                 return weight + 50;
             }
-            return weight - (team.numSlots - team.numConnectedPlayers);
+            return weight - (team.numPlayers - team.numConnectedPlayers);
         }
     };
 

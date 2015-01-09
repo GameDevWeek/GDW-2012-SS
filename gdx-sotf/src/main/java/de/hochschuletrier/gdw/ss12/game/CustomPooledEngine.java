@@ -53,6 +53,7 @@ public class CustomPooledEngine extends PooledEngine {
         ORDER.put(RenderPowerupHudSystem.class, priority++);
         ORDER.put(RenderDropableHudSystem.class, priority++);
         ORDER.put(RenderPizzaHudSystem.class, priority++);
+        ORDER.put(RenderScoreHudSystem.class, priority++);
         ORDER.put(RenderNoticeSystem.class, priority++);
     }
 
