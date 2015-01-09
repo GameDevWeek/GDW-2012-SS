@@ -66,7 +66,7 @@ public class UpdatePlayerSystem extends IteratingSystem {
 
     private void triggerPlayerDeath(Entity entity, PlayerComponent player, String animationEntity) {
         final PositionComponent position = ComponentMappers.position.get(entity);
-        engine.getSystem(EntitySpawnSystem.class).createStaticEntity(animationEntity, position.x, position.y, Constants.PLAYER_DEFAULT_SIZE);
+        engine.getSystem(EntitySpawnSystem.class).createStaticEntity(animationEntity, position.x, position.y, Constants.PLAYER_DEFAULT_SIZE, null);
         player.powerups.clear();
         player.state = PlayerState.DEAD;
         player.radius = Constants.PLAYER_DEFAULT_SIZE;

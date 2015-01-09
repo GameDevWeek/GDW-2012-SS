@@ -6,7 +6,6 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.hochschuletrier.gdw.commons.gdx.utils.DrawUtil;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
-import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 import de.hochschuletrier.gdw.ss12.game.components.RenderAnimationComponent;
 

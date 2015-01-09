@@ -203,7 +203,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         }
         String eatableName = nextEatables.pop();
         usedEatables.push(eatableName);
-        createStaticEntity(eatableName, position.x, position.y, Constants.ITEM_RADIUS);
+        createStaticEntity(eatableName, position.x, position.y, Constants.ITEM_RADIUS, null);
     }
 
     @Override
@@ -286,7 +286,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         return entity;
     }
 
-    public Entity createStaticEntity(String name, float x, float y, float radius) {
+    public Entity createStaticEntity(String name, float x, float y, float radius, Team team) {
         Entity entity = engine.createEntity();
         PositionComponent position = engine.createComponent(PositionComponent.class);
         entity.add(position);
@@ -297,7 +297,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         assert (entityJson != null);
         for (Map.Entry<String, Map<String, String>> entry : entityJson.components.entrySet()) {
             Map<String, String> config = entry.getValue();
-            Component component = createComponentFromConfig(entry.getKey(), config);
+            Component component = createComponentFromConfig(entry.getKey(), config, team);
             if (component != null) {
                 entity.add(component);
             }
@@ -320,7 +320,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         return entity;
     }
 
-    private Component createComponentFromConfig(String type, Map<String, String> config) {
+    private Component createComponentFromConfig(String type, Map<String, String> config, Team team) {
         try {
             switch (type) {
                 case "EatableComponent": {
@@ -348,12 +348,14 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
                 }
                 case "LightComponent": {
                     LightComponent component = engine.createComponent(LightComponent.class);
+                    component.team = team;
                     component.radius = Float.parseFloat(config.get("radius"));
                     component.shrinkPixelPerSecond = Float.parseFloat(config.get("shrinkPixelPerSecond"));
                     return component;
                 }
                 case "ItemTrapComponent": {
                     ItemTrapComponent component = engine.createComponent(ItemTrapComponent.class);
+                    component.team = team;
                     component.sound = config.get("sound");
                     String powerupName = config.get("powerup");
                     if (powerupName != null) {
