@@ -13,7 +13,8 @@ public class ComponentMappers {
     public static final ComponentMapper<LightComponent> light = ComponentMapper.getFor(LightComponent.class);
     public static final ComponentMapper<PlayerComponent> player = ComponentMapper.getFor(PlayerComponent.class);
     public static final ComponentMapper<PositionComponent> position = ComponentMapper.getFor(PositionComponent.class);
-    public static final ComponentMapper<RenderComponent> render = ComponentMapper.getFor(RenderComponent.class);
+    public static final ComponentMapper<RenderTextureComponent> renderTexture = ComponentMapper.getFor(RenderTextureComponent.class);
+    public static final ComponentMapper<RenderAnimationComponent> renderAnimation = ComponentMapper.getFor(RenderAnimationComponent.class);
     public static final ComponentMapper<TriggerComponent> trigger = ComponentMapper.getFor(TriggerComponent.class);
     public static final ComponentMapper<DropableComponent> dropable = ComponentMapper.getFor(DropableComponent.class);
     public static final ComponentMapper<PhysixBodyComponent> physixBody = ComponentMapper.getFor(PhysixBodyComponent.class);

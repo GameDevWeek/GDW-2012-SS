@@ -32,6 +32,7 @@ public class CustomPooledEngine extends PooledEngine {
         ORDER.put(PowerupSystem.class, priority++);
         ORDER.put(UpdatePlayerSystem.class, priority++);
         ORDER.put(UpdateLightSystem.class, priority++);
+        ORDER.put(RemoveAnimatedItemSystem.class, priority++);
         ORDER.put(GameStateSystem.class, priority++);
 
         // Network
@@ -43,7 +44,8 @@ public class CustomPooledEngine extends PooledEngine {
         // Rendering
         ORDER.put(RenderShadowMapSystem.class, priority++);
         ORDER.put(RenderMapSystem.class, priority++);
-        ORDER.put(RenderItemSystem.class, priority++);
+        ORDER.put(RenderItemTextureSystem.class, priority++);
+        ORDER.put(RenderItemAnimationSystem.class, priority++);
         ORDER.put(RenderPlayerSystem.class, priority++);
         ORDER.put(RenderShadowMapCleanupSystem.class, priority++);
         ORDER.put(PhysixDebugRenderSystem.class, priority++);

@@ -118,11 +118,13 @@ public class Game {
         engine.addSystem(new PowerupSystem());
         engine.addSystem(new UpdatePlayerSystem());
         engine.addSystem(new UpdateLightSystem());
+        engine.addSystem(new RemoveAnimatedItemSystem());
         engine.addSystem(new GameStateSystem());
 
         engine.addSystem(new RenderShadowMapSystem());
         engine.addSystem(new RenderMapSystem());
-        engine.addSystem(new RenderItemSystem());
+        engine.addSystem(new RenderItemTextureSystem());
+        engine.addSystem(new RenderItemAnimationSystem());
         engine.addSystem(new RenderPlayerSystem());
         engine.addSystem(new RenderShadowMapCleanupSystem());
         engine.addSystem(new RenderMiniMapSystem());

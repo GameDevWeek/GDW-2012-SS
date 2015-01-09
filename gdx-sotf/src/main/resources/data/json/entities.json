@@ -6,9 +6,10 @@
                 "energy": 10,
                 "sound": "eatable_generic"
             },
-            "RenderComponent": {
+            "RenderTextureComponent": {
                 "image": "eatable_cookie"
-            }
+            },
+            "PhysixBodyComponent": {}
         }
     },
     "muffin": {
@@ -18,9 +19,10 @@
                 "energy": 10,
                 "sound": "eatable_generic"
             },
-            "RenderComponent": {
+            "RenderTextureComponent": {
                 "image": "eatable_muffin"
-            }
+            },
+            "PhysixBodyComponent": {}
         }
     },
     "cake": {
@@ -30,14 +32,15 @@
                 "energy": 20,
                 "sound": "eatable_generic"
             },
-            "RenderComponent": {
+            "RenderTextureComponent": {
                 "image": "eatable_cake"
             },
             "DropableComponent": {
                 "item": "candle",
                 "sound": "drop_item",
                 "texture": "dropable_candle_icon"
-            }
+            },
+            "PhysixBodyComponent": {}
         }
     },
     "chili": {
@@ -48,9 +51,10 @@
                 "sound": "effect_chili",
                 "powerup": "chili"
             },
-            "RenderComponent": {
+            "RenderTextureComponent": {
                 "image": "eatable_chili"
-            }
+            },
+            "PhysixBodyComponent": {}
         }
     },
     "garlic": {
@@ -61,9 +65,10 @@
                 "sound": "eatable_generic",
                 "powerup": "garlic"
             },
-            "RenderComponent": {
+            "RenderTextureComponent": {
                 "image": "eatable_garlic"
-            }
+            },
+            "PhysixBodyComponent": {}
         }
     },
     "gumbox": {
@@ -73,14 +78,15 @@
                 "energy": 5,
                 "sound": "eatable_generic"
             },
-            "RenderComponent": {
+            "RenderTextureComponent": {
                 "image": "eatable_bubblegum"
             },
             "DropableComponent": {
                 "item": "trap_bubblegum",
                 "sound": "drop_item",
                 "texture": "dropable_bubblegum_icon"
-            }
+            },
+            "PhysixBodyComponent": {}
         }
     },
     "banana": {
@@ -90,14 +96,15 @@
                 "energy": 5,
                 "sound": "eatable_generic"
             },
-            "RenderComponent": {
+            "RenderTextureComponent": {
                 "image": "eatable_banana"
             },
             "DropableComponent": {
                 "item": "trap_bananapeel",
                 "sound": "drop_item",
                 "texture": "dropable_banana_icon"
-            }
+            },
+            "PhysixBodyComponent": {}
         }
     },
     "pizza": {
@@ -107,11 +114,11 @@
                 "energy": 15,
                 "sound": "eatable_generic"
             },
-            "RenderComponent": {
+            "RenderTextureComponent": {
                 "image": "eatable_pizza"
             },
-            "PizzaSliceComponent": {
-            }
+            "PizzaSliceComponent": {},
+            "PhysixBodyComponent": {}
         }
     },
     "magic_mushroom": {
@@ -122,21 +129,23 @@
                 "sound": "eatable_generic",
                 "powerup": "magic_mushroom"
             },
-            "RenderComponent": {
+            "RenderTextureComponent": {
                 "image": "eatable_magic_mushroom"
-            }
+            },
+            "PhysixBodyComponent": {}
         }
     },
     "candle": {
         "frequency": 0,
         "components": {
-            "RenderComponent": {
+            "RenderTextureComponent": {
                 "image": "dropable_candle"
             },
             "LightComponent": {
                 "radius": "400",
                 "shrinkPixelPerSecond": "20"
-            }
+            },
+            "PhysixBodyComponent": {}
         }
     },
     "trap_bubblegum": {
@@ -146,9 +155,10 @@
                 "sound": "eatable_generic",
                 "powerup": "trap_bubblegum"
             },
-            "RenderComponent": {
+            "RenderTextureComponent": {
                 "image": "dropable_bubblegum"
-            }
+            },
+            "PhysixBodyComponent": {}
         }
     },
     "trap_bananapeel": {
@@ -158,9 +168,31 @@
                 "sound": "effect_banana",
                 "powerup": "trap_bananapeel"
             },
-            "RenderComponent": {
+            "RenderTextureComponent": {
                 "image": "dropable_banana"
+            },
+            "PhysixBodyComponent": {}
+        }
+    },
+    "player_eaten": {
+        "frequency": 0,
+        "components": {
+            "RenderAnimationComponent": {
+                "animation": "player_eaten"
             }
+        }
+    },
+    "player_starved": {
+        "frequency": 0,
+        "components": {
+            "EatableComponent" : {
+                "energy": 10,
+                "sound": "eatable_generic"
+            },
+            "RenderAnimationComponent": {
+                "animation": "player_starved"
+            },
+            "PhysixBodyComponent": {}
         }
     }
 }

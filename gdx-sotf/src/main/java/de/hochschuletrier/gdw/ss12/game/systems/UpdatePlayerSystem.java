@@ -10,10 +10,12 @@ import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Constants;
 import de.hochschuletrier.gdw.ss12.game.components.data.PlayerState;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
+import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 
 public class UpdatePlayerSystem extends IteratingSystem {
 
     private PhysixSystem physixSystem;
+    private Engine engine;
 
     public UpdatePlayerSystem() {
         super(Family.all(PlayerComponent.class).get(), 0);
@@ -23,12 +25,14 @@ public class UpdatePlayerSystem extends IteratingSystem {
     public void addedToEngine(Engine engine) {
         super.addedToEngine(engine);
         physixSystem = engine.getSystem(PhysixSystem.class);
+        this.engine = engine;
     }
 
     @Override
     public void removedFromEngine(Engine engine) {
         super.removedFromEngine(engine);
         physixSystem = null;
+        this.engine = null;
     }
 
     @Override
@@ -37,7 +41,7 @@ public class UpdatePlayerSystem extends IteratingSystem {
         PhysixBodyComponent physix = ComponentMappers.physixBody.get(entity);
 
         if (player.killer != null) {
-            triggerPlayerDeath(entity, player);
+            triggerPlayerDeath(entity, player, "player_eaten");
             player.killer = null;//fixme: use?
         } else if (!player.isDead()) {
             float shrinkPixelThisFrame = Constants.PLAYER_SHRINK_PIXEL_PER_SECOND * deltaTime;
@@ -45,7 +49,7 @@ public class UpdatePlayerSystem extends IteratingSystem {
 
             // check if player radius got under min_size
             if (player.radius < Constants.PLAYER_MIN_SIZE) {
-                triggerPlayerDeath(entity, player);
+                triggerPlayerDeath(entity, player, "player_starved");
             } else {
                 if (player.radius > Constants.PLAYER_MAX_SIZE) {
                     player.radius = Constants.PLAYER_MAX_SIZE;
@@ -60,12 +64,14 @@ public class UpdatePlayerSystem extends IteratingSystem {
         }
     }
 
-    private void triggerPlayerDeath(Entity entity, PlayerComponent player) {
+    private void triggerPlayerDeath(Entity entity, PlayerComponent player, String animationEntity) {
+        final PositionComponent position = ComponentMappers.position.get(entity);
+        engine.getSystem(EntitySpawnSystem.class).createStaticEntity(animationEntity, position.x, position.y, Constants.PLAYER_DEFAULT_SIZE);
         player.powerups.clear();
         player.state = PlayerState.DEAD;
         player.radius = Constants.PLAYER_DEFAULT_SIZE;
         ComponentMappers.light.get(entity).radius = 0;
-        ComponentMappers.position.get(entity).ignorePhysix = true;
+        position.ignorePhysix = true;
         ComponentMappers.physixBody.get(entity).setActive(false);
     }
 

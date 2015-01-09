@@ -37,8 +37,9 @@ import de.hochschuletrier.gdw.ss12.game.components.LightComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PizzaSliceComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
-import de.hochschuletrier.gdw.ss12.game.components.RenderComponent;
+import de.hochschuletrier.gdw.ss12.game.components.RenderTextureComponent;
 import de.hochschuletrier.gdw.ss12.game.components.DropableComponent;
+import de.hochschuletrier.gdw.ss12.game.components.RenderAnimationComponent;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemMapInitializer;
 import de.hochschuletrier.gdw.ss12.game.json.EntityJson;
@@ -265,7 +266,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         light.radius = Constants.PLAYER_DEFAULT_SIGHTDISTANCE;
         entity.add(light);
 
-        RenderComponent render = engine.createComponent(RenderComponent.class);
+        RenderAnimationComponent render = engine.createComponent(RenderAnimationComponent.class);
         entity.add(render);
 
         modifyComponent.schedule(() -> {
@@ -295,9 +296,6 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         position.x = x;
         position.y = y;
 
-        PhysixModifierComponent modifyComponent = engine.createComponent(PhysixModifierComponent.class);
-        entity.add(modifyComponent);
-
         EntityJson entityJson = entityJsonMap.get(name);
         assert (entityJson != null);
         for (Map.Entry<String, Map<String, String>> entry : entityJson.components.entrySet()) {
@@ -308,15 +306,19 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
             }
         }
 
-        modifyComponent.schedule(() -> {
-            PhysixBodyComponent bodyComponent = engine.createComponent(PhysixBodyComponent.class);
-            PhysixBodyDef bodyDef = new PhysixBodyDef(BodyDef.BodyType.DynamicBody, physixSystem)
-                    .position(x, y).awake(false);
-            bodyComponent.init(bodyDef, physixSystem, entity);
-            PhysixFixtureDef fixtureDef = new PhysixFixtureDef(physixSystem).sensor(true).shapeCircle(radius);
-            bodyComponent.createFixture(fixtureDef);
-            entity.add(bodyComponent);
-        });
+        PhysixModifierComponent modifyComponent = ComponentMappers.physixModifier.get(entity);
+        if(modifyComponent != null) {
+            modifyComponent.schedule(() -> {
+                PhysixBodyComponent bodyComponent = engine.createComponent(PhysixBodyComponent.class);
+                PhysixBodyDef bodyDef = new PhysixBodyDef(BodyDef.BodyType.DynamicBody, physixSystem)
+                        .position(x, y).awake(false);
+                bodyComponent.init(bodyDef, physixSystem, entity);
+                PhysixFixtureDef fixtureDef = new PhysixFixtureDef(physixSystem).sensor(true).shapeCircle(radius);
+                bodyComponent.createFixture(fixtureDef);
+                entity.add(bodyComponent);
+            });
+        }
+
         engine.addEntity(entity);
         return entity;
     }
@@ -335,17 +337,16 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
                     }
                     return component;
                 }
-                case "RenderComponent": {
-                    RenderComponent component = engine.createComponent(RenderComponent.class);
-                    String image = config.get("image");
-                    if (image != null) {
-                        component.renderables.add(assetManager.getTexture(image));
-                    } else {
-                        String animation = config.get("animation");
-                        if (animation != null) {
-                            component.renderables.add(assetManager.getAnimation(animation));
-                        }
-                    }
+                case "RenderTextureComponent": {
+                    RenderTextureComponent component = engine.createComponent(RenderTextureComponent.class);
+                    component.texture = assetManager.getTexture(config.get("image"));
+                    assert(component.texture != null);
+                    return component;
+                }
+                case "RenderAnimationComponent": {
+                    RenderAnimationComponent component = engine.createComponent(RenderAnimationComponent.class);
+                    component.animation = assetManager.getAnimation(config.get("animation"));
+                    assert(component.animation != null);
                     return component;
                 }
                 case "LightComponent": {
@@ -373,6 +374,8 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
                     component.texture = assetManager.getTexture(config.get("texture"));
                     return component;
                 }
+                case "PhysixBodyComponent":
+                    return engine.createComponent(PhysixModifierComponent.class);
                 default:
                     logger.error("Uknown component {}", type);
             }

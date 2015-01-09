@@ -16,7 +16,7 @@ import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.components.data.PlayerState;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
-import de.hochschuletrier.gdw.ss12.game.components.RenderComponent;
+import de.hochschuletrier.gdw.ss12.game.components.RenderAnimationComponent;
 import java.util.Comparator;
 
 public class RenderPlayerSystem extends SortedIteratingSystem implements SystemGameInitializer {
@@ -25,7 +25,7 @@ public class RenderPlayerSystem extends SortedIteratingSystem implements SystemG
     private Game game;
 
     public RenderPlayerSystem() {
-        super(Family.all(PositionComponent.class, PlayerComponent.class, RenderComponent.class).get(), new EntityComparator(), 0);
+        super(Family.all(PositionComponent.class, PlayerComponent.class, RenderAnimationComponent.class).get(), new EntityComparator(), 0);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class RenderPlayerSystem extends SortedIteratingSystem implements SystemG
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        RenderComponent render = ComponentMappers.render.get(entity);
+        RenderAnimationComponent render = ComponentMappers.renderAnimation.get(entity);
         PositionComponent position = ComponentMappers.position.get(entity);
         PlayerComponent player = ComponentMappers.player.get(entity);
 
