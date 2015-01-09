@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -42,6 +43,7 @@ import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 import de.hochschuletrier.gdw.ss12.game.components.SoundEmitterComponent;
 import de.hochschuletrier.gdw.ss12.game.components.TriggerComponent;
+import de.hochschuletrier.gdw.ss12.game.components.data.NoticeType;
 import de.hochschuletrier.gdw.ss12.game.contactlisteners.PlayerContactListener;
 import de.hochschuletrier.gdw.ss12.game.contactlisteners.TriggerContactListener;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
@@ -62,6 +64,7 @@ public class Game {
 
     protected final CustomPooledEngine engine = new CustomPooledEngine();
     private ImmutableArray<Entity> botPlayers = engine.getEntitiesFor(Family.all(PlayerComponent.class, BotComponent.class).get());
+    private ImmutableArray<Entity> nonBotPlayers = engine.getEntitiesFor(Family.all(PlayerComponent.class).exclude(BotComponent.class).get());
     private ImmutableArray<Entity> playerEntities = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
     private ImmutableArray<Entity> entitiesToRemove = engine.getEntitiesFor(Family.exclude(PlayerComponent.class, TriggerComponent.class).get());
 
@@ -133,6 +136,7 @@ public class Game {
         engine.addSystem(new RenderDropableHudSystem());
         engine.addSystem(new RenderPizzaHudSystem());
         engine.addSystem(new RenderScoreHudSystem());
+        engine.addSystem(new RenderNoticeSystem());
 
         ImmutableArray<EntitySystem> systems = engine.getSystems();
         for (int i = 0; i < systems.size(); i++) {
@@ -286,6 +290,11 @@ public class Game {
         });
     }
 
+    public SoundInstance playAnouncerSound(String name) {
+        Vector3 position = camera.getPosition();
+        return SoundEmitter.playGlobal(assetManager.getSound(name), false, position.x, position.y, position.z);
+    }
+
     public SoundInstance playGlobalSound(String name, float x, float y, boolean loop) {
         return SoundEmitter.playGlobal(assetManager.getSound(name), loop, x, y, 0);
     }
@@ -358,10 +367,20 @@ public class Game {
     public void loadMap(String filename) {
         try {
             map = new TiledMap(filename, LayerObject.PolyMode.ABSOLUTE);
+            engine.getSystem(InputSystem.class).setProcessing(false);
             setupPhysixWorld();
         } catch (Exception ex) {
             throw new IllegalArgumentException("Map konnte nicht geladen werden: " + filename, ex);
         }
+    }
+    
+    public void start() {
+        engine.getSystem(InputSystem.class).setProcessing(false);
+        sendStartNotices();
+    }
+
+    public void go() {
+        engine.getSystem(InputSystem.class).setProcessing(true);
     }
 
     public void update(float delta) {
@@ -401,21 +420,21 @@ public class Game {
             modifyComponent.schedule(() -> {
                 PhysixBodyComponent bodyComponent = ComponentMappers.physixBody.get(entity);
                 bodyComponent.setPosition(player.startPosition);
+                bodyComponent.setLinearVelocity(0, 0);
                 bodyComponent.setActive(true);
             });
         }
-        //fixme: remove all non-player items
+        start();
     }
 
     public void sendStartNotices() {
-//        if (SotfGame.isServer()) {
-//            if (firstFrame) {
-//                GameEventManager.fireGameEvent(GameEventManager.THREE, 0, getPlayers());
-//                GameEventManager.fireGameEvent(GameEventManager.TWO, 1000, getPlayers());
-//                GameEventManager.fireGameEvent(GameEventManager.ONE, 2000, getPlayers());
-//                GameEventManager.fireGameEvent(GameEventManager.GO, 3000, getPlayers());
-//            }
-//        }
+        RenderNoticeSystem noticeSystem = engine.getSystem(RenderNoticeSystem.class);
+        for (Entity entity : nonBotPlayers) {
+            noticeSystem.schedule(NoticeType.THREE, 0, entity);
+            noticeSystem.schedule(NoticeType.TWO, 1, entity);
+            noticeSystem.schedule(NoticeType.ONE, 2, entity);
+            noticeSystem.schedule(NoticeType.GO, 3, entity);
+        }
     }
 
     public void createTrigger(PhysixSystem physixSystem, float x, float y, float width, float height, Consumer<Entity> consumer) {

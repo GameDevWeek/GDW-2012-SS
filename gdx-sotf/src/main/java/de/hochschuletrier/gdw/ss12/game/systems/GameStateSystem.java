@@ -12,9 +12,11 @@ import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Constants;
 import de.hochschuletrier.gdw.ss12.game.Game;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
+import de.hochschuletrier.gdw.ss12.game.components.data.NoticeType;
 import de.hochschuletrier.gdw.ss12.game.components.data.Team;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemMapInitializer;
+import de.hochschuletrier.gdw.ss12.game.systems.rendering.RenderNoticeSystem;
 
 public class GameStateSystem extends EntitySystem implements SystemGameInitializer, SystemMapInitializer {
 
@@ -23,6 +25,7 @@ public class GameStateSystem extends EntitySystem implements SystemGameInitializ
 
     private final Family family = Family.all(PlayerComponent.class).get();
     private ImmutableArray<Entity> players;
+    private Engine engine;
 
     public GameStateSystem() {
         super(0);
@@ -31,11 +34,13 @@ public class GameStateSystem extends EntitySystem implements SystemGameInitializ
     @Override
     public void addedToEngine(Engine engine) {
         players = engine.getEntitiesFor(family);
+        this.engine = engine;
     }
 
     @Override
     public void removedFromEngine(Engine engine) {
         players = null;
+        this.engine = null;
     }
 
     @Override
@@ -50,13 +55,6 @@ public class GameStateSystem extends EntitySystem implements SystemGameInitializ
 
     @Override
     public void update(float deltaTime) {
-//        if (firstFrame) {
-//            GameEventManager.fireGameEvent(GameEventManager.THREE, 0, getPlayers());
-//            GameEventManager.fireGameEvent(GameEventManager.TWO, 1000, getPlayers());
-//            GameEventManager.fireGameEvent(GameEventManager.ONE, 2000, getPlayers());
-//            GameEventManager.fireGameEvent(GameEventManager.GO, 3000, getPlayers());
-//        }
-
         // Update alive players
         for (Team team : teams) {
             team.alivePlayers = 0;
@@ -80,10 +78,11 @@ public class GameStateSystem extends EntitySystem implements SystemGameInitializ
         }
 
         if (numberAliveTeams <= 1) {
+            RenderNoticeSystem noticeSystem = engine.getSystem(RenderNoticeSystem.class);
             if (aliveTeam == null) {
                 // Tie (starved at the same time?)
                 for (Team team : teams) {
-//                    GameEventManager.fireGameEvent(GameEventManager.ROUND_LOST, 0, t.getPlayers());
+                    noticeSystem.schedule(NoticeType.ROUND_LOST, 0, team);
                 }
             } else {
                 aliveTeam.wins++;
@@ -92,18 +91,18 @@ public class GameStateSystem extends EntitySystem implements SystemGameInitializ
                     // Round won/lost message
                     for (Team team : teams) {
                         if (aliveTeam == team) {
-//                            GameEventManager.fireGameEvent(GameEventManager.ROUND_WON, 0, t.getPlayers());
+                            noticeSystem.schedule(NoticeType.ROUND_WON, 0, team);
                         } else {
-//                            GameEventManager.fireGameEvent(GameEventManager.ROUND_LOST, 0, t.getPlayers());
+                            noticeSystem.schedule(NoticeType.ROUND_LOST, 0, team);
                         }
                     }
                 } else {
                     // Team win/lost message
                     for (Team team : teams) {
                         if (aliveTeam == team) {
-//                            GameEventManager.fireGameEvent(GameEventManager.TEAM_WON, 0, t.getPlayers());
+                            noticeSystem.schedule(NoticeType.TEAM_WON, 0, team);
                         } else {
-//                            GameEventManager.fireGameEvent(GameEventManager.TEAM_LOST, 0, t.getPlayers());
+                            noticeSystem.schedule(NoticeType.TEAM_LOST, 0, team);
                         }
                         team.wins = 0;
                     }

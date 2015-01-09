@@ -13,6 +13,8 @@ import de.hochschuletrier.gdw.ss12.game.components.EatableComponent;
 import de.hochschuletrier.gdw.ss12.game.components.ItemTrapComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.DropableComponent;
+import de.hochschuletrier.gdw.ss12.game.components.data.NoticeType;
+import de.hochschuletrier.gdw.ss12.game.systems.rendering.RenderNoticeSystem;
 
 public class PlayerContactListener extends PhysixContactAdapter {
 
@@ -93,8 +95,6 @@ public class PlayerContactListener extends PhysixContactAdapter {
     }
 
     private void eatPlayer(PlayerComponent killer, Entity killerEntity, PlayerComponent victim, Entity victimEntity) {
-        game.playEntitySound("player_eat_player", killerEntity, false);
-
         // Wachsen des Spielers
         killer.radius += victim.radius * Constants.PLAYER_GROW_FACTOR;
 

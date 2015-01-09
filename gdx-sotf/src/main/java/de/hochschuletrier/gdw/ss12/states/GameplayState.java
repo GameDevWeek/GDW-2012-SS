@@ -82,6 +82,7 @@ public class GameplayState extends BaseGameState {
     public void onEnterComplete() {
         Main.inputMultiplexer.addProcessor(inputForwarder);
         inputForwarder.set(gameInputProcessor);
+        game.start();
     }
     
     @Override

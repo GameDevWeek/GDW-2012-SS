@@ -1,5 +1,6 @@
 package de.hochschuletrier.gdw.ss12.game.systems;
 
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
@@ -16,12 +17,14 @@ import de.hochschuletrier.gdw.ss12.game.components.data.Powerup;
 import de.hochschuletrier.gdw.ss12.game.components.data.Powerup.Modifier;
 import de.hochschuletrier.gdw.ss12.game.components.InputComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
+import de.hochschuletrier.gdw.ss12.game.components.data.NoticeType;
 import de.hochschuletrier.gdw.ss12.game.components.data.PlayerEffect;
 import de.hochschuletrier.gdw.ss12.game.components.data.PlayerState;
 import de.hochschuletrier.gdw.ss12.game.components.data.Team;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemMapInitializer;
 import de.hochschuletrier.gdw.ss12.game.json.PowerupJson;
+import de.hochschuletrier.gdw.ss12.game.systems.rendering.RenderNoticeSystem;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
@@ -36,6 +39,10 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
     private final Random random = new Random();
     private AssetManagerX assetManager;
     private Array<Team> teams;
+    private Game game;
+    private Entity localPlayer;
+    private Engine engine;
+    private RenderNoticeSystem noticeSystem;
 
     public PowerupSystem() {
         super(Family.all(PlayerComponent.class, InputComponent.class).get(), 0);
@@ -43,6 +50,7 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
 
     @Override
     public void initGame(Game game, AssetManagerX assetManager) {
+        this.game = game;
         this.assetManager = assetManager;
 
         try {
@@ -58,17 +66,31 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
     }
 
     @Override
+    public void addedToEngine(Engine engine) {
+        super.addedToEngine(engine);
+        this.engine = engine;
+    }
+
+    @Override
+    public void removedFromEngine(Engine engine) {
+        super.removedFromEngine(engine);
+        this.engine = null;
+    }
+
+    @Override
     protected void processEntity(Entity entity, float deltaTime) {
         InputComponent input = ComponentMappers.input.get(entity);
         PlayerComponent player = ComponentMappers.player.get(entity);
         initializePowerups(player, input);
         updatePowerups(player, deltaTime);
         input.speed = calculateSpeed(player);
-        removeExpiredPowerups(player, deltaTime);
+        removeExpiredPowerups(entity, player, deltaTime);
     }
 
     @Override
     public void update(float deltaTime) {
+        localPlayer = game.getLocalPlayer();
+        noticeSystem = engine.getSystem(RenderNoticeSystem.class);
         for (Team team : teams) {
             if (team.pizzaCount >= 8) {
                 team.pizzaCount -= 8;
@@ -76,9 +98,12 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
                 // Add Powerups to all team members alive
                 for (Entity entity : getEntities()) {
                     PlayerComponent player = ComponentMappers.player.get(entity);
-                    if (!player.isDead() && player.team == team) {
-                        player.newPowerups.add(createPowerup("pizza"));
-                        player.hasPizzaPowerup = true;
+                    if(player.team == team) {
+                        noticeSystem.schedule(NoticeType.PIZZABUFF_ACTIVATED, 0, entity);
+                        if (!player.isDead()) {
+                            player.newPowerups.add(createPowerup("pizza"));
+                            player.hasPizzaPowerup = true;
+                        }
                     }
                 }
 //                GameEventManager.fireGameEvent(
@@ -199,7 +224,7 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
         return speed;
     }
 
-    private void removeExpiredPowerups(PlayerComponent player, float deltaTime) {
+    private void removeExpiredPowerups(Entity entity, PlayerComponent player, float deltaTime) {
         Iterator<Powerup> iterator = player.powerups.iterator();
         boolean checkPowerups = false;
         while (iterator.hasNext()) {
@@ -226,6 +251,7 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
                             break;
                         case PIZZA:
                             player.hasPizzaPowerup = false;
+                            noticeSystem.schedule(NoticeType.PIZZABUFF_DEACTIVATED, 0, entity);
                             break;
                     }
                 }
