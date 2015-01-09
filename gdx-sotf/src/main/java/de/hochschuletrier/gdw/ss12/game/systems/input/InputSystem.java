@@ -14,9 +14,7 @@ import de.hochschuletrier.gdw.ss12.game.components.ItemTrapComponent;
 import de.hochschuletrier.gdw.ss12.game.components.LightComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
-import de.hochschuletrier.gdw.ss12.game.components.RenderTextureComponent;
 import de.hochschuletrier.gdw.ss12.game.components.DropableComponent;
-import de.hochschuletrier.gdw.ss12.game.components.RenderAnimationComponent;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.systems.EntitySpawnSystem;
 
@@ -67,8 +65,8 @@ public class InputSystem extends IteratingSystem implements SystemGameInitialize
         if (!input.moveDirection.isZero()) {
             input.lastMoveDirection.set(input.moveDirection);
 
-            RenderAnimationComponent render = ComponentMappers.renderAnimation.get(entity);
-            render.angle = input.lastMoveDirection.angle() - 90;
+            PlayerComponent player = ComponentMappers.player.get(entity);
+            player.angle = input.lastMoveDirection.angle() - 90;
 
             PositionComponent position = ComponentMappers.position.get(entity);
             position.x += input.moveDirection.x * input.speed * deltaTime;
@@ -82,8 +80,8 @@ public class InputSystem extends IteratingSystem implements SystemGameInitialize
         if (!input.moveDirection.isZero()) {
             input.lastMoveDirection.set(input.moveDirection);
 
-            RenderAnimationComponent render = ComponentMappers.renderAnimation.get(entity);
-            render.angle = input.lastMoveDirection.angle() - 90;
+            PlayerComponent player = ComponentMappers.player.get(entity);
+            player.angle = input.lastMoveDirection.angle() - 90;
         }
     }
 

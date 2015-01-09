@@ -16,7 +16,6 @@ import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.components.data.PlayerState;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
-import de.hochschuletrier.gdw.ss12.game.components.RenderAnimationComponent;
 import java.util.Comparator;
 
 public class RenderPlayerSystem extends SortedIteratingSystem implements SystemGameInitializer {
@@ -25,7 +24,7 @@ public class RenderPlayerSystem extends SortedIteratingSystem implements SystemG
     private Game game;
 
     public RenderPlayerSystem() {
-        super(Family.all(PositionComponent.class, PlayerComponent.class, RenderAnimationComponent.class).get(), new EntityComparator(), 0);
+        super(Family.all(PositionComponent.class, PlayerComponent.class).get(), new EntityComparator(), 0);
     }
 
     @Override
@@ -42,12 +41,11 @@ public class RenderPlayerSystem extends SortedIteratingSystem implements SystemG
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        RenderAnimationComponent render = ComponentMappers.renderAnimation.get(entity);
         PositionComponent position = ComponentMappers.position.get(entity);
         PlayerComponent player = ComponentMappers.player.get(entity);
 
         if (!player.isSlipping) {
-            render.stateTime += deltaTime;
+            player.stateTime += deltaTime;
         }
 
         if (player.isDead()) {
@@ -70,14 +68,14 @@ public class RenderPlayerSystem extends SortedIteratingSystem implements SystemG
 
         if (animation != null) {
             DrawUtil.batch.setColor(player.isDead() ? Constants.PLAYER_GHOST_FILTER : Color.WHITE);
-            TextureRegion keyFrame = animation.getKeyFrame(render.stateTime);
+            TextureRegion keyFrame = animation.getKeyFrame(player.stateTime);
             int width = keyFrame.getRegionWidth();
             int height = keyFrame.getRegionHeight();
             float scale = Constants.PLAYER_RENDER_SCALE * (player.radius * 2) / width;
             float halfWidth = width * 0.5f;
             float halfHeight = height * 0.5f;
 
-            DrawUtil.batch.draw(keyFrame, position.x - halfWidth, position.y - halfHeight, halfWidth, halfHeight, width, height, scale, scale, render.angle);
+            DrawUtil.batch.draw(keyFrame, position.x - halfWidth, position.y - halfHeight, halfWidth, halfHeight, width, height, scale, scale, player.angle);
 
             // render name
             if (player.name != null && !player.isDead() && !localPlayerComponent.isHalucinating()) {

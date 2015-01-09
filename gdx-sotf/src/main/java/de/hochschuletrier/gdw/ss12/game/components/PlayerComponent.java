@@ -35,6 +35,8 @@ public class PlayerComponent extends Component implements Pool.Poolable {
     public float lastSpawnShapeSize;
     public boolean hasPizzaPowerup;
     public boolean isSlipping;
+    public float stateTime;
+    public float angle;
     
     public PlayerComponent() {
         particleEffect = new ParticleEffect(Main.getInstance().getAssetManager().getParticleEffect("player"));

@@ -13,7 +13,7 @@ import de.hochschuletrier.gdw.ss12.game.components.RenderAnimationComponent;
 public class RenderItemAnimationSystem extends IteratingSystem {
 
     public RenderItemAnimationSystem() {
-        super(Family.all(PositionComponent.class, RenderAnimationComponent.class).exclude(PlayerComponent.class).get(), 0);
+        super(Family.all(PositionComponent.class, RenderAnimationComponent.class).get(), 0);
     }
 
     @Override

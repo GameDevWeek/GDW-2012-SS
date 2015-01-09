@@ -266,9 +266,6 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         light.radius = Constants.PLAYER_DEFAULT_SIGHTDISTANCE;
         entity.add(light);
 
-        RenderAnimationComponent render = engine.createComponent(RenderAnimationComponent.class);
-        entity.add(render);
-
         modifyComponent.schedule(() -> {
             PhysixBodyComponent bodyComponent = engine.createComponent(PhysixBodyComponent.class);
             PhysixBodyDef bodyDef = new PhysixBodyDef(BodyDef.BodyType.DynamicBody, physixSystem)
