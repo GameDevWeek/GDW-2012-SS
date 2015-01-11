@@ -291,8 +291,7 @@ public class Game {
     }
 
     public SoundInstance playAnouncerSound(String name) {
-        Vector3 position = camera.getPosition();
-        return SoundEmitter.playGlobal(assetManager.getSound(name), false, position.x, position.y, position.z);
+        return playEntitySound(name, localPlayer, false);
     }
 
     public SoundInstance playGlobalSound(String name, float x, float y, boolean loop) {

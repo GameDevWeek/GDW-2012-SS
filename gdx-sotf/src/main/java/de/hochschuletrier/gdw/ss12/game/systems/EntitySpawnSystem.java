@@ -40,6 +40,7 @@ import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 import de.hochschuletrier.gdw.ss12.game.components.RenderTextureComponent;
 import de.hochschuletrier.gdw.ss12.game.components.DropableComponent;
 import de.hochschuletrier.gdw.ss12.game.components.RenderAnimationComponent;
+import de.hochschuletrier.gdw.ss12.game.components.SoundEmitterComponent;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemMapInitializer;
 import de.hochschuletrier.gdw.ss12.game.json.EntityJson;
@@ -255,6 +256,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         player.startPosition.set(x, y);
         entity.add(player);
 
+        entity.add(engine.createComponent(SoundEmitterComponent.class));
         entity.add(engine.createComponent(BotComponent.class));
 
         InputComponent input = engine.createComponent(InputComponent.class);

@@ -42,7 +42,6 @@ public class UpdateSoundEmitterSystem extends IteratingSystem implements SystemG
         distanceModel.addListener((CVar) -> distanceModel.get().activate());
 
         console.register(emitterMode);
-        emitterMode.addListener(this::onEmitterModeChanged);
     }
 
     @Override
@@ -54,7 +53,7 @@ public class UpdateSoundEmitterSystem extends IteratingSystem implements SystemG
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        Vector3 position = game.getCamera().getPosition();
+        PositionComponent position = ComponentMappers.position.get(game.getLocalPlayer());
         SoundEmitter.setListenerPosition(position.x, position.y, 10, emitterMode.get());
         SoundEmitter.updateGlobal();
     }
@@ -64,11 +63,6 @@ public class UpdateSoundEmitterSystem extends IteratingSystem implements SystemG
         SoundEmitterComponent sound = ComponentMappers.soundEmitter.get(entity);
         PositionComponent position = ComponentMappers.position.get(entity);
         sound.emitter.setPosition(position.x, position.y, 0);
-    }
-
-    public void onEmitterModeChanged(CVar cvar) {
-        int x = Gdx.graphics.getWidth() / 2;
-        int y = Gdx.graphics.getHeight() / 2;
-        SoundEmitter.setListenerPosition(x, y, 10, emitterMode.get());
+        sound.emitter.update();
     }
 }
