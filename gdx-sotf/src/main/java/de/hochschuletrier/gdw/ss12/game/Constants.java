@@ -72,6 +72,8 @@ public class Constants {
     public static final float CHANCE_FOR_NEW_ITEM_REDUCED = 0.3f;
     public static final Color[] TEAM_COLOR_TABLE = {Color.BLUE, Color.RED, Color.YELLOW, Color.GREEN};
 
+    public static float MUSIC_FADE_TIME = 2;
+
     // PooledEngine parameters
     public static final int ENTITY_POOL_INITIAL_SIZE = 32;
     public static final int ENTITY_POOL_MAX_SIZE = 256;

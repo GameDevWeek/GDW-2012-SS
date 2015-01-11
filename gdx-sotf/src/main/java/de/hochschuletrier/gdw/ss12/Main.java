@@ -19,7 +19,9 @@ import de.hochschuletrier.gdw.commons.devcon.DevConsole;
 import de.hochschuletrier.gdw.commons.gdx.assets.AnimationExtended;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.gdx.assets.loaders.AnimationExtendedLoader;
+import de.hochschuletrier.gdw.commons.gdx.assets.loaders.TiledMapLoader;
 import de.hochschuletrier.gdw.commons.gdx.devcon.DevConsoleView;
+import de.hochschuletrier.gdw.commons.gdx.sound.MusicManager;
 import de.hochschuletrier.gdw.commons.gdx.state.BaseGameState;
 import de.hochschuletrier.gdw.commons.gdx.state.StateBasedGame;
 import de.hochschuletrier.gdw.commons.gdx.state.transition.SplitHorizontalTransition;
@@ -29,6 +31,7 @@ import de.hochschuletrier.gdw.commons.gdx.utils.KeyUtil;
 import de.hochschuletrier.gdw.commons.jackson.JacksonReader;
 import de.hochschuletrier.gdw.commons.netcode.core.NetDatagramPool;
 import de.hochschuletrier.gdw.commons.resourcelocator.CurrentResourceLocator;
+import de.hochschuletrier.gdw.commons.tiled.TiledMap;
 import de.hochschuletrier.gdw.ss12.game.Game;
 import de.hochschuletrier.gdw.ss12.game.datagrams.DatagramType;
 import de.hochschuletrier.gdw.ss12.sandbox.SandboxCommand;
@@ -87,6 +90,7 @@ public class Main extends StateBasedGame {
         param.minFilter = param.magFilter = Texture.TextureFilter.Linear;
 
         assetManager.loadAssetList("data/json/images.json", Texture.class, param);
+        assetManager.loadAssetListByKey("data/json/maps.json", TiledMap.class, new TiledMapLoader.TiledMapParameter());
         assetManager.loadAssetList("data/json/sounds.json", Sound.class, null);
         assetManager.loadAssetList("data/json/music.json", Music.class, null);
         assetManager.loadAssetListWithParam("data/json/animations.json", AnimationExtended.class,
@@ -180,6 +184,7 @@ public class Main extends StateBasedGame {
 
     @Override
     protected void postUpdate(float delta) {
+        MusicManager.update(delta);
         postRender();
     }
 

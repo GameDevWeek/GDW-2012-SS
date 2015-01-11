@@ -3,16 +3,18 @@ package de.hochschuletrier.gdw.ss12.states;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.gdx.input.InputForwarder;
-import de.hochschuletrier.gdw.commons.gdx.input.InputInterceptor;
 import de.hochschuletrier.gdw.commons.gdx.menu.MenuManager;
 import de.hochschuletrier.gdw.commons.gdx.menu.widgets.DecoImage;
+import de.hochschuletrier.gdw.commons.gdx.sound.MusicManager;
 import de.hochschuletrier.gdw.commons.gdx.state.BaseGameState;
 import de.hochschuletrier.gdw.commons.gdx.utils.DrawUtil;
 import de.hochschuletrier.gdw.ss12.Main;
+import de.hochschuletrier.gdw.ss12.game.Constants;
 import de.hochschuletrier.gdw.ss12.game.Game;
 import de.hochschuletrier.gdw.ss12.menu.MenuPageRoot;
 
@@ -25,6 +27,7 @@ public class GameplayState extends BaseGameState {
     private static final Color OVERLAY_COLOR = new Color(0f, 0f, 0f, 0.5f);
     
     private final Game game;
+    private final Music music;
     
     private final MenuManager menuManager = new MenuManager(Main.WINDOW_WIDTH, Main.WINDOW_HEIGHT, this::onMenuEmptyPop);
     private final InputForwarder inputForwarder;
@@ -33,6 +36,8 @@ public class GameplayState extends BaseGameState {
     
     public GameplayState(AssetManagerX assetManager, Game game) {
         this.game = game;
+        
+        music = assetManager.getMusic("gameplay");
         
         Skin skin = Main.getInstance().getSkin();
         final MenuPageRoot menuPageRoot = new MenuPageRoot(skin, menuManager, MenuPageRoot.Type.INGAME);
@@ -76,6 +81,11 @@ public class GameplayState extends BaseGameState {
             DrawUtil.fillRect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), OVERLAY_COLOR);
             menuManager.render();
         }
+    }
+    
+    @Override
+    public void onEnter(BaseGameState previousState) {
+        MusicManager.play(music, Constants.MUSIC_FADE_TIME);
     }
     
     @Override

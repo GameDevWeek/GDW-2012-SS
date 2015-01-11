@@ -363,13 +363,9 @@ public class Game {
     }
 
     public void loadMap(String filename) {
-        try {
-            map = new TiledMap(filename, LayerObject.PolyMode.ABSOLUTE);
-            engine.getSystem(InputSystem.class).setProcessing(false);
-            setupPhysixWorld();
-        } catch (Exception ex) {
-            throw new IllegalArgumentException("Map konnte nicht geladen werden: " + filename, ex);
-        }
+        map = assetManager.getTiledMap(filename);
+        engine.getSystem(InputSystem.class).setProcessing(false);
+        setupPhysixWorld();
     }
     
     public void start() {

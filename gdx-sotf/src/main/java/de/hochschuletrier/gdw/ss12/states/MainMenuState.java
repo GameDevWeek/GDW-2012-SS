@@ -13,6 +13,8 @@ import de.hochschuletrier.gdw.commons.gdx.state.BaseGameState;
 import de.hochschuletrier.gdw.commons.gdx.utils.DrawUtil;
 import de.hochschuletrier.gdw.ss12.Main;
 import de.hochschuletrier.gdw.commons.gdx.menu.widgets.DecoImage;
+import de.hochschuletrier.gdw.commons.gdx.sound.MusicManager;
+import de.hochschuletrier.gdw.ss12.game.Constants;
 import de.hochschuletrier.gdw.ss12.menu.MenuPageRoot;
 
 /**
@@ -29,9 +31,6 @@ public class MainMenuState extends BaseGameState {
 
     public MainMenuState(AssetManagerX assetManager) {
         music = assetManager.getMusic("menu");
-
-        music.setLooping(true);
-//        music.play();
 
         Skin skin = Main.getInstance().getSkin();
         final MenuPageRoot menuPageRoot = new MenuPageRoot(skin, menuManager, MenuPageRoot.Type.MAINMENU);
@@ -71,6 +70,7 @@ public class MainMenuState extends BaseGameState {
 
     @Override
     public void onEnterComplete() {
+        MusicManager.play(music, Constants.MUSIC_FADE_TIME);
         inputForwarder.set(menuManager.getInputProcessor());
     }
 
