@@ -134,6 +134,8 @@ public class Main extends StateBasedGame {
         inputMultiplexer.addProcessor(consoleView.getInputProcessor());
 
         changeState(new LoadGameState(assetManager, this::onLoadComplete), null, null);
+        MusicManager.setGlobalVolume(Settings.MUSIC_VOLUME.get());
+        MusicManager.setMuted(Settings.MUSIC_MUTE.get());
     }
 
     private void onLoadComplete() {

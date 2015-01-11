@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import de.hochschuletrier.gdw.commons.gdx.menu.MenuManager;
+import de.hochschuletrier.gdw.commons.gdx.sound.MusicManager;
 import de.hochschuletrier.gdw.commons.gdx.utils.ScreenUtil;
 import de.hochschuletrier.gdw.ss12.Settings;
 
@@ -30,16 +31,12 @@ public class MenuPageOptions extends MenuPage {
         soundSlider = createSlider(170, y, this::onSoundVolumeChanged);
         soundLabel = createLabel(380, y);
         soundMuteButton = createToggleButton(440, y, "Aus", this::onSoundMuteChanged);
-        soundMuteButton.setChecked(true);
-        soundSlider.setValue(1.0f);
         y -= 50;
 
         createLabel(100, y).setText("Musik:");
         musicSlider = createSlider(170, y, this::onMusicVolumeChanged);
         musicLabel = createLabel(380, y);
         musicMuteButton = createToggleButton(440, y, "Aus", this::onMusicMuteChanged);
-        musicMuteButton.setChecked(true);
-        musicSlider.setValue(1.0f);
 
         addCenteredButton(menuManager.getWidth() - 100, 54, 100, 40, "Zurück", () -> menuManager.popPage());
     }
@@ -96,8 +93,9 @@ public class MenuPageOptions extends MenuPage {
     }
 
     private void onMusicVolumeChanged() {
-        musicLabel.setText(pctToString(musicSlider.getValue()));
-//        SoundStore.get().setMusicVolume(soundValue);
+        final float value = musicSlider.getValue();
+        musicLabel.setText(pctToString(value));
+        MusicManager.setGlobalVolume(value);
     }
 
     private void onSoundMuteChanged() {
@@ -111,9 +109,7 @@ public class MenuPageOptions extends MenuPage {
     private void onMusicMuteChanged() {
         boolean musicOn = musicMuteButton.isChecked();
         musicMuteButton.setText(musicOn ? "An" : "Aus");
-//        if (SoundStore.get().isMusicOn() != musicOn) {
-//            SoundStore.get().setMusicOn(musicOn);
-//        }
+        MusicManager.setMuted(!musicOn);
     }
 
 
@@ -131,17 +127,17 @@ public class MenuPageOptions extends MenuPage {
     
     private void restoreSettings() {
         soundSlider.setValue(Settings.SOUND_VOLUME.get());
-        soundMuteButton.setChecked(Settings.SOUND_MUTE.get());
+        soundMuteButton.setChecked(!Settings.SOUND_MUTE.get());
         musicSlider.setValue(Settings.MUSIC_VOLUME.get());
-        musicMuteButton.setChecked(Settings.MUSIC_MUTE.get());
+        musicMuteButton.setChecked(!Settings.MUSIC_MUTE.get());
         fullscreenButton.setChecked(Gdx.graphics.isFullscreen());
     }
 
     private void storeSettings() {
         Settings.SOUND_VOLUME.set(soundSlider.getValue());
-        Settings.SOUND_MUTE.set(soundMuteButton.isChecked());
+        Settings.SOUND_MUTE.set(!soundMuteButton.isChecked());
         Settings.MUSIC_VOLUME.set(musicSlider.getValue());
-        Settings.MUSIC_MUTE.set(musicMuteButton.isChecked());
+        Settings.MUSIC_MUTE.set(!musicMuteButton.isChecked());
         Settings.FULLSCREEN.set(Gdx.graphics.isFullscreen());
         Settings.flush();
     }
