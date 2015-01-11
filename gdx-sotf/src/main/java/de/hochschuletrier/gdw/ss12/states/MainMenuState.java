@@ -13,7 +13,7 @@ import de.hochschuletrier.gdw.commons.gdx.state.BaseGameState;
 import de.hochschuletrier.gdw.commons.gdx.utils.DrawUtil;
 import de.hochschuletrier.gdw.ss12.Main;
 import de.hochschuletrier.gdw.commons.gdx.menu.widgets.DecoImage;
-import de.hochschuletrier.gdw.commons.gdx.sound.MusicManager;
+import de.hochschuletrier.gdw.commons.gdx.audio.MusicManager;
 import de.hochschuletrier.gdw.ss12.game.Constants;
 import de.hochschuletrier.gdw.ss12.menu.MenuPageRoot;
 
