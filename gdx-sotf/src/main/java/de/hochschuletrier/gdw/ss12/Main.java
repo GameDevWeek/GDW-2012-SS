@@ -22,6 +22,7 @@ import de.hochschuletrier.gdw.commons.gdx.assets.loaders.AnimationExtendedLoader
 import de.hochschuletrier.gdw.commons.gdx.assets.loaders.TiledMapLoader;
 import de.hochschuletrier.gdw.commons.gdx.devcon.DevConsoleView;
 import de.hochschuletrier.gdw.commons.gdx.audio.MusicManager;
+import de.hochschuletrier.gdw.commons.gdx.audio.SoundEmitter;
 import de.hochschuletrier.gdw.commons.gdx.state.BaseGameState;
 import de.hochschuletrier.gdw.commons.gdx.state.StateBasedGame;
 import de.hochschuletrier.gdw.commons.gdx.state.transition.SplitHorizontalTransition;
@@ -134,6 +135,9 @@ public class Main extends StateBasedGame {
         inputMultiplexer.addProcessor(consoleView.getInputProcessor());
 
         changeState(new LoadGameState(assetManager, this::onLoadComplete), null, null);
+        
+        SoundEmitter.setGlobalVolume(Settings.SOUND_VOLUME.get());
+        SoundEmitter.setMuted(Settings.SOUND_MUTE.get());
         MusicManager.setGlobalVolume(Settings.MUSIC_VOLUME.get());
         MusicManager.setMuted(Settings.MUSIC_MUTE.get());
     }

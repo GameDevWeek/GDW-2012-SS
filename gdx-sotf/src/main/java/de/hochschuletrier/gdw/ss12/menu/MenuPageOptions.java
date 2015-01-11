@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import de.hochschuletrier.gdw.commons.gdx.menu.MenuManager;
 import de.hochschuletrier.gdw.commons.gdx.audio.MusicManager;
+import de.hochschuletrier.gdw.commons.gdx.audio.SoundEmitter;
 import de.hochschuletrier.gdw.commons.gdx.utils.ScreenUtil;
 import de.hochschuletrier.gdw.ss12.Settings;
 
@@ -88,8 +89,10 @@ public class MenuPageOptions extends MenuPage {
     }
 
     private void onSoundVolumeChanged() {
-        soundLabel.setText(pctToString(soundSlider.getValue()));
+        final float value = soundSlider.getValue();
+        soundLabel.setText(pctToString(value));
 //        SoundStore.get().setSoundVolume(soundValue);
+        SoundEmitter.setGlobalVolume(value);
     }
 
     private void onMusicVolumeChanged() {
@@ -101,9 +104,7 @@ public class MenuPageOptions extends MenuPage {
     private void onSoundMuteChanged() {
         boolean soundOn = soundMuteButton.isChecked();
         soundMuteButton.setText(soundOn ? "An" : "Aus");
-//        if (SoundStore.get().soundsOn() != soundOn) {
-//            SoundStore.get().setSoundsOn(soundOn);
-//        }
+        SoundEmitter.setMuted(!soundOn);
     }
 
     private void onMusicMuteChanged() {
