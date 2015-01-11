@@ -13,8 +13,6 @@ import de.hochschuletrier.gdw.ss12.game.components.EatableComponent;
 import de.hochschuletrier.gdw.ss12.game.components.ItemTrapComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.DropableComponent;
-import de.hochschuletrier.gdw.ss12.game.components.data.NoticeType;
-import de.hochschuletrier.gdw.ss12.game.systems.rendering.RenderNoticeSystem;
 
 public class PlayerContactListener extends PhysixContactAdapter {
 

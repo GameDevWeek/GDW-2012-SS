@@ -111,8 +111,7 @@ public class Game {
         engine.addSystem(new BotSystem());
         engine.addSystem(new InputSystem());
         engine.addSystem(new PhysixSystem(
-                Constants.BOX2D_SCALE, Constants.STEP_SIZE,
-                Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS
+                Constants.BOX2D_SCALE, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS
         ));
         engine.addSystem(new UpdatePositionSystem());
         engine.addSystem(new UpdateSoundEmitterSystem());
