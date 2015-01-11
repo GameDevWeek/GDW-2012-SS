@@ -118,7 +118,12 @@
                 { "type": "text", "style" : "name", "path": "left", "text": "Ben Michel Raus", "delay": "750" },
                 { "type": "text", "style" : "name", "path": "right", "text": "Patrick Monville", "delay": "750" },
                 { "type": "text", "style" : "name", "path": "left", "text": "Susanne Kühn", "delay": "750" },
-                { "type": "text", "style" : "name", "path": "right", "text": "Wendelin Lehr", "delay": "750" }
+                { "type": "text", "style" : "name", "path": "right", "text": "Wendelin Lehr", "delay": "750" },
+                
+                { "type": "text", "style" : "title", "path": "middle", "text": "Sound & Music", "delay": "1150" },
+                { "type": "text", "style" : "name", "path": "right", "text": "tekgnosis (Countdown Voice)", "delay": "750" },
+                { "type": "text", "style" : "name", "path": "left", "text": "Fortadelis (Ingame Music)", "delay": "750" },
+                { "type": "text", "style" : "name", "path": "right", "text": "8 Bit Weapon (Menu Music)", "delay": "750" }
             ]
         },
         "animations": {
@@ -129,14 +134,14 @@
                 { "type": "animation", "path": "player", "resource": "player_wiggle2", "scale": "0.4", "angle": "-90", "oriented": "true", "delay": "500" },
                 { "type": "animation", "path": "player", "resource": "player_team0", "scale": "0.53", "angle": "-90", "oriented": "true", "delay": "500" },
 
-                { "type": "animation", "path": "player_reverse", "resource": "player_wiggle", "scale": "0.53", "angle": "-90", "oriented": "true", "delay": "5500" },
+                { "type": "animation", "path": "player_reverse", "resource": "player_wiggle", "scale": "0.53", "angle": "-90", "oriented": "true", "delay": "6400" },
                 { "type": "animation", "path": "player_reverse", "resource": "player_team1", "scale": "0.8", "angle": "-90", "oriented": "true", "delay": "500" },
 
-                { "type": "texture", "path": "player2", "resource": "pizza_icon", "scale": "0.35", "oriented": "false", "delay": "4000" },
+                { "type": "texture", "path": "player2", "resource": "pizza_icon", "scale": "0.35", "oriented": "false", "delay": "6400" },
                 { "type": "animation", "path": "player2", "resource": "player_wiggle", "scale": "0.4", "angle": "-90", "oriented": "true", "delay": "500" },
                 { "type": "animation", "path": "player2", "resource": "player_team1", "scale": "0.53", "angle": "-90", "oriented": "true", "delay": "500" },
 
-                { "type": "animation", "path": "player2_reverse", "resource": "player_wiggle2", "scale": "0.53", "angle": "-90", "oriented": "true", "delay": "5500" },
+                { "type": "animation", "path": "player2_reverse", "resource": "player_wiggle2", "scale": "0.53", "angle": "-90", "oriented": "true", "delay": "6400" },
                 { "type": "animation", "path": "player2_reverse", "resource": "player_wiggle", "scale": "0.4", "angle": "-90", "oriented": "true", "delay": "500" },
                 { "type": "texture", "path": "player2_reverse_pizza", "resource": "pizza_icon", "scale": "1.42", "oriented": "false", "delay": "1000" }
             ]
