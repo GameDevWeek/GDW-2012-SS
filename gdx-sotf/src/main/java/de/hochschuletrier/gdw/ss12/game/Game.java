@@ -61,10 +61,10 @@ public class Game {
 
     private static final float TELEPORTER_SCALE = 0.4f;
 
-    protected final CVarBool physixDebug = new CVarBool("physix_debug", true, 0, "Draw physix debug");
+    protected final CVarBool physixDebug = new CVarBool("physix_debug", !Main.IS_RELEASE, 0, "Draw physix debug");
     protected final CVarBool botsEnabled = new CVarBool("bots_enable", true, 0, "Enable bots");
-    private final Hotkey togglePhysixDebug = new Hotkey(() -> physixDebug.toggle(false), Input.Keys.F1, HotkeyModifier.CTRL);
-    private final Hotkey toggleBotsEnabled = new Hotkey(this::toggleBotsEnabled, Input.Keys.F2, HotkeyModifier.CTRL);
+    private final Hotkey togglePhysixDebug = new Hotkey(() -> physixDebug.toggle(false), Input.Keys.F1);
+    private final Hotkey toggleBotsEnabled = new Hotkey(this::toggleBotsEnabled, Input.Keys.F2);
 
     protected final CustomPooledEngine engine = new CustomPooledEngine();
     private ImmutableArray<Entity> botPlayers = engine.getEntitiesFor(Family.all(PlayerComponent.class, BotComponent.class).get());
