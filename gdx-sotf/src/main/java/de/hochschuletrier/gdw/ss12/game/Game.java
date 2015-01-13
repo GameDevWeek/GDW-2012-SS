@@ -5,10 +5,10 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -27,18 +27,21 @@ import de.hochschuletrier.gdw.commons.gdx.physix.systems.PhysixDebugRenderSystem
 import de.hochschuletrier.gdw.commons.gdx.physix.systems.PhysixSystem;
 import de.hochschuletrier.gdw.commons.gdx.audio.SoundEmitter;
 import de.hochschuletrier.gdw.commons.gdx.audio.SoundInstance;
+import de.hochschuletrier.gdw.commons.gdx.input.hotkey.Hotkey;
+import de.hochschuletrier.gdw.commons.gdx.input.hotkey.HotkeyModifier;
 import de.hochschuletrier.gdw.commons.tiled.Layer;
-import de.hochschuletrier.gdw.commons.tiled.LayerObject;
 import de.hochschuletrier.gdw.commons.tiled.TileInfo;
 import de.hochschuletrier.gdw.commons.tiled.TileSet;
 import de.hochschuletrier.gdw.commons.tiled.TiledMap;
 import de.hochschuletrier.gdw.commons.tiled.utils.RectangleGenerator;
+import de.hochschuletrier.gdw.commons.utils.ClassUtils;
 import de.hochschuletrier.gdw.commons.utils.Rectangle;
 import de.hochschuletrier.gdw.ss12.Main;
 import de.hochschuletrier.gdw.ss12.game.components.data.PlayerState;
 import de.hochschuletrier.gdw.ss12.game.components.data.Team;
 import de.hochschuletrier.gdw.ss12.game.components.BotComponent;
 import de.hochschuletrier.gdw.ss12.game.components.DropableComponent;
+import de.hochschuletrier.gdw.ss12.game.components.InputComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 import de.hochschuletrier.gdw.ss12.game.components.SoundEmitterComponent;
@@ -61,6 +64,8 @@ public class Game {
 
     protected final CVarBool physixDebug = new CVarBool("physix_debug", true, 0, "Draw physix debug");
     protected final CVarBool botsEnabled = new CVarBool("bots_enable", true, 0, "Enable bots");
+    private final Hotkey togglePhysixDebug = new Hotkey(() -> physixDebug.toggle(false), Input.Keys.F1, HotkeyModifier.CTRL);
+    private final Hotkey toggleBotsEnabled = new Hotkey(this::toggleBotsEnabled, Input.Keys.F2, HotkeyModifier.CTRL);
 
     protected final CustomPooledEngine engine = new CustomPooledEngine();
     private ImmutableArray<Entity> botPlayers = engine.getEntitiesFor(Family.all(PlayerComponent.class, BotComponent.class).get());
@@ -92,9 +97,26 @@ public class Game {
         botsEnabled.addListener((CVar) -> engine.getSystem(BotSystem.class).setProcessing(botsEnabled.get()));
         addSystems(assetManager);
         addContactListeners();
+
+        // If this is a build jar file, disable hotkeys
+        if (!ClassUtils.getClassUrl(getClass()).toString().startsWith("jar:")) {
+            togglePhysixDebug.register();
+            toggleBotsEnabled.register();
+        }
     }
 
     public void dispose() {
+        togglePhysixDebug.unregister();
+        toggleBotsEnabled.unregister();
+    }
+
+    public void toggleBotsEnabled() {
+        for (Entity botPlayer : botPlayers) {
+            InputComponent input = ComponentMappers.input.get(botPlayer);
+            input.moveDirection.setZero();
+            input.dropItem = false;
+        }
+        botsEnabled.toggle(false);
     }
 
     public LimitedSmoothCamera getCamera() {
@@ -367,7 +389,7 @@ public class Game {
         engine.getSystem(InputSystem.class).setProcessing(false);
         setupPhysixWorld();
     }
-    
+
     public void start() {
         engine.getSystem(InputSystem.class).setProcessing(false);
         sendStartNotices();
