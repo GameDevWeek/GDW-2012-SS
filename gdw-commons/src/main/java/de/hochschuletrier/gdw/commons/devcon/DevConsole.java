@@ -463,14 +463,10 @@ public class DevConsole {
         return cvar;
     }
 
-    private final IConsoleCompleter cvarCompleter = new IConsoleCompleter() {
-
-        @Override
-        public void complete(String arg, List<String> results) {
-            for (CVar cvar : cvarList.values()) {
-                if (cvar.isVisible(false) && cvar.getName().startsWith(arg)) {
-                    results.add(cvar.getName());
-                }
+    private final IConsoleCompleter cvarCompleter = (String arg, List<String> results) -> {
+        for (CVar cvar : cvarList.values()) {
+            if (cvar.isVisible(false) && cvar.getName().startsWith(arg)) {
+                results.add(cvar.getName());
             }
         }
     };
@@ -479,14 +475,10 @@ public class DevConsole {
         return cvarCompleter;
     }
 
-    private final IConsoleCompleter cmdCompleter = new IConsoleCompleter() {
-
-        @Override
-        public void complete(String arg, List<String> results) {
-            for (ConsoleCmd cmd : cmdList.values()) {
-                if (cmd.isCallable(false) && cmd.getName().startsWith(arg)) {
-                    results.add(cmd.getName());
-                }
+    private final IConsoleCompleter cmdCompleter = (String arg, List<String> results) -> {
+        for (ConsoleCmd cmd : cmdList.values()) {
+            if (cmd.isCallable(false) && cmd.getName().startsWith(arg)) {
+                results.add(cmd.getName());
             }
         }
     };
@@ -634,8 +626,9 @@ public class DevConsole {
 
         @Override
         public void complete(String prefix, List<String> results) {
+            final String lowerPrefix = prefix.toLowerCase();
             for (String option : options) {
-                if (option.startsWith(prefix)) {
+                if (option.toLowerCase().startsWith(lowerPrefix)) {
                     results.add(option);
                 }
             }

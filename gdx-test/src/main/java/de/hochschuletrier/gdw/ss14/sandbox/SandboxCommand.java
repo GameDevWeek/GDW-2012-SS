@@ -45,8 +45,9 @@ public class SandboxCommand {
 
         @Override
         public void complete(String prefix, List<String> results) {
+            final String lowerPrefix = prefix.toLowerCase();
             for (String sbc : sandboxClasses.keySet()) {
-                if (sbc.startsWith(prefix)) {
+                if (sbc.toLowerCase().startsWith(lowerPrefix)) {
                     results.add(sbc);
                 }
             }
