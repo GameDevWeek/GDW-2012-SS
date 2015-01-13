@@ -34,7 +34,6 @@ import de.hochschuletrier.gdw.commons.tiled.TileInfo;
 import de.hochschuletrier.gdw.commons.tiled.TileSet;
 import de.hochschuletrier.gdw.commons.tiled.TiledMap;
 import de.hochschuletrier.gdw.commons.tiled.utils.RectangleGenerator;
-import de.hochschuletrier.gdw.commons.utils.ClassUtils;
 import de.hochschuletrier.gdw.commons.utils.Rectangle;
 import de.hochschuletrier.gdw.ss12.Main;
 import de.hochschuletrier.gdw.ss12.game.components.data.PlayerState;
@@ -99,7 +98,7 @@ public class Game {
         addContactListeners();
 
         // If this is a build jar file, disable hotkeys
-        if (!ClassUtils.getClassUrl(getClass()).toString().startsWith("jar:")) {
+        if (!Main.IS_RELEASE) {
             togglePhysixDebug.register();
             toggleBotsEnabled.register();
         }

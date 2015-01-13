@@ -34,6 +34,7 @@ import de.hochschuletrier.gdw.commons.jackson.JacksonReader;
 import de.hochschuletrier.gdw.commons.netcode.core.NetDatagramPool;
 import de.hochschuletrier.gdw.commons.resourcelocator.CurrentResourceLocator;
 import de.hochschuletrier.gdw.commons.tiled.TiledMap;
+import de.hochschuletrier.gdw.commons.utils.ClassUtils;
 import de.hochschuletrier.gdw.ss12.game.Game;
 import de.hochschuletrier.gdw.ss12.game.datagrams.DatagramType;
 import de.hochschuletrier.gdw.ss12.sandbox.SandboxCommand;
@@ -49,7 +50,9 @@ import org.slf4j.LoggerFactory;
  * @author Santo Pfingsten
  */
 public class Main extends StateBasedGame {
+
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
+    public static final boolean IS_RELEASE = ClassUtils.getClassUrl(Main.class).getProtocol().equals("jar");
 
     public static final NetDatagramPool datagramPool = new NetDatagramPool(DatagramType.MAPPER);
 
@@ -100,13 +103,12 @@ public class Main extends StateBasedGame {
         BitmapFontParameter fontParam = new BitmapFontParameter();
         fontParam.flip = true;
         assetManager.loadAssetList("data/json/fonts.json", BitmapFont.class, fontParam);
-        
-        
+
         ParticleEffectParameter particleParam = new ParticleEffectParameter();
         particleParam.imagesDir = Gdx.files.internal("data/particles");
 
         assetManager.loadAssetList("data/json/particle_effects.json", ParticleEffect.class, particleParam);
-        
+
         try {
             maps = JacksonReader.readMap("data/json/maps.json", String.class);
         } catch (Exception e) {
@@ -137,7 +139,7 @@ public class Main extends StateBasedGame {
         inputMultiplexer.addProcessor(HotkeyManager.getInputProcessor());
 
         changeState(new LoadGameState(assetManager, this::onLoadComplete), null, null);
-        
+
         SoundEmitter.setGlobalVolume(Settings.SOUND_VOLUME.get());
         SoundEmitter.setMuted(Settings.SOUND_MUTE.get());
         MusicManager.setGlobalVolume(Settings.MUSIC_VOLUME.get());
