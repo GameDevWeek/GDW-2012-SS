@@ -8,6 +8,8 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -39,6 +41,7 @@ import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 import de.hochschuletrier.gdw.ss12.game.components.RenderTextureComponent;
 import de.hochschuletrier.gdw.ss12.game.components.DropableComponent;
+import de.hochschuletrier.gdw.ss12.game.components.ParticleEffectComponent;
 import de.hochschuletrier.gdw.ss12.game.components.RenderAnimationComponent;
 import de.hochschuletrier.gdw.ss12.game.components.SoundEmitterComponent;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
@@ -255,6 +258,16 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         player.name = name;
         player.startPosition.set(x, y);
         entity.add(player);
+        
+        ParticleEffectComponent particleEffect = engine.createComponent(ParticleEffectComponent.class);
+        particleEffect.effect = new ParticleEffect(assetManager.getParticleEffect("player"));
+        particleEffect.effect.start();
+        for (ParticleEmitter emitter : particleEffect.effect.getEmitters()) {
+                emitter.setContinuous(false);
+                emitter.duration = 0;
+                emitter.durationTimer = 0;
+        }
+        entity.add(particleEffect);
 
         entity.add(engine.createComponent(SoundEmitterComponent.class));
         entity.add(engine.createComponent(BotComponent.class));

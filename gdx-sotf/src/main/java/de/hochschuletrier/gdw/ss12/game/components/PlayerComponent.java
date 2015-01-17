@@ -2,12 +2,8 @@ package de.hochschuletrier.gdw.ss12.game.components;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool;
-import de.hochschuletrier.gdw.ss12.Main;
-import de.hochschuletrier.gdw.ss12.game.components.data.PlayerEffect;
 import de.hochschuletrier.gdw.ss12.game.components.data.PlayerState;
 import de.hochschuletrier.gdw.ss12.game.components.data.PlayerStatistic;
 import de.hochschuletrier.gdw.ss12.game.components.data.Powerup;
@@ -18,12 +14,10 @@ import java.util.List;
 
 public class PlayerComponent extends Component implements Pool.Poolable {
     
-    public final ParticleEffect particleEffect;
     public final Vector2 startPosition = new Vector2();
     public final List<Powerup> newPowerups = new ArrayList();
     public final List<Powerup> powerups = new ArrayList();
     public final PlayerStatistic statistic = new PlayerStatistic();
-    public final ParticleEmitter []particleEmitters = new ParticleEmitter[PlayerEffect.values().length];
 
     public float radius;
     public String name;
@@ -37,30 +31,10 @@ public class PlayerComponent extends Component implements Pool.Poolable {
     public boolean isSlipping;
     public float stateTime;
     public float angle;
-    
-    public PlayerComponent() {
-        particleEffect = new ParticleEffect(Main.getInstance().getAssetManager().getParticleEffect("player"));
-        clearParticleEffect();
-    }
-
-    private void clearParticleEffect() {
-        particleEffect.start();
-        for (PlayerEffect effect: PlayerEffect.values()) {
-            final ParticleEmitter emitter = particleEffect.findEmitter(effect.name().toLowerCase());
-            if(emitter != null) {
-                emitter.setContinuous(false);
-                emitter.duration = 0;
-                emitter.durationTimer = 0;
-                particleEmitters[effect.ordinal()] = emitter;
-            }
-        }
-    }
 
     @Override
     public void reset() {
         statistic.reset();
-        particleEffect.reset();
-        clearParticleEffect();
         //todo
     }
     

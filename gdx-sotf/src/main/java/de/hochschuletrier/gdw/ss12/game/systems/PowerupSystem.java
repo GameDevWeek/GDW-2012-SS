@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.utils.Array;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
@@ -16,6 +15,7 @@ import de.hochschuletrier.gdw.ss12.game.Game;
 import de.hochschuletrier.gdw.ss12.game.components.data.Powerup;
 import de.hochschuletrier.gdw.ss12.game.components.data.Powerup.Modifier;
 import de.hochschuletrier.gdw.ss12.game.components.InputComponent;
+import de.hochschuletrier.gdw.ss12.game.components.ParticleEffectComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.data.NoticeType;
 import de.hochschuletrier.gdw.ss12.game.components.data.PlayerEffect;
@@ -81,8 +81,8 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
     protected void processEntity(Entity entity, float deltaTime) {
         InputComponent input = ComponentMappers.input.get(entity);
         PlayerComponent player = ComponentMappers.player.get(entity);
-        initializePowerups(player, input);
-        updatePowerups(player, deltaTime);
+        initializePowerups(entity, player, input);
+        updatePowerups(entity, player, deltaTime);
         input.speed = calculateSpeed(player);
         removeExpiredPowerups(entity, player, deltaTime);
     }
@@ -115,14 +115,14 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
         super.update(deltaTime);
     }
 
-    private void initializePowerups(PlayerComponent player, InputComponent input) {
+    private void initializePowerups(Entity entity, PlayerComponent player, InputComponent input) {
         for (Powerup powerup : player.newPowerups) {
-            initializePowerup(powerup, player, input);
+            initializePowerup(powerup, entity, player, input);
         }
         player.newPowerups.clear();
     }
 
-    void initializePowerup(Powerup powerup, PlayerComponent player, InputComponent input) {
+    void initializePowerup(Powerup powerup, Entity entity, PlayerComponent player, InputComponent input) {
         for (Modifier modifier : powerup.modifiers) {
             switch (modifier.type) {
                 case SLIPPED:
@@ -141,7 +141,8 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
         }
         // Turn on effect and update shape size
         if (powerup.effect != null) {
-            ParticleEmitter emitter = player.particleEmitters[powerup.effect.ordinal()];
+            ParticleEffectComponent particleEffect = ComponentMappers.particleEffect.get(entity);
+            ParticleEmitter emitter = particleEffect.getEmitter(powerup.effect.name());
             if (emitter != null) {
                 setParticleSpawnShapeSize(emitter, player.radius * powerup.effect.shapeScale);
             }
@@ -149,10 +150,11 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
         player.powerups.add(powerup);
     }
 
-    private void updatePowerups(PlayerComponent player, float deltaTime) {
+    private void updatePowerups(Entity entity, PlayerComponent player, float deltaTime) {
+        ParticleEffectComponent particleEffect = ComponentMappers.particleEffect.get(entity);
         for (Powerup powerup : player.powerups) {
             if (powerup.effect != null) {
-                ParticleEmitter emitter = player.particleEmitters[powerup.effect.ordinal()];
+                ParticleEmitter emitter = particleEffect.getEmitter(powerup.effect.name());
                 if (emitter != null) {
                     // Reset duration timer
                     emitter.duration = Integer.MAX_VALUE;
@@ -177,7 +179,7 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
 
             for (Powerup powerup : player.powerups) {
                 if (powerup.effect != null) {
-                    ParticleEmitter emitter = player.particleEmitters[powerup.effect.ordinal()];
+                    ParticleEmitter emitter = particleEffect.getEmitter(powerup.effect.name());
                     if (emitter != null) {
                         setParticleSpawnShapeSize(emitter, player.radius * powerup.effect.shapeScale);
                     }
@@ -225,6 +227,7 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
     }
 
     private void removeExpiredPowerups(Entity entity, PlayerComponent player, float deltaTime) {
+        ParticleEffectComponent particleEffect = ComponentMappers.particleEffect.get(entity);
         Iterator<Powerup> iterator = player.powerups.iterator();
         boolean checkPowerups = false;
         while (iterator.hasNext()) {
@@ -235,7 +238,7 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
             if (powerup.expiredTime >= powerup.lifetime) {
                 // Turn off effect
                 if (powerup.effect != null) {
-                    ParticleEmitter emitter = player.particleEmitters[powerup.effect.ordinal()];
+                    ParticleEmitter emitter = particleEffect.getEmitter(powerup.effect.name());
                     if (emitter != null) {
                         emitter.duration = 0;
                         emitter.durationTimer = 0;

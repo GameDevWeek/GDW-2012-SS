@@ -28,7 +28,6 @@ import de.hochschuletrier.gdw.commons.gdx.physix.systems.PhysixSystem;
 import de.hochschuletrier.gdw.commons.gdx.audio.SoundEmitter;
 import de.hochschuletrier.gdw.commons.gdx.audio.SoundInstance;
 import de.hochschuletrier.gdw.commons.gdx.input.hotkey.Hotkey;
-import de.hochschuletrier.gdw.commons.gdx.input.hotkey.HotkeyModifier;
 import de.hochschuletrier.gdw.commons.tiled.Layer;
 import de.hochschuletrier.gdw.commons.tiled.TileInfo;
 import de.hochschuletrier.gdw.commons.tiled.TileSet;
@@ -41,6 +40,7 @@ import de.hochschuletrier.gdw.ss12.game.components.data.Team;
 import de.hochschuletrier.gdw.ss12.game.components.BotComponent;
 import de.hochschuletrier.gdw.ss12.game.components.DropableComponent;
 import de.hochschuletrier.gdw.ss12.game.components.InputComponent;
+import de.hochschuletrier.gdw.ss12.game.components.ParticleEffectComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 import de.hochschuletrier.gdw.ss12.game.components.SoundEmitterComponent;
@@ -146,6 +146,7 @@ public class Game {
 
         engine.addSystem(new RenderShadowMapSystem());
         engine.addSystem(new RenderMapSystem());
+        engine.addSystem(new RenderParticleEffectSystem());
         engine.addSystem(new RenderItemTextureSystem());
         engine.addSystem(new RenderItemAnimationSystem());
         engine.addSystem(new RenderPlayerSystem());
@@ -412,13 +413,15 @@ public class Game {
         }
         for (Entity entity : playerEntities) {
             PlayerComponent player = ComponentMappers.player.get(entity);
+            ParticleEffectComponent particleEffect = ComponentMappers.particleEffect.get(entity);
 
-            for (ParticleEmitter emitter : player.particleEmitters) {
+            for (ParticleEmitter emitter : particleEffect.effect.getEmitters()) {
                 if (emitter != null) {
                     emitter.duration = 0;
                     emitter.durationTimer = 0;
                 }
             }
+            
             player.newPowerups.clear(); //fixme: pooling
             player.powerups.clear(); //fixme: pooling
             player.radius = Constants.PLAYER_DEFAULT_SIZE;

@@ -44,6 +44,7 @@ public class CustomPooledEngine extends PooledEngine {
         // Rendering
         ORDER.put(RenderShadowMapSystem.class, priority++);
         ORDER.put(RenderMapSystem.class, priority++);
+        ORDER.put(RenderParticleEffectSystem.class, priority++);
         ORDER.put(RenderItemTextureSystem.class, priority++);
         ORDER.put(RenderItemAnimationSystem.class, priority++);
         ORDER.put(RenderPlayerSystem.class, priority++);

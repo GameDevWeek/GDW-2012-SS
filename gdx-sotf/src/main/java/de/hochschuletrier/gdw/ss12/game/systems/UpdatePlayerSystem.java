@@ -89,6 +89,8 @@ public class UpdatePlayerSystem extends IteratingSystem implements SystemGameIni
             physix.getFixtureByUserData("body").getShape().setRadius(radius);
             physix.getFixtureByUserData("sensor").getShape().setRadius(radius);
         }
+        
+        ComponentMappers.particleEffect.get(entity).draw = !player.isDead();
     }
 
     private void triggerPlayerDeath(Entity entity, PlayerComponent player, String animationEntity) {

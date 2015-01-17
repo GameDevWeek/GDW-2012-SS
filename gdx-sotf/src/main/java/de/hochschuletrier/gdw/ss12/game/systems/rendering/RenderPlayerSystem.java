@@ -52,10 +52,8 @@ public class RenderPlayerSystem extends SortedIteratingSystem implements SystemG
             if (entity != game.getLocalPlayer()) {
                 return;
             }
-        } else {
-            player.particleEffect.setPosition(position.x, position.y);
-            player.particleEffect.draw(DrawUtil.batch, deltaTime);
         }
+
         Entity localPlayer = game.getLocalPlayer();
         PlayerComponent localPlayerComponent = ComponentMappers.player.get(localPlayer);
 
