@@ -7,7 +7,6 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -65,6 +64,7 @@ public class Game {
     protected final CVarBool botsEnabled = new CVarBool("bots_enable", true, 0, "Enable bots");
     private final Hotkey togglePhysixDebug = new Hotkey(() -> physixDebug.toggle(false), Input.Keys.F1);
     private final Hotkey toggleBotsEnabled = new Hotkey(this::toggleBotsEnabled, Input.Keys.F2);
+    private final Hotkey resetGame = new Hotkey(this::reset, Input.Keys.F5);
 
     protected final CustomPooledEngine engine = new CustomPooledEngine();
     private ImmutableArray<Entity> botPlayers = engine.getEntitiesFor(Family.all(PlayerComponent.class, BotComponent.class).get());
@@ -101,12 +101,14 @@ public class Game {
         if (!Main.IS_RELEASE) {
             togglePhysixDebug.register();
             toggleBotsEnabled.register();
+            resetGame.register();
         }
     }
 
     public void dispose() {
         togglePhysixDebug.unregister();
         toggleBotsEnabled.unregister();
+        resetGame.unregister();
     }
 
     public void toggleBotsEnabled() {
@@ -415,15 +417,7 @@ public class Game {
             PlayerComponent player = ComponentMappers.player.get(entity);
             ParticleEffectComponent particleEffect = ComponentMappers.particleEffect.get(entity);
 
-            for (ParticleEmitter emitter : particleEffect.effect.getEmitters()) {
-                if (emitter != null) {
-                    emitter.duration = 0;
-                    emitter.durationTimer = 0;
-                }
-            }
-            
-            player.newPowerups.clear(); //fixme: pooling
-            player.powerups.clear(); //fixme: pooling
+            engine.getSystem(PowerupSystem.class).removePlayerPowerups(entity, player);
             player.radius = Constants.PLAYER_DEFAULT_SIZE;
             player.state = PlayerState.ALIVE;
             player.lastTeleport = 0;

@@ -22,7 +22,6 @@ public class UpdatePlayerSystem extends IteratingSystem implements SystemGameIni
     private PhysixSystem physixSystem;
     private Engine engine;
     private RenderNoticeSystem noticeSystem;
-    private Entity localPlayer;
     private Game game;
 
     public UpdatePlayerSystem() {
@@ -51,7 +50,6 @@ public class UpdatePlayerSystem extends IteratingSystem implements SystemGameIni
     @Override
     public void update(float deltaTime) {
         noticeSystem = engine.getSystem(RenderNoticeSystem.class);
-        localPlayer = game.getLocalPlayer();
         super.update(deltaTime);
     }
     
@@ -89,8 +87,6 @@ public class UpdatePlayerSystem extends IteratingSystem implements SystemGameIni
             physix.getFixtureByUserData("body").getShape().setRadius(radius);
             physix.getFixtureByUserData("sensor").getShape().setRadius(radius);
         }
-        
-        ComponentMappers.particleEffect.get(entity).draw = !player.isDead();
     }
 
     private void triggerPlayerDeath(Entity entity, PlayerComponent player, String animationEntity) {
@@ -103,6 +99,7 @@ public class UpdatePlayerSystem extends IteratingSystem implements SystemGameIni
         ComponentMappers.light.get(entity).radius = 0;
         position.ignorePhysix = true;
         ComponentMappers.physixBody.get(entity).setActive(false);
+        engine.getSystem(PowerupSystem.class).removePlayerPowerups(entity, player);
     }
 
     private void setSightDistance(Entity entity, float radius) {

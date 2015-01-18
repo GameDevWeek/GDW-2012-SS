@@ -8,12 +8,10 @@ import com.badlogic.gdx.utils.Pool;
 public class ParticleEffectComponent extends Component implements Pool.Poolable {
 
     public ParticleEffect effect;
-    public boolean draw;
 
     @Override
     public void reset() {
         effect = null;
-        draw = true;
     }
 
     public ParticleEmitter getEmitter(String name) {

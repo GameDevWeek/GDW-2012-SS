@@ -19,9 +19,7 @@ public class RenderParticleEffectSystem extends IteratingSystem {
         PositionComponent position = ComponentMappers.position.get(entity);
         ParticleEffectComponent component = ComponentMappers.particleEffect.get(entity);
 
-        if(component.draw) {
-            component.effect.setPosition(position.x, position.y);
-            component.effect.draw(DrawUtil.batch, deltaTime);
-        }
+        component.effect.setPosition(position.x, position.y);
+        component.effect.draw(DrawUtil.batch, deltaTime);
     }
 }

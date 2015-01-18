@@ -13,6 +13,8 @@ import de.hochschuletrier.gdw.ss12.game.components.EatableComponent;
 import de.hochschuletrier.gdw.ss12.game.components.ItemTrapComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.DropableComponent;
+import java.util.Iterator;
+import java.util.List;
 
 public class PlayerContactListener extends PhysixContactAdapter {
 
@@ -78,6 +80,7 @@ public class PlayerContactListener extends PhysixContactAdapter {
         // Powerup hinzufügen (Effekt wird in PowerupSystem abgehandelt)
         if (eatable.powerup != null) {
             eater.newPowerups.add(eatable.powerup);
+            eatable.powerup = null;
         }
 
         engine.removeEntity(eatableEntity);
@@ -87,6 +90,7 @@ public class PlayerContactListener extends PhysixContactAdapter {
         // Powerup hinzufügen (Effekt wird in PowerupSystem abgehandelt)
         if (trap.powerup != null) {
             victim.newPowerups.add(trap.powerup);
+            trap.powerup = null;
         }
 
         engine.removeEntity(trapEntity);
@@ -100,14 +104,21 @@ public class PlayerContactListener extends PhysixContactAdapter {
 
         // Powerups hinzufügen (Effekt wird in PowerupSystem abgehandelt)
         if (!victim.powerups.isEmpty()) {
-            for (Powerup powerup : victim.powerups) {
-                if(powerup.isTransferable) {
-                    killer.newPowerups.add(powerup);
-                }
-            }
+            addPlayerPowerups(victim.powerups, killer);
+            addPlayerPowerups(victim.newPowerups, killer);
         }
 
         victim.killer = killerEntity;
+    }
+
+    void addPlayerPowerups(final List<Powerup> powerups, PlayerComponent killer) {
+        for (Iterator<Powerup> iterator = powerups.iterator(); iterator.hasNext();) {
+            Powerup powerup = iterator.next();
+            if(powerup.isTransferable) {
+                killer.newPowerups.add(powerup);
+                iterator.remove();
+            }
+        }
     }
     
     private void copyDropable(Entity eater, Entity eatable) {

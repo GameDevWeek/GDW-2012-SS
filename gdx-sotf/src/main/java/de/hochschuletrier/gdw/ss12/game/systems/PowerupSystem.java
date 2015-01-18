@@ -2,19 +2,23 @@ package de.hochschuletrier.gdw.ss12.game.systems;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ReflectionPool;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.jackson.JacksonReader;
 import de.hochschuletrier.gdw.commons.tiled.TiledMap;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Constants;
 import de.hochschuletrier.gdw.ss12.game.Game;
+import de.hochschuletrier.gdw.ss12.game.components.EatableComponent;
 import de.hochschuletrier.gdw.ss12.game.components.data.Powerup;
 import de.hochschuletrier.gdw.ss12.game.components.data.Powerup.Modifier;
 import de.hochschuletrier.gdw.ss12.game.components.InputComponent;
+import de.hochschuletrier.gdw.ss12.game.components.ItemTrapComponent;
 import de.hochschuletrier.gdw.ss12.game.components.ParticleEffectComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.data.NoticeType;
@@ -27,6 +31,7 @@ import de.hochschuletrier.gdw.ss12.game.json.PowerupJson;
 import de.hochschuletrier.gdw.ss12.game.systems.rendering.RenderNoticeSystem;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,12 +40,12 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
 
     private static final Logger logger = LoggerFactory.getLogger(PowerupSystem.class);
 
+    private final ReflectionPool<Powerup> powerupPool = new ReflectionPool(Powerup.class);
+    private final ReflectionPool<Modifier> powerupModifierPool = new ReflectionPool(Modifier.class);
     private HashMap<String, PowerupJson> powerupJsonMap;
     private final Random random = new Random();
     private AssetManagerX assetManager;
     private Array<Team> teams;
-    private Game game;
-    private Entity localPlayer;
     private Engine engine;
     private RenderNoticeSystem noticeSystem;
 
@@ -50,7 +55,6 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
 
     @Override
     public void initGame(Game game, AssetManagerX assetManager) {
-        this.game = game;
         this.assetManager = assetManager;
 
         try {
@@ -69,27 +73,34 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
     public void addedToEngine(Engine engine) {
         super.addedToEngine(engine);
         this.engine = engine;
+        engine.addEntityListener(Family.all(EatableComponent.class).get(), eatableListener);
+        engine.addEntityListener(Family.all(ItemTrapComponent.class).get(), itemTrapListener);
+        engine.addEntityListener(Family.all(PlayerComponent.class).get(), playerListener);
     }
 
     @Override
     public void removedFromEngine(Engine engine) {
         super.removedFromEngine(engine);
         this.engine = null;
+        engine.removeEntityListener(eatableListener);
+        engine.removeEntityListener(itemTrapListener);
+        engine.removeEntityListener(playerListener);
     }
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         InputComponent input = ComponentMappers.input.get(entity);
         PlayerComponent player = ComponentMappers.player.get(entity);
-        initializePowerups(entity, player, input);
-        updatePowerups(entity, player, deltaTime);
+        if (!player.isDead()) {
+            initializePowerups(entity, player, input);
+            updatePowerups(entity, player, deltaTime);
+        }
         input.speed = calculateSpeed(player);
         removeExpiredPowerups(entity, player, deltaTime);
     }
 
     @Override
     public void update(float deltaTime) {
-        localPlayer = game.getLocalPlayer();
         noticeSystem = engine.getSystem(RenderNoticeSystem.class);
         for (Team team : teams) {
             if (team.pizzaCount >= 8) {
@@ -98,7 +109,7 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
                 // Add Powerups to all team members alive
                 for (Entity entity : getEntities()) {
                     PlayerComponent player = ComponentMappers.player.get(entity);
-                    if(player.team == team) {
+                    if (player.team == team) {
                         noticeSystem.schedule(NoticeType.PIZZABUFF_ACTIVATED, 0, entity);
                         if (!player.isDead()) {
                             player.newPowerups.add(createPowerup("pizza"));
@@ -167,7 +178,6 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
                     case SIZE:
                         float addSize = modifier.value * deltaTime;
                         player.radius += addSize;
-                        //fixme: check
                         break;
                 }
             }
@@ -273,12 +283,13 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
 
     Powerup createPowerup(String powerupName) {
         PowerupJson powerupJson = powerupJsonMap.get(powerupName);
-        Powerup powerup = new Powerup();//fixme: pooling
+        Powerup powerup = powerupPool.obtain();
         powerup.image = assetManager.getTexture(powerupJson.image);
         powerup.isTransferable = powerupJson.isTransferable;
         powerup.effect = powerupJson.effect;
+
         for (PowerupJson.Modifier modifierJson : powerupJson.modifiers) {
-            Modifier modifier = new Modifier();//fixme: pooling
+            Modifier modifier = powerupModifierPool.obtain();
             modifier.type = modifierJson.type;
             modifier.value = modifierJson.value;
             modifier.lifetime = modifierJson.lifetime;
@@ -288,5 +299,71 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
             powerup.modifiers.add(modifier);
         }
         return powerup;
+    }
+
+    private void freePowerup(Powerup powerup) {
+        for (Modifier modifier : powerup.modifiers) {
+            powerupModifierPool.free(modifier);
+        }
+        powerupPool.free(powerup);
+    }
+
+    private final EntityListener eatableListener = new EntityListener() {
+
+        @Override
+        public void entityAdded(Entity entity) {
+        }
+
+        @Override
+        public void entityRemoved(Entity entity) {
+            Powerup powerup = ComponentMappers.eatable.get(entity).powerup;
+            if (powerup != null) {
+                freePowerup(powerup);
+            }
+        }
+    };
+
+    private final EntityListener itemTrapListener = new EntityListener() {
+
+        @Override
+        public void entityAdded(Entity entity) {
+        }
+
+        @Override
+        public void entityRemoved(Entity entity) {
+            Powerup powerup = ComponentMappers.itemTrap.get(entity).powerup;
+            if (powerup != null) {
+                freePowerup(powerup);
+            }
+        }
+    };
+
+    private final EntityListener playerListener = new EntityListener() {
+
+        @Override
+        public void entityAdded(Entity entity) {
+        }
+
+        @Override
+        public void entityRemoved(Entity entity) {
+            removePlayerPowerups(entity, ComponentMappers.player.get(entity));
+        }
+    };
+
+    public void removePlayerPowerups(Entity entity, PlayerComponent player) {
+        ParticleEffectComponent particleEffect = ComponentMappers.particleEffect.get(entity);
+        for (ParticleEmitter emitter : particleEffect.effect.getEmitters()) {
+            emitter.duration = 0;
+            emitter.durationTimer = 0;
+        }
+        freePowerupsList(player.powerups);
+        freePowerupsList(player.newPowerups);
+    }
+
+    void freePowerupsList(List<Powerup> powerups) {
+        for (Powerup powerup : powerups) {
+            freePowerup(powerup);
+        }
+        powerups.clear();
     }
 }

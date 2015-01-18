@@ -263,9 +263,9 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         particleEffect.effect = new ParticleEffect(assetManager.getParticleEffect("player"));
         particleEffect.effect.start();
         for (ParticleEmitter emitter : particleEffect.effect.getEmitters()) {
-                emitter.setContinuous(false);
-                emitter.duration = 0;
-                emitter.durationTimer = 0;
+            emitter.setContinuous(false);
+            emitter.duration = 0;
+            emitter.durationTimer = 0;
         }
         entity.add(particleEffect);
 
