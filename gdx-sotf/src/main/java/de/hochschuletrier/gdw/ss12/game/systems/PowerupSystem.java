@@ -136,9 +136,9 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
                     if (player.isSlipping) {
                         return; // Avoid slipping twice
                     }
-                    // Slip at random direction, but not within 60° of the current movement direction
-                    float oldAngle = input.moveDirection.angle();
-                    input.moveDirection.set(1, 0).setAngle(oldAngle - 30 + random.nextFloat() * 300);
+                    // Slip at random direction, but not within 90° of the current movement direction
+                    final float newAngle = input.moveDirection.angle() - 45 + random.nextFloat() * 270;
+                    input.moveDirection.set(1, 0).setAngle(newAngle);
                     player.isSlipping = true;
                     break;
                 case HALUCINATION:

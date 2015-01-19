@@ -30,21 +30,23 @@ public class KeyboardInputSystem extends EntitySystem implements SystemGameIniti
     @Override
     public void update(float deltaTime) {
         Entity localPlayer = game.getLocalPlayer();
-        InputComponent input = ComponentMappers.input.get(localPlayer);
-        float velX = 0, velY = 0;
-        if (leftDown) {
-            velX -= 1;
+        if(!ComponentMappers.player.get(localPlayer).isSlipping) {
+            InputComponent input = ComponentMappers.input.get(localPlayer);
+            float velX = 0, velY = 0;
+            if (leftDown) {
+                velX -= 1;
+            }
+            if (rightDown) {
+                velX += 1;
+            }
+            if (upDown) {
+                velY -= 1;
+            }
+            if (downDown) {
+                velY += 1;
+            }
+            input.moveDirection.set(velX, velY).nor();
         }
-        if (rightDown) {
-            velX += 1;
-        }
-        if (upDown) {
-            velY -= 1;
-        }
-        if (downDown) {
-            velY += 1;
-        }
-        input.moveDirection.set(velX, velY).nor();
     }
 
     @Override

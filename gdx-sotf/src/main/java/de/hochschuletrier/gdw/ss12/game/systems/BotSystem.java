@@ -107,6 +107,10 @@ public class BotSystem extends EntitySystem implements EntityListener {
                 input.moveDirection.setZero();
                 return;
             }
+            
+            if(player.isSlipping) {
+                return;
+            }
 
             Iterator<Map.Entry<Entity, IgnoreEatable>> iter = bot.ignoreEatables.entrySet().iterator();
             while (iter.hasNext()) {
