@@ -1,4 +1,4 @@
-package de.hochschuletrier.gdw.ss12.game.components.data;
+package de.hochschuletrier.gdw.ss12.game.data;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Pool;

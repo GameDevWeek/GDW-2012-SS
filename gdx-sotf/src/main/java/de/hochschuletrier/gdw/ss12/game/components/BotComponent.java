@@ -4,7 +4,7 @@ import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool;
-import de.hochschuletrier.gdw.ss12.game.components.data.IgnoreEatable;
+import de.hochschuletrier.gdw.ss12.game.data.IgnoreEatable;
 import java.util.HashMap;
 
 public class BotComponent extends Component implements Pool.Poolable {

@@ -1,4 +1,4 @@
-package de.hochschuletrier.gdw.ss12.game.components.data;
+package de.hochschuletrier.gdw.ss12.game.data;
 
 import com.badlogic.gdx.graphics.Color;
 import de.hochschuletrier.gdw.commons.gdx.assets.AnimationExtended;

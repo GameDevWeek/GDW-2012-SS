@@ -2,8 +2,8 @@ package de.hochschuletrier.gdw.ss12.game.components;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.utils.Pool;
-import de.hochschuletrier.gdw.ss12.game.components.data.Powerup;
-import de.hochschuletrier.gdw.ss12.game.components.data.Team;
+import de.hochschuletrier.gdw.ss12.game.data.Powerup;
+import de.hochschuletrier.gdw.ss12.game.data.Team;
 
 public class ItemTrapComponent extends Component implements Pool.Poolable {
     

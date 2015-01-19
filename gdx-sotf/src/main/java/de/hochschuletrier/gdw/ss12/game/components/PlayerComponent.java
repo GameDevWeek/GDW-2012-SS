@@ -4,11 +4,11 @@ import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool;
-import de.hochschuletrier.gdw.ss12.game.components.data.PlayerState;
-import de.hochschuletrier.gdw.ss12.game.components.data.PlayerStatistic;
-import de.hochschuletrier.gdw.ss12.game.components.data.Powerup;
-import de.hochschuletrier.gdw.ss12.game.components.data.Powerup.ModifierType;
-import de.hochschuletrier.gdw.ss12.game.components.data.Team;
+import de.hochschuletrier.gdw.ss12.game.data.PlayerState;
+import de.hochschuletrier.gdw.ss12.game.data.PlayerStatistic;
+import de.hochschuletrier.gdw.ss12.game.data.Powerup;
+import de.hochschuletrier.gdw.ss12.game.data.Powerup.ModifierType;
+import de.hochschuletrier.gdw.ss12.game.data.Team;
 import java.util.ArrayList;
 import java.util.List;
 

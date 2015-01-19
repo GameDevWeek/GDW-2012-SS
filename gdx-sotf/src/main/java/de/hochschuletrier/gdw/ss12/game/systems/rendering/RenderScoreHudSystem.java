@@ -18,7 +18,7 @@ import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Game;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
-import de.hochschuletrier.gdw.ss12.game.components.data.Team;
+import de.hochschuletrier.gdw.ss12.game.data.Team;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemMapInitializer;
 
 public class RenderScoreHudSystem extends EntitySystem implements SystemGameInitializer, SystemMapInitializer {

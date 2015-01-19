@@ -14,7 +14,7 @@ import de.hochschuletrier.gdw.commons.gdx.physix.components.PhysixBodyComponent;
 import de.hochschuletrier.gdw.commons.gdx.physix.systems.PhysixSystem;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Constants;
-import de.hochschuletrier.gdw.ss12.game.components.data.IgnoreEatable;
+import de.hochschuletrier.gdw.ss12.game.data.IgnoreEatable;
 import de.hochschuletrier.gdw.ss12.game.components.BotComponent;
 import de.hochschuletrier.gdw.ss12.game.components.EatableComponent;
 import de.hochschuletrier.gdw.ss12.game.components.InputComponent;

@@ -6,7 +6,7 @@ import de.hochschuletrier.gdw.commons.netcode.core.NetDatagram;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageIn;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageOut;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageType;
-import de.hochschuletrier.gdw.ss12.game.components.data.Team;
+import de.hochschuletrier.gdw.ss12.game.data.Team;
 
 public class CreateEntityDatagram extends NetDatagram {
 

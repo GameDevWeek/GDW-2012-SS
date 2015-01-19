@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -14,11 +13,10 @@ import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.gdx.utils.DrawUtil;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Game;
-import de.hochschuletrier.gdw.ss12.game.components.data.NoticePosition;
-import de.hochschuletrier.gdw.ss12.game.components.data.NoticeType;
-import de.hochschuletrier.gdw.ss12.game.components.data.Team;
+import de.hochschuletrier.gdw.ss12.game.data.NoticePosition;
+import de.hochschuletrier.gdw.ss12.game.data.NoticeType;
+import de.hochschuletrier.gdw.ss12.game.data.Team;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
-import java.util.Comparator;
 import java.util.Iterator;
 
 public class RenderNoticeSystem extends EntitySystem implements SystemGameInitializer {
@@ -88,7 +86,7 @@ public class RenderNoticeSystem extends EntitySystem implements SystemGameInitia
         return true;
     }
 
-    public void draw(Notice notice) {
+    private void draw(Notice notice) {
         if (notice.type.texture == null && notice.type.content == null) {
             return;
         }
@@ -106,7 +104,7 @@ public class RenderNoticeSystem extends EntitySystem implements SystemGameInitia
         }
     }
 
-    public void getPosition(NoticePosition anchor, Vector2 outPos) {
+    private void getPosition(NoticePosition anchor, Vector2 outPos) {
         switch (anchor) {
             case TOPLEFT:
                 outPos.set(0, 0);

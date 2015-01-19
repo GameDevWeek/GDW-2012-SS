@@ -1,4 +1,4 @@
-package de.hochschuletrier.gdw.ss12.game.json;
+package de.hochschuletrier.gdw.ss12.game.data;
 
 import de.hochschuletrier.gdw.commons.jackson.JacksonMapMap;
 import java.util.Map;

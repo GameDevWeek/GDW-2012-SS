@@ -10,10 +10,10 @@ import de.hochschuletrier.gdw.commons.gdx.physix.systems.PhysixSystem;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Constants;
 import de.hochschuletrier.gdw.ss12.game.Game;
-import de.hochschuletrier.gdw.ss12.game.components.data.PlayerState;
+import de.hochschuletrier.gdw.ss12.game.data.PlayerState;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
-import de.hochschuletrier.gdw.ss12.game.components.data.NoticeType;
+import de.hochschuletrier.gdw.ss12.game.data.NoticeType;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.systems.rendering.RenderNoticeSystem;
 
