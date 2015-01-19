@@ -415,8 +415,6 @@ public class Game {
         }
         for (Entity entity : playerEntities) {
             PlayerComponent player = ComponentMappers.player.get(entity);
-            ParticleEffectComponent particleEffect = ComponentMappers.particleEffect.get(entity);
-
             engine.getSystem(PowerupSystem.class).removePlayerPowerups(entity, player);
             player.radius = Constants.PLAYER_DEFAULT_SIZE;
             player.state = PlayerState.ALIVE;

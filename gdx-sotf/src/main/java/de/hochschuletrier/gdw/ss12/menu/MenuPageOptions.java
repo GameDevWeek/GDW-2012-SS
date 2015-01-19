@@ -91,7 +91,6 @@ public class MenuPageOptions extends MenuPage {
     private void onSoundVolumeChanged() {
         final float value = soundSlider.getValue();
         soundLabel.setText(pctToString(value));
-//        SoundStore.get().setSoundVolume(soundValue);
         SoundEmitter.setGlobalVolume(value);
     }
 
