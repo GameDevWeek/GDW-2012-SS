@@ -3,8 +3,9 @@ package de.hochschuletrier.gdw.ss12.game.data;
 import java.util.HashMap;
 
 public class PlayerStatistic {
-    
+
     public static class Counter {
+
         public int value;
     }
 
@@ -19,7 +20,7 @@ public class PlayerStatistic {
 
     public void addEatenEntity(String type) {
         Counter counter = eatenEntities.get(type);
-        if(counter == null) {
+        if (counter == null) {
             counter = new Counter();
             eatenEntities.put(type, counter);
         }

@@ -43,7 +43,7 @@ public class ConnectingState extends BaseGameState implements NetDatagramHandler
         this.assetManager = assetManager;
         main = Main.getInstance();
         netClient.setHandler(this);
-        if(netClient.connect(ip, port)) {
+        if (netClient.connect(ip, port)) {
             serverConnection.sendReliable(DatagramType.CONNECT.create());
             status = Status.CONNECTING;
         } else {

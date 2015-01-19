@@ -258,7 +258,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         player.name = name;
         player.startPosition.set(x, y);
         entity.add(player);
-        
+
         ParticleEffectComponent particleEffect = engine.createComponent(ParticleEffectComponent.class);
         particleEffect.effect = new ParticleEffect(assetManager.getParticleEffect("player"));
         particleEffect.effect.start();
@@ -319,7 +319,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         }
 
         PhysixModifierComponent modifyComponent = ComponentMappers.physixModifier.get(entity);
-        if(modifyComponent != null) {
+        if (modifyComponent != null) {
             modifyComponent.schedule(() -> {
                 PhysixBodyComponent bodyComponent = engine.createComponent(PhysixBodyComponent.class);
                 PhysixBodyDef bodyDef = new PhysixBodyDef(BodyDef.BodyType.DynamicBody, physixSystem)
@@ -352,13 +352,13 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
                 case "RenderTextureComponent": {
                     RenderTextureComponent component = engine.createComponent(RenderTextureComponent.class);
                     component.texture = assetManager.getTexture(config.get("image"));
-                    assert(component.texture != null);
+                    assert (component.texture != null);
                     return component;
                 }
                 case "RenderAnimationComponent": {
                     RenderAnimationComponent component = engine.createComponent(RenderAnimationComponent.class);
                     component.animation = assetManager.getAnimation(config.get("animation"));
-                    assert(component.animation != null);
+                    assert (component.animation != null);
                     return component;
                 }
                 case "LightComponent": {

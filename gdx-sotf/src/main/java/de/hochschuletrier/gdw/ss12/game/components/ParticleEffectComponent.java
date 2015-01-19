@@ -16,7 +16,7 @@ public class ParticleEffectComponent extends Component implements Pool.Poolable 
 
     public ParticleEmitter getEmitter(String name) {
         for (ParticleEmitter emitter : effect.getEmitters()) {
-            if(name.equalsIgnoreCase(emitter.getName())) {
+            if (name.equalsIgnoreCase(emitter.getName())) {
                 return emitter;
             }
         }

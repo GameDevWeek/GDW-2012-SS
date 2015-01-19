@@ -32,7 +32,7 @@ public class RemoveAnimatedItemSystem extends IteratingSystem {
     @Override
     public void processEntity(Entity entity, float deltaTime) {
         RenderAnimationComponent render = ComponentMappers.renderAnimation.get(entity);
-        if(render.stateTime > render.animation.animationDuration) {
+        if (render.stateTime > render.animation.animationDuration) {
             engine.removeEntity(entity);
         }
     }

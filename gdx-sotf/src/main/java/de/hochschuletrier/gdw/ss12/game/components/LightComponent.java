@@ -5,7 +5,7 @@ import com.badlogic.gdx.utils.Pool;
 import de.hochschuletrier.gdw.ss12.game.data.Team;
 
 public class LightComponent extends Component implements Pool.Poolable {
-    
+
     public float radius;
     public float shrinkPixelPerSecond;
     public Team team;

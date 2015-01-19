@@ -52,7 +52,7 @@ public class UpdatePlayerSystem extends IteratingSystem implements SystemGameIni
         noticeSystem = engine.getSystem(RenderNoticeSystem.class);
         super.update(deltaTime);
     }
-    
+
     @Override
     public void processEntity(Entity entity, float deltaTime) {
         PlayerComponent player = ComponentMappers.player.get(entity);
@@ -61,7 +61,7 @@ public class UpdatePlayerSystem extends IteratingSystem implements SystemGameIni
         if (player.killer != null) {
             triggerPlayerDeath(entity, player, "player_eaten");
             game.playEntitySound("player_eat_player", player.killer, false);
-            
+
             PlayerComponent killer = ComponentMappers.player.get(player.killer);
             killer.statistic.kills++;
             noticeSystem.schedule(player.team == killer.team ? NoticeType.FRIENDLY_EATEN : NoticeType.ENEMY_EATEN, 0, player.killer);

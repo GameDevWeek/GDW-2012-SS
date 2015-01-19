@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.Pool;
 import de.hochschuletrier.gdw.ss12.game.data.Powerup;
 
 public class EatableComponent extends Component implements Pool.Poolable {
+
     public float energy;
     public Powerup powerup;
     public String sound;

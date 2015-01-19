@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SandboxCommand {
+
     private static final Logger logger = LoggerFactory.getLogger(SandboxCommand.class);
     private static final HashMap<String, Class> sandboxClasses = new HashMap();
     private static AssetManagerX assetManager;
@@ -32,7 +33,7 @@ public class SandboxCommand {
 
         Main.getInstance().console.register(sandbox_f);
     }
-    
+
     public static void shutdown() {
         Main.getInstance().console.unregister(sandbox_f);
     }
@@ -56,7 +57,7 @@ public class SandboxCommand {
         @Override
         public void execute(List<String> args) {
             Main main = Main.getInstance();
-            if(main.isTransitioning()) {
+            if (main.isTransitioning()) {
                 logger.warn("Transition in progress, please wait.");
             }
             String gameName = args.get(1);
@@ -70,7 +71,7 @@ public class SandboxCommand {
                     game.init(assetManager);
                     SandboxState state = new SandboxState(assetManager, game);
                     logger.info("starting sandbox {}", gameName);
-                    
+
                     main.changeState(state);
                 } catch (InstantiationException | IllegalAccessException e) {
                     logger.error("Could not create instance of class", e);

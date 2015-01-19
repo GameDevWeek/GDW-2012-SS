@@ -15,13 +15,13 @@ public class Team {
     public int numPlayers = 0;
     public HashMap<PlayerState, AnimationExtended> animations = new HashMap();
     public int alivePlayers;
-    
+
     public Team(int id, String teamName, Color color) {
         this.teamName = teamName;
         this.id = id;
         this.color = color;
     }
-    
+
     public boolean isFull() {
         return numConnectedPlayers == numPlayers;
     }

@@ -10,7 +10,7 @@ import de.hochschuletrier.gdw.commons.gdx.sceneanimator.SceneAnimatorActor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MenuPageCredits extends MenuPage implements SceneAnimator.Getter{
+public class MenuPageCredits extends MenuPage implements SceneAnimator.Getter {
 
     private static final Logger logger = LoggerFactory.getLogger(MenuPageCredits.class);
 

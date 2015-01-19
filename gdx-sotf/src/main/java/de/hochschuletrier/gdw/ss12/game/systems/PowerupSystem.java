@@ -117,10 +117,6 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
                         }
                     }
                 }
-//                GameEventManager.fireGameEvent(
-//                        GameEventManager.PIZZABUFF_ACTIVATED, 0,
-//                        team.getPlayers());
-//                GameWorld.stateChanged = true;
             }
         }
         super.update(deltaTime);
@@ -150,6 +146,7 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
                     break;
             }
         }
+
         // Turn on effect and update shape size
         if (powerup.effect != null) {
             ParticleEffectComponent particleEffect = ComponentMappers.particleEffect.get(entity);

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerComponent extends Component implements Pool.Poolable {
-    
+
     public final Vector2 startPosition = new Vector2();
     public final List<Powerup> newPowerups = new ArrayList();
     public final List<Powerup> powerups = new ArrayList();
@@ -39,12 +39,13 @@ public class PlayerComponent extends Component implements Pool.Poolable {
         newPowerups.clear();
         powerups.clear();
     }
-    
+
     public boolean canEat(PlayerComponent other) {
-        if(isDead())
+        if (isDead()) {
             return false;
-        for (Powerup powerup: other.powerups) {
-            for(Powerup.Modifier modifier: powerup.modifiers) {
+        }
+        for (Powerup powerup : other.powerups) {
+            for (Powerup.Modifier modifier : powerup.modifiers) {
                 if (modifier.type == ModifierType.IMMUNITY) {
                     return false;
                 }
@@ -55,11 +56,11 @@ public class PlayerComponent extends Component implements Pool.Poolable {
         }
         return team != other.team || isHalucinating();
     }
-    
+
     public boolean isDead() {
         return state == PlayerState.DEAD || killer != null;
     }
-    
+
     public boolean isHalucinating() {
         return state == PlayerState.HALUCINATING;
     }

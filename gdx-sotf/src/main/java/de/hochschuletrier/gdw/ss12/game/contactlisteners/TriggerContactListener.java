@@ -7,6 +7,7 @@ import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.components.TriggerComponent;
 
 public class TriggerContactListener extends PhysixContactAdapter {
+
     @Override
     public void beginContact(PhysixContact contact) {
         PhysixBodyComponent otherComponent = contact.getOtherComponent();

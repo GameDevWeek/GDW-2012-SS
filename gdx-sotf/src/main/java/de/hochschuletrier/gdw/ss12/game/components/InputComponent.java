@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool;
 
 public class InputComponent extends Component implements Pool.Poolable {
+
     public final Vector2 moveDirection = new Vector2();
     public final Vector2 lastMoveDirection = new Vector2();
     public boolean dropItem;

@@ -24,39 +24,40 @@ import de.hochschuletrier.gdw.ss12.menu.MenuPageRoot;
  * @author Santo Pfingsten
  */
 public class GameplayState extends BaseGameState {
+
     private static final Color OVERLAY_COLOR = new Color(0f, 0f, 0f, 0.5f);
-    
+
     private final Game game;
     private final Music music;
-    
+
     private final MenuManager menuManager = new MenuManager(Main.WINDOW_WIDTH, Main.WINDOW_HEIGHT, this::onMenuEmptyPop);
     private final InputForwarder inputForwarder;
     private final InputProcessor menuInputProcessor;
     private final InputProcessor gameInputProcessor;
-    
+
     public GameplayState(AssetManagerX assetManager, Game game) {
         this.game = game;
-        
+
         music = assetManager.getMusic("gameplay");
-        
+
         Skin skin = Main.getInstance().getSkin();
         final MenuPageRoot menuPageRoot = new MenuPageRoot(skin, menuManager, MenuPageRoot.Type.INGAME);
         menuManager.addLayer(menuPageRoot);
         menuInputProcessor = menuManager.getInputProcessor();
         gameInputProcessor = game.getInputProcessor();
-        
+
         menuManager.addLayer(new DecoImage(assetManager.getTexture("menu_fg_border")));
         menuManager.pushPage(menuPageRoot);
 //        menuManager.getStage().setDebugAll(true);
-        
+
         Main.getInstance().addScreenListener(menuManager);
-        
+
         inputForwarder = new InputForwarder() {
-            
+
             @Override
             public boolean keyUp(int keycode) {
                 if (keycode == Input.Keys.ESCAPE) {
-                    if(mainProcessor == gameInputProcessor) {
+                    if (mainProcessor == gameInputProcessor) {
                         mainProcessor = menuInputProcessor;
                     } else {
                         menuManager.popPage();
@@ -67,11 +68,11 @@ public class GameplayState extends BaseGameState {
             }
         };
     }
-    
+
     private void onMenuEmptyPop() {
         inputForwarder.set(gameInputProcessor);
     }
-    
+
     @Override
     public void update(float delta) {
         game.update(delta);
@@ -82,24 +83,24 @@ public class GameplayState extends BaseGameState {
             menuManager.render();
         }
     }
-    
+
     @Override
     public void onEnter(BaseGameState previousState) {
         MusicManager.play(music, Constants.MUSIC_FADE_TIME);
     }
-    
+
     @Override
     public void onEnterComplete() {
         Main.inputMultiplexer.addProcessor(inputForwarder);
         inputForwarder.set(gameInputProcessor);
         game.start();
     }
-    
+
     @Override
     public void onLeave(BaseGameState nextState) {
         Main.inputMultiplexer.removeProcessor(inputForwarder);
     }
-    
+
     @Override
     public void dispose() {
         game.dispose();

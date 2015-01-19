@@ -113,11 +113,10 @@ public class MenuPageOptions extends MenuPage {
         MusicManager.setMuted(!musicOn);
     }
 
-
     @Override
     public void setVisible(boolean visible) {
-        if(soundSlider != null && isVisible() != visible) {
-            if(visible) {
+        if (soundSlider != null && isVisible() != visible) {
+            if (visible) {
                 restoreSettings();
             } else {
                 storeSettings();
@@ -125,7 +124,7 @@ public class MenuPageOptions extends MenuPage {
         }
         super.setVisible(visible);
     }
-    
+
     private void restoreSettings() {
         soundSlider.setValue(Settings.SOUND_VOLUME.get());
         soundMuteButton.setChecked(!Settings.SOUND_MUTE.get());

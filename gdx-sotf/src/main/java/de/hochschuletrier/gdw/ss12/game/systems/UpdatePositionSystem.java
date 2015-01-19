@@ -16,9 +16,9 @@ public class UpdatePositionSystem extends IteratingSystem {
 
     @Override
     public void processEntity(Entity entity, float deltaTime) {
-        PhysixBodyComponent physix = ComponentMappers.physixBody.get(entity);
         PositionComponent position = ComponentMappers.position.get(entity);
         if (!position.ignorePhysix) {
+            PhysixBodyComponent physix = ComponentMappers.physixBody.get(entity);
             position.x = physix.getX();
             position.y = physix.getY();
         }

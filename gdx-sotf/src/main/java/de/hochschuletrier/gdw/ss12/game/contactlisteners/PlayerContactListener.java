@@ -71,12 +71,12 @@ public class PlayerContactListener extends PhysixContactAdapter {
         // Wachsen des Spielers
         eater.radius += eatable.energy * Constants.PLAYER_GROW_FACTOR;
 
-        if(ComponentMappers.pizzaSlice.has(eatableEntity)) {
+        if (ComponentMappers.pizzaSlice.has(eatableEntity)) {
             eater.team.pizzaCount++;
         }
-        
+
         copyDropable(eaterEntity, eatableEntity);
-        
+
         // Powerup hinzufügen (Effekt wird in PowerupSystem abgehandelt)
         if (eatable.powerup != null) {
             eater.newPowerups.add(eatable.powerup);
@@ -114,18 +114,18 @@ public class PlayerContactListener extends PhysixContactAdapter {
     void addPlayerPowerups(final List<Powerup> powerups, PlayerComponent killer) {
         for (Iterator<Powerup> iterator = powerups.iterator(); iterator.hasNext();) {
             Powerup powerup = iterator.next();
-            if(powerup.isTransferable) {
+            if (powerup.isTransferable) {
                 killer.newPowerups.add(powerup);
                 iterator.remove();
             }
         }
     }
-    
+
     private void copyDropable(Entity eater, Entity eatable) {
         DropableComponent dropable = ComponentMappers.dropable.get(eatable);
-        if(dropable != null) {
+        if (dropable != null) {
             DropableComponent destinationDropable = ComponentMappers.dropable.get(eater);
-            if(destinationDropable == null) {
+            if (destinationDropable == null) {
                 destinationDropable = engine.createComponent(DropableComponent.class);
                 eater.add(destinationDropable);
             }
