@@ -35,9 +35,9 @@ public class PlayerComponent extends Component implements Pool.Poolable {
     @Override
     public void reset() {
         statistic.reset();
-        //todo
         newPowerups.clear();
         powerups.clear();
+        //fixme
     }
 
     public boolean canEat(PlayerComponent other) {
