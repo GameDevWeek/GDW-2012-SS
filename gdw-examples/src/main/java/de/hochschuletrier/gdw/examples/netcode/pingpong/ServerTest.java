@@ -3,10 +3,9 @@ package de.hochschuletrier.gdw.examples.netcode.pingpong;
 import de.hochschuletrier.gdw.commons.netcode.core.NetConnection;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetDatagramHandler;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetServerSimple;
-import de.hochschuletrier.gdw.commons.netcode.core.NetDatagramPool;
 import de.hochschuletrier.gdw.commons.utils.QuietUtils;
 import de.hochschuletrier.gdw.examples.netcode.pingpong.datagrams.ChatDatagram;
-import de.hochschuletrier.gdw.examples.netcode.pingpong.datagrams.DatagramType;
+import de.hochschuletrier.gdw.examples.netcode.pingpong.datagrams.DatagramFactory;
 
 /**
  *
@@ -14,8 +13,7 @@ import de.hochschuletrier.gdw.examples.netcode.pingpong.datagrams.DatagramType;
  */
 public class ServerTest implements NetDatagramHandler, NetServerSimple.Listener {
 
-    private final NetDatagramPool datagramPool = new NetDatagramPool(DatagramType.MAPPER);
-    private final NetServerSimple netServer = new NetServerSimple(datagramPool);
+    private final NetServerSimple netServer = new NetServerSimple(DatagramFactory.POOL);
 
     private void run() {
         if (netServer.start(9090, 10)) {
@@ -26,10 +24,6 @@ public class ServerTest implements NetDatagramHandler, NetServerSimple.Listener 
             }
             System.out.println("server shut down");
         }
-    }
-
-    private ServerTest() {
-        DatagramType.setPool(datagramPool);
     }
 
     public static ServerTest create() {
@@ -43,10 +37,7 @@ public class ServerTest implements NetDatagramHandler, NetServerSimple.Listener 
         long time = System.currentTimeMillis() - datagram.getTimestamp();
         System.out.printf("%s (%d ms)\n", datagram.getText(), time);
 
-        ChatDatagram pong = (ChatDatagram) DatagramType.CHAT.create();
-        pong.setText("Pong");
-        pong.setTimestamp(System.currentTimeMillis());
-        datagram.getConnection().sendUnreliable(pong);
+        datagram.getConnection().sendUnreliable(ChatDatagram.create("Pong"));
     }
 
     @Override

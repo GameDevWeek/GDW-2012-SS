@@ -3,8 +3,7 @@ package de.hochschuletrier.gdw.examples.netcode.game;
 import de.hochschuletrier.gdw.commons.netcode.core.NetConnection;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetDatagramHandler;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetClientSimple;
-import de.hochschuletrier.gdw.commons.netcode.core.NetDatagramPool;
-import de.hochschuletrier.gdw.examples.netcode.game.datagrams.DatagramType;
+import de.hochschuletrier.gdw.examples.netcode.game.datagrams.DatagramFactory;
 import de.hochschuletrier.gdw.examples.netcode.game.datagrams.DestroyEntityDatagram;
 import de.hochschuletrier.gdw.examples.netcode.game.datagrams.MoveIntentDatagram;
 import de.hochschuletrier.gdw.examples.netcode.game.datagrams.PlayerDatagram;
@@ -17,8 +16,7 @@ import java.util.HashMap;
  */
 public class ClientGame extends BaseGame implements NetDatagramHandler {
 
-    private final NetDatagramPool datagramPool = new NetDatagramPool(DatagramType.MAPPER);
-    private final NetClientSimple netClient = new NetClientSimple(datagramPool);
+    private final NetClientSimple netClient = new NetClientSimple(DatagramFactory.POOL);
     private final HashMap<Long, Entity> entityMap = new HashMap<>();
     private boolean moveChanged;
     private int moveX, moveY;
@@ -26,7 +24,6 @@ public class ClientGame extends BaseGame implements NetDatagramHandler {
 
     private ClientGame() {
         super("NetPack Game Client Example");
-        DatagramType.setPool(datagramPool);
 
         if (!netClient.connect("localhost", 9090)) {
             System.exit(-1);
@@ -107,9 +104,7 @@ public class ClientGame extends BaseGame implements NetDatagramHandler {
     }
 
     private void sendMoveIntent() {
-        MoveIntentDatagram intent = (MoveIntentDatagram) DatagramType.MOVE_INTENT.create();
-        intent.setX(moveX);
-        intent.setY(moveY);
+        MoveIntentDatagram intent = MoveIntentDatagram.create(moveX, moveY);
         connection.sendReliable(intent);
         moveChanged = false;
     }

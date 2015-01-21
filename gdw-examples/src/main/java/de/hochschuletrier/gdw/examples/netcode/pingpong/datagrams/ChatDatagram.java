@@ -13,18 +13,12 @@ public class ChatDatagram extends NetDatagram {
 
     private String text;
     private long timestamp;
-    protected long id;
 
-    @Override
-    public void reset() {
-        super.reset();
-
-        text = null;
-        timestamp = 0;
-    }
-
-    public void setText(String text) {
-        this.text = text;
+    public static ChatDatagram create(String text) {
+        ChatDatagram datagram = DatagramFactory.create(ChatDatagram.class);
+        datagram.text = text;
+        datagram.timestamp = System.currentTimeMillis();
+        return datagram;
     }
 
     public String getText() {
@@ -35,8 +29,12 @@ public class ChatDatagram extends NetDatagram {
         return timestamp;
     }
 
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
+    @Override
+    public void reset() {
+        super.reset();
+
+        text = null;
+        timestamp = 0;
     }
 
     @Override
@@ -54,9 +52,5 @@ public class ChatDatagram extends NetDatagram {
     public void readFromMessage(NetMessageIn message) {
         text = message.getString();
         timestamp = message.getLong();
-    }
-
-    public long getID() {
-        return id;
     }
 }

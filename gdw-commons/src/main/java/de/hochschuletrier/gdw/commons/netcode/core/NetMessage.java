@@ -1,6 +1,7 @@
 package de.hochschuletrier.gdw.commons.netcode.core;
 
 import java.io.IOException;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
@@ -40,11 +41,7 @@ public class NetMessage implements NetMessageIn, NetMessageOut {
             int messageSize = getInt();
             long sequenceId = getLong();
             short type = getShort();
-            if (type < 0) {
-                throw new IOException("Received negative type");
-            }
-
-            datagram = connection.datagramPool.get(type);
+            datagram = connection.datagramPool.obtain(type);
             datagram.messageSize = messageSize;
             datagram.sequenceId = sequenceId;
             datagram.connection = connection;
@@ -55,8 +52,8 @@ public class NetMessage implements NetMessageIn, NetMessageOut {
                     break;
             }
             connection.onDatagramReceived(datagram);
-        } catch (IOException ex) {
-            logger.error("Error reading datagram", ex);
+        } catch (IllegalArgumentException | BufferUnderflowException e) {
+            logger.error("Error reading datagram", e);
             if (datagram != null) {
                 connection.datagramPool.free(datagram);
             }

@@ -3,8 +3,7 @@ package de.hochschuletrier.gdw.examples.netcode.game;
 import de.hochschuletrier.gdw.commons.netcode.core.NetConnection;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetDatagramHandler;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetServerSimple;
-import de.hochschuletrier.gdw.commons.netcode.core.NetDatagramPool;
-import de.hochschuletrier.gdw.examples.netcode.game.datagrams.DatagramType;
+import de.hochschuletrier.gdw.examples.netcode.game.datagrams.DatagramFactory;
 import de.hochschuletrier.gdw.examples.netcode.game.datagrams.DestroyEntityDatagram;
 import de.hochschuletrier.gdw.examples.netcode.game.datagrams.MoveIntentDatagram;
 import de.hochschuletrier.gdw.examples.netcode.game.datagrams.PlayerDatagram;
@@ -16,15 +15,12 @@ import java.util.ArrayList;
  */
 public class ServerGame extends BaseGame implements NetDatagramHandler, NetServerSimple.Listener {
 
-    private final NetDatagramPool datagramPool = new NetDatagramPool(DatagramType.MAPPER);
-
     private final ArrayList<Entity> players = new ArrayList();
-    private final NetServerSimple netServer = new NetServerSimple(datagramPool);
+    private final NetServerSimple netServer = new NetServerSimple(DatagramFactory.POOL);
     private short entityCount = 0;
 
     private ServerGame() {
         super("NetPack Game Server Example");
-        DatagramType.setPool(datagramPool);
 
         if (!netServer.start(9090, 10)) {
             System.exit(-1);
@@ -45,15 +41,8 @@ public class ServerGame extends BaseGame implements NetDatagramHandler, NetServe
         for (Entity player : players) {
             player.setChanged((System.currentTimeMillis() - player.getLastMessage()) < 50);
             player.move();
-            netServer.broadcastReliable(createPlayerDatagram(player.getID(), player.getX(), player.getY()));
+            netServer.broadcastReliable(PlayerDatagram.create(player.getID(), player.getX(), player.getY()));
         }
-    }
-
-    private PlayerDatagram createPlayerDatagram(long id, int x, int y) {
-        PlayerDatagram datagram = (PlayerDatagram) DatagramType.PLAYER.create();
-        datagram.setID(id);
-        datagram.setPosition(x, y);
-        return datagram;
     }
 
     public void handle(MoveIntentDatagram datagram) {
@@ -82,9 +71,7 @@ public class ServerGame extends BaseGame implements NetDatagramHandler, NetServe
         if (entity != null) {
             players.remove(entity);
             entity.destroy();
-            DestroyEntityDatagram datagram = (DestroyEntityDatagram)datagramPool.get(DatagramType.DESTROY_ENTITY.toID());
-            datagram.setID(entity.getID());
-            netServer.broadcastReliable(datagram);
+            netServer.broadcastReliable(DestroyEntityDatagram.create(entity.getID()));
         }
     }
 }

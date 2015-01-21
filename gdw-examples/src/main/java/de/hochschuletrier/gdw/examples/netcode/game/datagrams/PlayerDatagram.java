@@ -11,11 +11,27 @@ import de.hochschuletrier.gdw.commons.netcode.core.NetMessageOut;
  */
 public class PlayerDatagram extends NetDatagram {
 
-    private int x, y;
     protected long id;
+    private int x, y;
 
-    public PlayerDatagram() {
-        super();
+    public static PlayerDatagram create(long id, int x, int y) {
+        PlayerDatagram datagram = DatagramFactory.create(PlayerDatagram.class);
+        datagram.id = id;
+        datagram.x = x;
+        datagram.y = y;
+        return datagram;
+    }
+
+    public long getID() {
+        return id;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
 
     @Override
@@ -35,26 +51,5 @@ public class PlayerDatagram extends NetDatagram {
         id = message.getLong();
         x = message.getInt();
         y = message.getInt();
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setPosition(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public long getID() {
-        return id;
-    }
-
-    public void setID(long id) {
-        this.id = id;
     }
 }

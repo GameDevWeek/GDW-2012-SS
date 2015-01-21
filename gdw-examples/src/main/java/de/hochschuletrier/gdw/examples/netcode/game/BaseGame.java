@@ -18,7 +18,7 @@ public abstract class BaseGame extends JFrame implements Runnable, KeyListener {
 
     public class Entity {
 
-        private long id;
+        private final long id;
         private int moveX, moveY;
         private final JLabel label;
         private long lastMessage;

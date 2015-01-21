@@ -3,10 +3,9 @@ package de.hochschuletrier.gdw.examples.netcode.pingpong;
 import de.hochschuletrier.gdw.commons.netcode.core.NetConnection;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetDatagramHandler;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetClientSimple;
-import de.hochschuletrier.gdw.commons.netcode.core.NetDatagramPool;
 import de.hochschuletrier.gdw.commons.utils.QuietUtils;
 import de.hochschuletrier.gdw.examples.netcode.pingpong.datagrams.ChatDatagram;
-import de.hochschuletrier.gdw.examples.netcode.pingpong.datagrams.DatagramType;
+import de.hochschuletrier.gdw.examples.netcode.pingpong.datagrams.DatagramFactory;
 
 /**
  *
@@ -14,19 +13,12 @@ import de.hochschuletrier.gdw.examples.netcode.pingpong.datagrams.DatagramType;
  */
 public class ClientTest implements NetDatagramHandler {
 
-    private final NetDatagramPool datagramPool = new NetDatagramPool(DatagramType.MAPPER);
-    private final NetClientSimple netClient = new NetClientSimple(datagramPool);
+    private final NetClientSimple netClient = new NetClientSimple(DatagramFactory.POOL);
     private NetConnection connection;
 
     public void sendPing() {
-        ChatDatagram ping = (ChatDatagram) DatagramType.CHAT.create();
-        ping.setText("Ping");
-        ping.setTimestamp(System.currentTimeMillis());
+        ChatDatagram ping = ChatDatagram.create("Ping");
         connection.sendUnreliable(ping);
-    }
-    
-    private ClientTest() {
-        DatagramType.setPool(datagramPool);
     }
 
     static ClientTest create() {

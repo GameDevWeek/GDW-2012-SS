@@ -57,11 +57,8 @@ class NetDatagramReader {
             int messageSize = message.getInt();
             long sequenceId = message.getLong();
             short type = message.getShort();
-            if (type < 0) {
-                throw new IOException("Received negative type");
-            }
 
-            datagram = connection.datagramPool.get(type);
+            datagram = connection.datagramPool.obtain(type);
             datagram.messageSize = messageSize;
             datagram.sequenceId = sequenceId;
             datagram.connection = connection;

@@ -12,7 +12,21 @@ import de.hochschuletrier.gdw.commons.netcode.core.NetMessageOut;
 public class MoveIntentDatagram extends NetDatagram {
 
     private int x, y;
-    protected long id;
+
+    public static MoveIntentDatagram create(int x, int y) {
+        MoveIntentDatagram datagram = DatagramFactory.create(MoveIntentDatagram.class);
+        datagram.x = x;
+        datagram.y = y;
+        return datagram;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
 
     @Override
     public NetMessageType getMessageType() {
@@ -29,25 +43,5 @@ public class MoveIntentDatagram extends NetDatagram {
     public void readFromMessage(NetMessageIn message) {
         x = message.getInt();
         y = message.getInt();
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public long getID() {
-        return id;
     }
 }

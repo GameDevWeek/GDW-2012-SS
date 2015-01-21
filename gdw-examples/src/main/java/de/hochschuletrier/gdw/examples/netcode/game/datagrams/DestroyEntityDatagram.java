@@ -12,6 +12,12 @@ import de.hochschuletrier.gdw.commons.netcode.core.NetMessageType;
 public class DestroyEntityDatagram extends NetDatagram {
     protected long id;
 
+    public static DestroyEntityDatagram create(long id) {
+        DestroyEntityDatagram datagram = DatagramFactory.create(DestroyEntityDatagram.class);
+        datagram.id = id;
+        return datagram;
+    }
+
     public long getID() {
         return id;
     }
