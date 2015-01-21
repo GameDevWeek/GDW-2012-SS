@@ -9,7 +9,7 @@ import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.components.InputComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.datagrams.CreateEntityDatagram;
-import de.hochschuletrier.gdw.ss12.game.datagrams.DatagramType;
+import de.hochschuletrier.gdw.ss12.game.datagrams.DatagramFactory;
 import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerStateDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.WorldSetupDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.WorldStateDatagram;

@@ -8,7 +8,7 @@ import de.hochschuletrier.gdw.commons.netcode.simple.NetServerSimple;
 import de.hochschuletrier.gdw.ss12.game.Game;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.datagrams.ConnectDatagram;
-import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerControlDatagram;
+import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerInputDatagram;
 
 public class NetServerUpdateSystem extends EntitySystem implements NetDatagramHandler, NetServerSimple.Listener, SystemGameInitializer {
 

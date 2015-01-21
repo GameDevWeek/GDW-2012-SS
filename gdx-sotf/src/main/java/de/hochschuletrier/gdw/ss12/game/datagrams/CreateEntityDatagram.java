@@ -8,15 +8,19 @@ import de.hochschuletrier.gdw.commons.netcode.core.NetMessageOut;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageType;
 import de.hochschuletrier.gdw.ss12.game.data.Team;
 
+/**
+ * send from server only
+ */
 public class CreateEntityDatagram extends NetDatagram {
 
+    private long netId;
     private String entityType;
     private final Vector2 position = new Vector2();
     private byte team;
-    private long id;
 
-    public void setEntity(Entity e) {
-//        id = e.getId(); // fixme: netid ? and: write/read
+    public static CreateEntityDatagram create(Entity entity) {
+        CreateEntityDatagram datagram = DatagramFactory.create(CreateEntityDatagram.class);
+        datagram.netId = entity.getId();
 //        entityType = e.getEntityType();
 //        position.set(e.getPosition());
 //        team = -1;
@@ -28,6 +32,11 @@ public class CreateEntityDatagram extends NetDatagram {
 //                team = (byte) t.getID();
 //            }
 //        }
+        return datagram;
+    }
+
+    public long getNetId() {
+        return netId;
     }
 
     public String getEntityType() {
@@ -38,7 +47,7 @@ public class CreateEntityDatagram extends NetDatagram {
         return position;
     }
 
-    public int getTeam() {
+    public byte getTeam() {
         return team;
     }
 
@@ -49,6 +58,7 @@ public class CreateEntityDatagram extends NetDatagram {
 
     @Override
     public void writeToMessage(NetMessageOut message) {
+        message.putLong(netId);
         message.putString(entityType);
         message.putFloat(position.x);
         message.putFloat(position.y);
@@ -57,6 +67,7 @@ public class CreateEntityDatagram extends NetDatagram {
 
     public @Override
     void readFromMessage(NetMessageIn message) {
+        netId = message.getLong();
         entityType = message.getString();
         position.x = message.getFloat();
         position.y = message.getFloat();

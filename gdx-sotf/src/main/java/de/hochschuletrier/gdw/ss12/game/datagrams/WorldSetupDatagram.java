@@ -1,24 +1,36 @@
 package de.hochschuletrier.gdw.ss12.game.datagrams;
 
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector2;
 import de.hochschuletrier.gdw.commons.netcode.core.NetDatagram;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageIn;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageOut;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageType;
+import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
+import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 
+/**
+ * send from server only
+ */
 public final class WorldSetupDatagram extends NetDatagram {
 
+    private long netId;
     private String mapname = "";
     private boolean paused;
     private final Vector2 startPosition = new Vector2();
-    private long id;
 
-    public void setup(String mapname, boolean paused, int playerId, Vector2 startPosition) {
-        id = playerId; // fixme: netid ? and: write/read
-        
-        this.mapname = mapname;
-        this.paused = paused;
-        this.startPosition.set(startPosition);
+    public static WorldSetupDatagram create(String mapname, boolean paused, Entity entity) {
+        WorldSetupDatagram datagram = DatagramFactory.create(WorldSetupDatagram.class);
+        datagram.netId = entity.getId();
+        datagram.mapname = mapname;
+        datagram.paused = paused;
+        PositionComponent position = ComponentMappers.position.get(entity);
+        datagram.startPosition.set(position.x, position.y);
+        return datagram;
+    }
+
+    public long getNetId() {
+        return netId;
     }
 
     public String getMapname() {
@@ -40,6 +52,7 @@ public final class WorldSetupDatagram extends NetDatagram {
 
     @Override
     public void writeToMessage(NetMessageOut message) {
+        message.putLong(netId);
         message.putString(mapname);
         message.putBool(paused);
         message.putFloat(startPosition.x);
@@ -48,6 +61,7 @@ public final class WorldSetupDatagram extends NetDatagram {
 
     public @Override
     void readFromMessage(NetMessageIn message) {
+        netId = message.getLong();
         mapname = message.getString();
         paused = message.getBool();
         startPosition.x = message.getFloat();

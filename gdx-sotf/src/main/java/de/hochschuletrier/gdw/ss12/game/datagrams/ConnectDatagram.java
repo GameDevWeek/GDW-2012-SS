@@ -5,12 +5,17 @@ import de.hochschuletrier.gdw.commons.netcode.core.NetMessageIn;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageOut;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageType;
 
+/**
+ * send from client only
+ */
 public final class ConnectDatagram extends NetDatagram {
 
     private String playerName;
 
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
+    public static ConnectDatagram create(String playerName) {
+        ConnectDatagram datagram = DatagramFactory.create(ConnectDatagram.class);
+        datagram.playerName = playerName;
+        return datagram;
     }
 
     public String getPlayerName() {

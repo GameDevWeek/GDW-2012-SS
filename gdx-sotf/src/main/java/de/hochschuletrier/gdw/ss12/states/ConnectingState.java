@@ -2,14 +2,12 @@ package de.hochschuletrier.gdw.ss12.states;
 
 import com.badlogic.gdx.graphics.Color;
 import de.hochschuletrier.gdw.ss12.game.datagrams.ConnectDatagram;
-import de.hochschuletrier.gdw.ss12.game.datagrams.DatagramType;
+import de.hochschuletrier.gdw.ss12.game.datagrams.DatagramFactory;
 import de.hochschuletrier.gdw.ss12.game.datagrams.WorldSetupDatagram;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.gdx.state.BaseGameState;
 import de.hochschuletrier.gdw.commons.gdx.state.transition.FadeTransition;
 import de.hochschuletrier.gdw.commons.netcode.core.NetConnection;
-import de.hochschuletrier.gdw.commons.netcode.core.NetDatagram;
-import de.hochschuletrier.gdw.commons.netcode.core.NetDatagramPool;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetClientSimple;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetDatagramHandler;
 import de.hochschuletrier.gdw.ss12.Main;
@@ -36,7 +34,7 @@ public class ConnectingState extends BaseGameState implements NetDatagramHandler
     private final AssetManagerX assetManager;
     private Status status;
     private Game game;
-    private final NetClientSimple netClient = new NetClientSimple(Main.datagramPool);
+    private final NetClientSimple netClient = new NetClientSimple(DatagramFactory.POOL);
     private NetConnection serverConnection;
 
     public ConnectingState(AssetManagerX assetManager, String ip, int port, String playerName) throws IOException {
@@ -44,7 +42,7 @@ public class ConnectingState extends BaseGameState implements NetDatagramHandler
         main = Main.getInstance();
         netClient.setHandler(this);
         if (netClient.connect(ip, port)) {
-            serverConnection.sendReliable(DatagramType.CONNECT.create());
+            serverConnection.sendReliable(ConnectDatagram.create(playerName));
             status = Status.CONNECTING;
         } else {
             //fixme

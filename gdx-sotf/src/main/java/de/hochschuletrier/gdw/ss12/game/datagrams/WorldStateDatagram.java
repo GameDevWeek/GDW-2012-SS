@@ -4,14 +4,19 @@ import de.hochschuletrier.gdw.commons.netcode.core.NetDatagram;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageIn;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageOut;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageType;
+import de.hochschuletrier.gdw.ss12.game.Game;
 
+/**
+ * send from server only
+ */
 public final class WorldStateDatagram extends NetDatagram {
 
     private String[] playerNames;
     private int[] numberTeamWins;
     private byte[] pizzaCount;
 
-//    public void setup(GameWorld world) {
+    public static WorldStateDatagram create(Game game) {
+        WorldStateDatagram datagram = DatagramFactory.create(WorldStateDatagram.class);
 //        playerNames = new String[GameWorld.getMaxPlayers()];
 //        for (int playerId = 0; playerId < world.getPlayers().size(); ++playerId) {
 //            IPlayer p = world.getPlayerByID(playerId);
@@ -25,7 +30,8 @@ public final class WorldStateDatagram extends NetDatagram {
 //            numberTeamWins[i] = team.getWins();
 //            pizzaCount[i] = (byte) team.getPizzaCount();
 //        }
-//    }
+        return datagram;
+    }
 
     public String[] getPlayerNames() {
         return playerNames;
@@ -64,6 +70,7 @@ public final class WorldStateDatagram extends NetDatagram {
 
     public @Override
     void readFromMessage(NetMessageIn message) {
+        //Fixme: check for size overflow
         // read player names
         int maxPlayers = message.getInt();
         playerNames = new String[maxPlayers];

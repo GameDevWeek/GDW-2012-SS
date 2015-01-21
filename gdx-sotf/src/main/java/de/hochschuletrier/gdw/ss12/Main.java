@@ -31,12 +31,10 @@ import de.hochschuletrier.gdw.commons.gdx.utils.DrawUtil;
 import de.hochschuletrier.gdw.commons.gdx.utils.GdxResourceLocator;
 import de.hochschuletrier.gdw.commons.gdx.utils.KeyUtil;
 import de.hochschuletrier.gdw.commons.jackson.JacksonReader;
-import de.hochschuletrier.gdw.commons.netcode.core.NetDatagramPool;
 import de.hochschuletrier.gdw.commons.resourcelocator.CurrentResourceLocator;
 import de.hochschuletrier.gdw.commons.tiled.TiledMap;
 import de.hochschuletrier.gdw.commons.utils.ClassUtils;
 import de.hochschuletrier.gdw.ss12.game.Game;
-import de.hochschuletrier.gdw.ss12.game.datagrams.DatagramType;
 import de.hochschuletrier.gdw.ss12.sandbox.SandboxCommand;
 import de.hochschuletrier.gdw.ss12.states.GameplayState;
 import de.hochschuletrier.gdw.ss12.states.LoadGameState;
@@ -53,8 +51,6 @@ public class Main extends StateBasedGame {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
     public static final boolean IS_RELEASE = ClassUtils.getClassUrl(Main.class).getProtocol().equals("jar");
-
-    public static final NetDatagramPool datagramPool = new NetDatagramPool(DatagramType.MAPPER);
 
     public static final int WINDOW_WIDTH = 1024;
     public static final int WINDOW_HEIGHT = 768;

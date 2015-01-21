@@ -1,5 +1,6 @@
 package de.hochschuletrier.gdw.ss12.game.datagrams;
 
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector2;
 
 import de.hochschuletrier.gdw.commons.netcode.core.NetDatagram;
@@ -7,8 +8,12 @@ import de.hochschuletrier.gdw.commons.netcode.core.NetMessageIn;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageOut;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageType;
 
+/**
+ * send from server only
+ */
 public final class PlayerStateDatagram extends NetDatagram {
 
+    private long netId;
     private final Vector2 position = new Vector2();
     private float moveSpeed;
     private float viewingAngle;
@@ -16,11 +21,11 @@ public final class PlayerStateDatagram extends NetDatagram {
     private int renderEffectState;
 //    private byte teamID; //why would this have to be send every frame ?
     private byte animState;
-    private long id;
 
-//    public void setup(IPlayer player) {
-//        id = playerId; // fixme: netid ? and: write/read
-//
+    public static PlayerStateDatagram create(Entity entity) {
+        PlayerStateDatagram datagram = DatagramFactory.create(PlayerStateDatagram.class);
+        datagram.netId = entity.getId();
+
 //        if (player.isDead()) {
 //            position.set(player.getDeathPosition());
 //        } else {
@@ -38,7 +43,12 @@ public final class PlayerStateDatagram extends NetDatagram {
 //                renderEffectState |= 1 << effect.getBit();
 //            }
 //        }
-//    }
+        return datagram;
+    }
+
+    public long getNetId() {
+        return netId;
+    }
 
     public Vector2 getPosition() {
         return position;
@@ -63,7 +73,6 @@ public final class PlayerStateDatagram extends NetDatagram {
 //    public byte getTeamID() {
 //        return teamID;
 //    }
-
     public byte getAnimState() {
         return animState;
     }
@@ -75,6 +84,7 @@ public final class PlayerStateDatagram extends NetDatagram {
 
     @Override
     public void writeToMessage(NetMessageOut message) {
+        message.putLong(netId);
         message.putFloat(position.x);
         message.putFloat(position.y);
         message.putFloat(moveSpeed);
@@ -87,6 +97,7 @@ public final class PlayerStateDatagram extends NetDatagram {
 
     public @Override
     void readFromMessage(NetMessageIn message) {
+        netId = message.getLong();
         position.x = message.getFloat();
         position.y = message.getFloat();
         moveSpeed = message.getFloat();

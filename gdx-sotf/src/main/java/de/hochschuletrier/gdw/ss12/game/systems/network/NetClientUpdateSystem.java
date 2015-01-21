@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.gdx.math.Vector2;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.netcode.core.NetConnection;
+import de.hochschuletrier.gdw.commons.netcode.simple.NetClientSimple;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetDatagramHandler;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Game;
@@ -16,6 +17,7 @@ import de.hochschuletrier.gdw.ss12.game.datagrams.WorldSoundDatagram;
 public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHandler, SystemGameInitializer {
 
     private Game game;
+    private NetClientSimple netClient;
 
     public NetClientUpdateSystem() {
         super(0);
@@ -28,7 +30,7 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
 
     @Override
     public void update(float deltaTime) {
-        // fixme: call update on manager
+        netClient.update();
     }
 
     public void handle(WorldSoundDatagram datagram) {
