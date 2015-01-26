@@ -172,12 +172,11 @@ public class GameLocal extends Game {
     }
 
     public void sendStartNotices() {
-        RenderNoticeSystem noticeSystem = engine.getSystem(RenderNoticeSystem.class);
         for (Entity entity : nonBotPlayers) {
-            noticeSystem.schedule(NoticeType.THREE, 0, entity);
-            noticeSystem.schedule(NoticeType.TWO, 1, entity);
-            noticeSystem.schedule(NoticeType.ONE, 2, entity);
-            noticeSystem.schedule(NoticeType.GO, 3, entity);
+            scheduleNoticeForPlayer(NoticeType.THREE, 0, entity);
+            scheduleNoticeForPlayer(NoticeType.TWO, 1, entity);
+            scheduleNoticeForPlayer(NoticeType.ONE, 2, entity);
+            scheduleNoticeForPlayer(NoticeType.GO, 3, entity);
         }
     }
 }

@@ -12,6 +12,7 @@ import de.hochschuletrier.gdw.ss12.game.Game;
 import de.hochschuletrier.gdw.ss12.game.components.NetPlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.datagrams.CreateEntityDatagram;
+import de.hochschuletrier.gdw.ss12.game.datagrams.NoticeDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerStateDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.WorldSetupDatagram;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
@@ -40,6 +41,10 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
     public void handle(WorldSoundDatagram datagram) {
         Vector2 position = datagram.getPosition();
         game.playGlobalSound(datagram.getSound(), position.x, position.y, false);
+    }
+
+    public void handle(NoticeDatagram datagram) {
+        game.scheduleNoticeForPlayer(datagram.getNoticeType(), datagram.getDelay(), game.getLocalPlayer());
     }
 
     // fixme: handle methods for all datagrams
@@ -79,6 +84,7 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
 //        engine.removeEntity(e);
 //    }
 //
+
     public void handle(WorldStateDatagram datagram) {
 //        GameWorld world = GameWorld.getInstance();
 //
@@ -97,18 +103,18 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
 //            world.getTeam(team).setPizzaCount(pizzaCount[team]);
 //        }
     }
-    
+
     public Entity getPlayerByNetId(long netId) {
         return null; //fixme
     }
 
     public void handle(PlayerStateDatagram datagram) {
         Entity playerEntity = getPlayerByNetId(datagram.getNetId());
-        if(playerEntity != null) {
+        if (playerEntity != null) {
             NetPlayerComponent netPlayer = ComponentMappers.netPlayer.get(playerEntity);
 
             // only handle the latest datagrams
-            if(netPlayer.lastSequenceId > datagram.getSequenceId()) {
+            if (netPlayer.lastSequenceId > datagram.getSequenceId()) {
                 netPlayer.lastSequenceId = datagram.getSequenceId();
                 ComponentMappers.position.get(playerEntity).set(datagram.getPosition());
                 ComponentMappers.input.get(playerEntity).speed = datagram.getMoveSpeed();

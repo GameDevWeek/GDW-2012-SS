@@ -36,6 +36,7 @@ import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 import de.hochschuletrier.gdw.ss12.game.components.SoundEmitterComponent;
 import de.hochschuletrier.gdw.ss12.game.components.TriggerComponent;
+import de.hochschuletrier.gdw.ss12.game.data.NoticeType;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemMapInitializer;
 import de.hochschuletrier.gdw.ss12.game.systems.*;
@@ -129,6 +130,18 @@ public class Game {
 
     public InputProcessor getInputProcessor() {
         return inputForwarder;
+    }
+
+    public void scheduleNoticeForPlayer(NoticeType type, float delay, Entity entity) {
+        if (localPlayer == entity) {
+            engine.getSystem(RenderNoticeSystem.class).schedule(type, delay);
+        }
+    }
+
+    public void scheduleNoticeForTeam(NoticeType type, float delay, Team team) {
+        if (ComponentMappers.player.get(localPlayer).team == team) {
+            engine.getSystem(RenderNoticeSystem.class).schedule(type, delay);
+        }
     }
 
     private static class TeleporterInfo extends Rectangle {

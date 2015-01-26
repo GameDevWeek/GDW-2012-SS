@@ -15,13 +15,11 @@ import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 import de.hochschuletrier.gdw.ss12.game.data.NoticeType;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
-import de.hochschuletrier.gdw.ss12.game.systems.rendering.RenderNoticeSystem;
 
 public class UpdatePlayerSystem extends IteratingSystem implements SystemGameInitializer {
 
     private PhysixSystem physixSystem;
     private Engine engine;
-    private RenderNoticeSystem noticeSystem;
     private Game game;
 
     public UpdatePlayerSystem() {
@@ -49,7 +47,6 @@ public class UpdatePlayerSystem extends IteratingSystem implements SystemGameIni
 
     @Override
     public void update(float deltaTime) {
-        noticeSystem = engine.getSystem(RenderNoticeSystem.class);
         super.update(deltaTime);
     }
 
@@ -64,8 +61,8 @@ public class UpdatePlayerSystem extends IteratingSystem implements SystemGameIni
 
             PlayerComponent killer = ComponentMappers.player.get(player.killer);
             killer.statistic.kills++;
-            noticeSystem.schedule(player.team == killer.team ? NoticeType.FRIENDLY_EATEN : NoticeType.ENEMY_EATEN, 0, player.killer);
-            noticeSystem.schedule(NoticeType.DEATH, 0, entity);
+            game.scheduleNoticeForPlayer(player.team == killer.team ? NoticeType.FRIENDLY_EATEN : NoticeType.ENEMY_EATEN, 0, player.killer);
+            game.scheduleNoticeForPlayer(NoticeType.DEATH, 0, entity);
             player.killer = null;
         } else if (!player.isDead()) {
             float shrinkPixelThisFrame = Constants.PLAYER_SHRINK_PIXEL_PER_SECOND * deltaTime;
@@ -74,7 +71,7 @@ public class UpdatePlayerSystem extends IteratingSystem implements SystemGameIni
             // check if player radius got under min_size
             if (player.radius < Constants.PLAYER_MIN_SIZE) {
                 triggerPlayerDeath(entity, player, "player_starved");
-                noticeSystem.schedule(NoticeType.STARVATION, 0, entity);
+                game.scheduleNoticeForPlayer(NoticeType.STARVATION, 0, entity);
             } else {
                 if (player.radius > Constants.PLAYER_MAX_SIZE) {
                     player.radius = Constants.PLAYER_MAX_SIZE;

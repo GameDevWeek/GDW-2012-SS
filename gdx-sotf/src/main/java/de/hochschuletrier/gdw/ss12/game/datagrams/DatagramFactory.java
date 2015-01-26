@@ -22,6 +22,7 @@ public final class DatagramFactory {
 //            UseItemDatagram.class,
             WorldSoundDatagram.class,
 //            UnpauseDatagram.class,
+            NoticeDatagram.class,
             EntitySoundDatagram.class
     );
 

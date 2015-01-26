@@ -1,8 +1,6 @@
 package de.hochschuletrier.gdw.ss12.game.systems.rendering;
 
-import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
@@ -11,15 +9,12 @@ import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.ReflectionPool;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.gdx.utils.DrawUtil;
-import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Game;
 import de.hochschuletrier.gdw.ss12.game.data.NoticePosition;
 import de.hochschuletrier.gdw.ss12.game.data.NoticeType;
-import de.hochschuletrier.gdw.ss12.game.data.Team;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import java.util.Iterator;
 
-//fixme: split into render and update systems
 public class RenderNoticeSystem extends EntitySystem implements SystemGameInitializer {
 
     private final ReflectionPool<Notice> noticePool = new ReflectionPool(Notice.class);
@@ -50,7 +45,7 @@ public class RenderNoticeSystem extends EntitySystem implements SystemGameInitia
         lastPosition = null;
         for (Iterator<Notice> iterator = notices.iterator(); iterator.hasNext();) {
             Notice notice = iterator.next();
-            if (!processNotice(notice, deltaTime)) {
+            if (!update(notice, deltaTime)) {
                 iterator.remove();
                 noticePool.free(notice);
                 changed = true;
@@ -61,7 +56,7 @@ public class RenderNoticeSystem extends EntitySystem implements SystemGameInitia
         }
     }
 
-    protected boolean processNotice(Notice notice, float deltaTime) {
+    protected boolean update(Notice notice, float deltaTime) {
         if (notice.delay >= 0) {
             if (deltaTime >= notice.delay) {
                 deltaTime -= notice.delay;
@@ -92,7 +87,7 @@ public class RenderNoticeSystem extends EntitySystem implements SystemGameInitia
             return;
         }
 
-        getPosition(notice.type.position, drawPoint);
+        notice.type.position.getPosition(drawPoint);
 
         if (notice.type.texture == null) {
             font.setColor(Color.WHITE);
@@ -105,53 +100,7 @@ public class RenderNoticeSystem extends EntitySystem implements SystemGameInitia
         }
     }
 
-    private void getPosition(NoticePosition anchor, Vector2 outPos) {
-        switch (anchor) {
-            case TOPLEFT:
-                outPos.set(0, 0);
-                break;
-            case TOPMID:
-                outPos.set(Gdx.graphics.getWidth() / 2.0f, 0);
-                break;
-            case TOPRIGHT:
-                outPos.set(Gdx.graphics.getWidth(), 0);
-                break;
-            case CENTERLEFT:
-                outPos.set(0, Gdx.graphics.getHeight() / 2.0f);
-                break;
-            case CENTER:
-                outPos.set(Gdx.graphics.getWidth() / 2.0f, Gdx.graphics.getHeight() / 2.0f);
-                break;
-            case CENTERRIGHT:
-                outPos.set(Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2.0f);
-                break;
-            case BOTTOMLEFT:
-                outPos.set(0, Gdx.graphics.getHeight());
-                break;
-            case BOTTOMMID:
-                outPos.set(Gdx.graphics.getWidth() / 2.0f, Gdx.graphics.getHeight());
-                break;
-            case BOTTOMRIGHT:
-                outPos.set(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-                break;
-        }
-    }
-
-    public void schedule(NoticeType type, float delay, Entity entity) {
-        Entity localPlayer = game.getLocalPlayer();
-        if (localPlayer == entity) {
-            schedule(type, delay);
-        }
-    }
-
-    public void schedule(NoticeType type, float delay, Team team) {
-        Entity localPlayer = game.getLocalPlayer();
-        if (ComponentMappers.player.get(localPlayer).team == team) {
-            schedule(type, delay);
-        }
-    }
-
-    private void schedule(NoticeType type, float delay) {
+    public void schedule(NoticeType type, float delay) {
         Notice notice = noticePool.obtain();
         notice.delay = delay;
         notice.timeLeft = type.displayTime;
