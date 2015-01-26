@@ -35,6 +35,8 @@ import de.hochschuletrier.gdw.commons.resourcelocator.CurrentResourceLocator;
 import de.hochschuletrier.gdw.commons.tiled.TiledMap;
 import de.hochschuletrier.gdw.commons.utils.ClassUtils;
 import de.hochschuletrier.gdw.ss12.game.Game;
+import de.hochschuletrier.gdw.ss12.game.GameServer;
+import de.hochschuletrier.gdw.ss12.game.GameLocal;
 import de.hochschuletrier.gdw.ss12.sandbox.SandboxCommand;
 import de.hochschuletrier.gdw.ss12.states.GameplayState;
 import de.hochschuletrier.gdw.ss12.states.LoadGameState;
@@ -233,7 +235,7 @@ public class Main extends StateBasedGame {
 
     public void startSingleplayer() {
         if (beforeConnect()) {
-            Game game = new Game(assetManager);
+            GameLocal game = new GameLocal(assetManager);
             game.loadMap(Settings.MAP_FILE.get());
             game.setLocalPlayer(game.acquireBotPlayer(), Settings.PLAYER_NAME.get());
             GameplayState gameplayState = new GameplayState(assetManager, game);
@@ -244,7 +246,7 @@ public class Main extends StateBasedGame {
     public void createServer(String ip, int port) {
         if (beforeConnect()) {
             //Fixme: create netServer, init it and pass to game
-            Game game = new Game(assetManager);
+            GameServer game = new GameServer(assetManager);
             game.loadMap(Settings.MAP_FILE.get());
             game.setLocalPlayer(game.acquireBotPlayer(), Settings.PLAYER_NAME.get());
             GameplayState gameplayState = new GameplayState(assetManager, game);

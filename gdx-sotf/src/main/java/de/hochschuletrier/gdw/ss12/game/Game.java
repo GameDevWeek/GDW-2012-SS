@@ -5,28 +5,23 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.utils.Array;
-import de.hochschuletrier.gdw.commons.devcon.cvar.CVarBool;
 import de.hochschuletrier.gdw.commons.gdx.assets.AnimationExtended;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.gdx.cameras.orthogonal.LimitedSmoothCamera;
 import de.hochschuletrier.gdw.commons.gdx.input.InputForwarder;
 import de.hochschuletrier.gdw.commons.gdx.physix.PhysixBodyDef;
-import de.hochschuletrier.gdw.commons.gdx.physix.PhysixComponentAwareContactListener;
 import de.hochschuletrier.gdw.commons.gdx.physix.PhysixFixtureDef;
 import de.hochschuletrier.gdw.commons.gdx.physix.components.PhysixBodyComponent;
 import de.hochschuletrier.gdw.commons.gdx.physix.components.PhysixModifierComponent;
-import de.hochschuletrier.gdw.commons.gdx.physix.systems.PhysixDebugRenderSystem;
 import de.hochschuletrier.gdw.commons.gdx.physix.systems.PhysixSystem;
 import de.hochschuletrier.gdw.commons.gdx.audio.SoundEmitter;
 import de.hochschuletrier.gdw.commons.gdx.audio.SoundInstance;
-import de.hochschuletrier.gdw.commons.gdx.input.hotkey.Hotkey;
 import de.hochschuletrier.gdw.commons.tiled.Layer;
 import de.hochschuletrier.gdw.commons.tiled.TileInfo;
 import de.hochschuletrier.gdw.commons.tiled.TileSet;
@@ -34,43 +29,27 @@ import de.hochschuletrier.gdw.commons.tiled.TiledMap;
 import de.hochschuletrier.gdw.commons.tiled.utils.RectangleGenerator;
 import de.hochschuletrier.gdw.commons.utils.Rectangle;
 import de.hochschuletrier.gdw.ss12.Main;
-import de.hochschuletrier.gdw.ss12.Settings;
 import de.hochschuletrier.gdw.ss12.game.data.PlayerState;
 import de.hochschuletrier.gdw.ss12.game.data.Team;
-import de.hochschuletrier.gdw.ss12.game.components.BotComponent;
 import de.hochschuletrier.gdw.ss12.game.components.DropableComponent;
-import de.hochschuletrier.gdw.ss12.game.components.InputComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 import de.hochschuletrier.gdw.ss12.game.components.SoundEmitterComponent;
 import de.hochschuletrier.gdw.ss12.game.components.TriggerComponent;
-import de.hochschuletrier.gdw.ss12.game.data.NoticeType;
-import de.hochschuletrier.gdw.ss12.game.contactlisteners.PlayerContactListener;
-import de.hochschuletrier.gdw.ss12.game.contactlisteners.TriggerContactListener;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemMapInitializer;
 import de.hochschuletrier.gdw.ss12.game.systems.*;
 import de.hochschuletrier.gdw.ss12.game.systems.input.*;
 import de.hochschuletrier.gdw.ss12.game.systems.rendering.*;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.function.Consumer;
 
 public class Game {
 
     private static final float TELEPORTER_SCALE = 0.4f;
 
-    protected final CVarBool physixDebug = new CVarBool("physix_debug", !Main.IS_RELEASE, 0, "Draw physix debug");
-    protected final CVarBool botsEnabled = new CVarBool("bots_enable", true, 0, "Enable bots");
-    private final Hotkey togglePhysixDebug = new Hotkey(() -> physixDebug.toggle(false), Input.Keys.F1);
-    private final Hotkey toggleBotsEnabled = new Hotkey(this::toggleBotsEnabled, Input.Keys.F2);
-    private final Hotkey resetGame = new Hotkey(this::reset, Input.Keys.F5);
-
     protected final CustomPooledEngine engine = new CustomPooledEngine();
-    private ImmutableArray<Entity> botPlayers = engine.getEntitiesFor(Family.all(PlayerComponent.class, BotComponent.class).get());
-    private ImmutableArray<Entity> nonBotPlayers = engine.getEntitiesFor(Family.all(PlayerComponent.class).exclude(BotComponent.class).get());
     private ImmutableArray<Entity> playerEntities = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
     private ImmutableArray<Entity> entitiesToRemove = engine.getEntitiesFor(Family.exclude(PlayerComponent.class, TriggerComponent.class).get());
 
@@ -80,22 +59,9 @@ public class Game {
     protected final Array<Team> teams = new Array();
     protected AssetManagerX assetManager;
     private InputForwarder inputForwarder = new InputForwarder();
-    private final LinkedList<String> freeBotNames = new LinkedList();
-    private static final String BOT_NAME_PREFIX = "[BOT] ";
-    private final String[] botNamesOrdered = {
-        "Stan", "Kyle", "Cartman", "Kenny",
-        "Butters", "Timmy", "Jimmy", "Token",
-        "Wendy", "Bebe", "Nichole", "Stacy",
-        "Shelly", "Jessica", "Maria", "Henrietta",
-        "Chef", "Garrison", "Prin. Victoria", "Ms. Choksondik",
-        "Randy", "Sharon", "Gerald", "Sheila"
-    };
 
     public Game(AssetManagerX assetManager) {
         this.assetManager = assetManager;
-
-        Collections.addAll(freeBotNames, botNamesOrdered);
-        Collections.shuffle(freeBotNames);
 
         for (int i = 0; i < Constants.TEAM_COLOR_TABLE.length; i++) {
             final Team team = new Team(i, "Team " + i, Constants.TEAM_COLOR_TABLE[i]);
@@ -106,43 +72,16 @@ public class Game {
             animations.put(PlayerState.HALUCINATING, assetManager.getAnimation("player_halucinating"));
             teams.add(team);
         }
-        Main.getInstance().console.register(physixDebug);
-        physixDebug.addListener((CVar) -> engine.getSystem(PhysixDebugRenderSystem.class).setProcessing(physixDebug.get()));
-        Main.getInstance().console.register(botsEnabled);
-        botsEnabled.addListener((CVar) -> engine.getSystem(BotSystem.class).setProcessing(botsEnabled.get()));
-        addSystems(assetManager);
-        addContactListeners();
-
-        // If this is a build jar file, disable hotkeys
-        if (!Main.IS_RELEASE) {
-            togglePhysixDebug.register();
-            toggleBotsEnabled.register();
-            resetGame.register();
-        }
+        init();
     }
 
-    public String acquireBotName() {
-        return BOT_NAME_PREFIX + freeBotNames.pop();
-    }
-
-    public void freeBotName(String botName) {
-        freeBotNames.add(botName.substring(BOT_NAME_PREFIX.length()));
-        Collections.shuffle(freeBotNames);
+    private void init() {
+        addSystems();
+        initSystems();
+        inputForwarder.set(engine.getSystem(KeyboardInputSystem.class));
     }
 
     public void dispose() {
-        togglePhysixDebug.unregister();
-        toggleBotsEnabled.unregister();
-        resetGame.unregister();
-    }
-
-    public void toggleBotsEnabled() {
-        for (Entity botPlayer : botPlayers) {
-            InputComponent input = ComponentMappers.input.get(botPlayer);
-            input.moveDirection.setZero();
-            input.dropItem = false;
-        }
-        botsEnabled.toggle(false);
     }
 
     public LimitedSmoothCamera getCamera() {
@@ -153,24 +92,14 @@ public class Game {
         return localPlayer;
     }
 
-    private void addSystems(AssetManagerX assetManager) {
+    protected void addSystems() {
         // Remember to set priorities in CustomPooledEngine when creating new system classes
         engine.addSystem(new KeyboardInputSystem());
-        engine.addSystem(new BotSystem());
         engine.addSystem(new InputSystem());
-        engine.addSystem(new PhysixSystem(
-                Constants.BOX2D_SCALE, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS
-        ));
-        engine.addSystem(new UpdatePositionSystem());
         engine.addSystem(new UpdateSoundEmitterSystem());
 
         engine.addSystem(new EntitySpawnSystem());
-        engine.addSystem(new SpawnRandomEatableSystem());
-        engine.addSystem(new PowerupSystem());
-        engine.addSystem(new UpdatePlayerSystem());
-        engine.addSystem(new UpdateLightSystem());
-        engine.addSystem(new RemoveAnimatedItemSystem());
-        engine.addSystem(new GameStateSystem());
+        engine.addSystem(new PowerupSystem()); //Fixme?
 
         engine.addSystem(new RenderShadowMapSystem());
         engine.addSystem(new RenderMapSystem());
@@ -180,13 +109,14 @@ public class Game {
         engine.addSystem(new RenderPlayerSystem());
         engine.addSystem(new RenderShadowMapCleanupSystem());
         engine.addSystem(new RenderMiniMapSystem());
-        engine.addSystem(new PhysixDebugRenderSystem());
         engine.addSystem(new RenderPowerupHudSystem());
         engine.addSystem(new RenderDropableHudSystem());
         engine.addSystem(new RenderPizzaHudSystem());
         engine.addSystem(new RenderScoreHudSystem());
         engine.addSystem(new RenderNoticeSystem());
+    }
 
+    private void initSystems() {
         ImmutableArray<EntitySystem> systems = engine.getSystems();
         for (int i = 0; i < systems.size(); i++) {
             EntitySystem system = systems.get(i);
@@ -195,16 +125,6 @@ public class Game {
                 initializer.initGame(this, assetManager);
             }
         }
-
-        inputForwarder.set(engine.getSystem(KeyboardInputSystem.class));
-    }
-
-    private void addContactListeners() {
-        PhysixSystem physixSystem = engine.getSystem(PhysixSystem.class);
-        PhysixComponentAwareContactListener contactListener = new PhysixComponentAwareContactListener();
-        physixSystem.getWorld().setContactListener(contactListener);
-        contactListener.addListener(TriggerComponent.class, new TriggerContactListener());
-        contactListener.addListener(PlayerComponent.class, new PlayerContactListener(engine, this));
     }
 
     public InputProcessor getInputProcessor() {
@@ -249,7 +169,7 @@ public class Game {
             }
         }
     }
-    
+
     public void setLocalPlayer(Entity entity, String name) {
         localPlayer = entity;
         if (localPlayer == null) {
@@ -378,43 +298,6 @@ public class Game {
         }
     };
 
-    public Entity acquireBotPlayer() {
-        teams.sort(acquireTeamComparator);
-        Team bestTeam = teams.get(0);
-
-        Entity entity = acquireBotPlayer(bestTeam);
-        if (entity != null) {
-            PlayerComponent player = ComponentMappers.player.get(entity);
-            player.team.numConnectedPlayers++;
-            freeBotName(player.name);
-            player.name = "[Connecting]";
-            //fixme: send new name to everyone
-            entity.remove(BotComponent.class);
-        }
-        return entity;
-    }
-
-    private Entity acquireBotPlayer(Team team) {
-        // try alive players first
-        for (Entity e : botPlayers) {
-            PlayerComponent p = ComponentMappers.player.get(e);
-            if (!p.isDead() && p.team == team) {
-                return e;
-            }
-        }
-
-        // now take whatever you can get
-        return botPlayers.random();
-    }
-
-    public void freeBotPlayer(Entity entity) {
-        PlayerComponent player = ComponentMappers.player.get(entity);
-        player.team.numConnectedPlayers--;
-        player.name = acquireBotName();
-        //fixme: send new name to everyone
-        entity.add(engine.createComponent(BotComponent.class));
-    }
-
     private void addShape(PhysixSystem physixSystem, Rectangle rect, int tileWidth, int tileHeight) {
         float width = rect.width * tileWidth;
         float height = rect.height * tileHeight;
@@ -433,7 +316,6 @@ public class Game {
 
     public void start() {
         engine.getSystem(InputSystem.class).setProcessing(false);
-        sendStartNotices();
     }
 
     public void go() {
@@ -474,16 +356,6 @@ public class Game {
             });
         }
         start();
-    }
-
-    public void sendStartNotices() {
-        RenderNoticeSystem noticeSystem = engine.getSystem(RenderNoticeSystem.class);
-        for (Entity entity : nonBotPlayers) {
-            noticeSystem.schedule(NoticeType.THREE, 0, entity);
-            noticeSystem.schedule(NoticeType.TWO, 1, entity);
-            noticeSystem.schedule(NoticeType.ONE, 2, entity);
-            noticeSystem.schedule(NoticeType.GO, 3, entity);
-        }
     }
 
     public void createTrigger(PhysixSystem physixSystem, float x, float y, float width, float height, Consumer<Entity> consumer) {

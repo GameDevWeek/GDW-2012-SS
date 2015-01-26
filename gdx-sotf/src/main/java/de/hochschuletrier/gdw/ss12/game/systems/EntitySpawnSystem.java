@@ -23,6 +23,7 @@ import de.hochschuletrier.gdw.commons.tiled.TiledMap;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Constants;
 import de.hochschuletrier.gdw.ss12.game.Game;
+import de.hochschuletrier.gdw.ss12.game.GameLocal;
 import de.hochschuletrier.gdw.ss12.game.data.PlayerState;
 import de.hochschuletrier.gdw.ss12.game.data.Team;
 import de.hochschuletrier.gdw.ss12.game.components.BotComponent;
@@ -75,21 +76,23 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
 
     @Override
     public void initMap(TiledMap map, Array<Team> teams) {
-        int highestTeamID = -1;
+        if(game instanceof GameLocal) {
+            GameLocal gameLocal = (GameLocal)game;
+            int highestTeamID = -1;
+            for (Layer layer : map.getLayers()) {
+                if (layer.isObjectLayer()) {
+                    for (LayerObject obj : layer.getObjects()) {
+                        int id = obj.getIntProperty("team", -1);
+                        if (id >= 0) {
+                            if (id > highestTeamID) {
+                                highestTeamID = id;
+                            }
+                            if (id < 0 || id >= teams.size) {
+                                throw new RuntimeException("Map contains bad Team Id: " + id);
+                            }
 
-        for (Layer layer : map.getLayers()) {
-            if (layer.isObjectLayer()) {
-                for (LayerObject obj : layer.getObjects()) {
-                    int id = obj.getIntProperty("team", -1);
-                    if (id >= 0) {
-                        if (id > highestTeamID) {
-                            highestTeamID = id;
+                            createBotPlayer(obj.getX() + obj.getWidth() / 2, obj.getY() + obj.getHeight() / 2, teams.get(id), gameLocal.acquireBotName());
                         }
-                        if (id < 0 || id >= teams.size) {
-                            throw new RuntimeException("Map contains bad Team Id: " + id);
-                        }
-
-                        createBotPlayer(obj.getX() + obj.getWidth() / 2, obj.getY() + obj.getHeight() / 2, teams.get(id), game.acquireBotName());
                     }
                 }
             }

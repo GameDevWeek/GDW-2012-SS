@@ -8,6 +8,7 @@ import de.hochschuletrier.gdw.commons.netcode.simple.NetDatagramHandler;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetServerSimple;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Game;
+import de.hochschuletrier.gdw.ss12.game.GameServer;
 import de.hochschuletrier.gdw.ss12.game.components.InputComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
@@ -17,7 +18,7 @@ import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerInputDatagram;
 
 public class NetServerUpdateSystem extends EntitySystem implements NetDatagramHandler, NetServerSimple.Listener, SystemGameInitializer {
 
-    private Game game;
+    private GameServer game;
 
     public NetServerUpdateSystem() {
         super(0);
@@ -25,7 +26,7 @@ public class NetServerUpdateSystem extends EntitySystem implements NetDatagramHa
 
     @Override
     public void initGame(Game game, AssetManagerX assetManager) {
-        this.game = game;
+        this.game = (GameServer)game;
     }
 
     @Override
