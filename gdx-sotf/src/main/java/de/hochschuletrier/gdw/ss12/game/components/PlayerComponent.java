@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool;
+import de.hochschuletrier.gdw.ss12.game.data.PlayerEffect;
 import de.hochschuletrier.gdw.ss12.game.data.PlayerState;
 import de.hochschuletrier.gdw.ss12.game.data.PlayerStatistic;
 import de.hochschuletrier.gdw.ss12.game.data.Powerup;
@@ -25,18 +26,17 @@ public class PlayerComponent extends Component implements Pool.Poolable {
     public Team team;
     public long lastTeleport;
     public Entity killer;
-    public long lastSequenceId;
     public float lastSpawnShapeSize;
-    public boolean hasPizzaPowerup;
-    public boolean isSlipping;
     public float stateTime;
     public float angle;
+    public int effectBits;
 
     @Override
     public void reset() {
         statistic.reset();
         newPowerups.clear();
         powerups.clear();
+        effectBits = 0;
         //fixme
     }
 
@@ -63,5 +63,13 @@ public class PlayerComponent extends Component implements Pool.Poolable {
 
     public boolean isHalucinating() {
         return state == PlayerState.HALUCINATING;
+    }
+
+    public boolean isSlipping() {
+        return (effectBits & PlayerEffect.BANANA.getBit()) != 0;
+    }
+
+    public boolean hasPizzaPowerup() {
+        return (effectBits & PlayerEffect.PIZZA.getBit()) != 0;
     }
 }

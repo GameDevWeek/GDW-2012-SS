@@ -21,6 +21,7 @@ import de.hochschuletrier.gdw.ss12.game.data.NoticeType;
 import de.hochschuletrier.gdw.ss12.game.data.Team;
 import de.hochschuletrier.gdw.ss12.game.systems.BotSystem;
 import de.hochschuletrier.gdw.ss12.game.systems.GameStateSystem;
+import de.hochschuletrier.gdw.ss12.game.systems.PowerupSystem;
 import de.hochschuletrier.gdw.ss12.game.systems.RemoveAnimatedItemSystem;
 import de.hochschuletrier.gdw.ss12.game.systems.SpawnRandomEatableSystem;
 import de.hochschuletrier.gdw.ss12.game.systems.UpdateLightSystem;
@@ -97,6 +98,7 @@ public class GameLocal extends Game {
         engine.addSystem(new PhysixSystem(
                 Constants.BOX2D_SCALE, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS
         ));
+        engine.addSystem(new PowerupSystem());
         engine.addSystem(new UpdatePositionSystem());
         engine.addSystem(new SpawnRandomEatableSystem());
         engine.addSystem(new UpdatePlayerSystem());

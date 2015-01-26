@@ -76,8 +76,8 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
 
     @Override
     public void initMap(TiledMap map, Array<Team> teams) {
-        if(game instanceof GameLocal) {
-            GameLocal gameLocal = (GameLocal)game;
+        if (game instanceof GameLocal) {
+            GameLocal gameLocal = (GameLocal) game;
             int highestTeamID = -1;
             for (Layer layer : map.getLayers()) {
                 if (layer.isObjectLayer()) {
@@ -140,6 +140,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
             emitter.duration = 0;
             emitter.durationTimer = 0;
         }
+        particleEffect.effect.update(20); // bugfix for single particle playing at the start
         entity.add(particleEffect);
 
         entity.add(engine.createComponent(SoundEmitterComponent.class));

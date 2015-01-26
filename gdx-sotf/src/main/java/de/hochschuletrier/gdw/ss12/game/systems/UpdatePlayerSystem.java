@@ -79,7 +79,7 @@ public class UpdatePlayerSystem extends IteratingSystem implements SystemGameIni
                 if (player.radius > Constants.PLAYER_MAX_SIZE) {
                     player.radius = Constants.PLAYER_MAX_SIZE;
                 }
-                setSightDistance(entity, player.radius);
+                ComponentMappers.light.get(entity).setFromPlayerRadius(player.radius);
             }
 
             // Adjust body and sensor size
@@ -100,16 +100,5 @@ public class UpdatePlayerSystem extends IteratingSystem implements SystemGameIni
         position.ignorePhysix = true;
         ComponentMappers.physixBody.get(entity).setActive(false);
         engine.getSystem(PowerupSystem.class).removePlayerPowerups(entity, player);
-    }
-
-    private void setSightDistance(Entity entity, float radius) {
-        float m = (2 * radius) / (float) Constants.PLAYER_DEFAULT_SIZE;
-        if (m > 1f) {
-            float softM = m - 1f;
-            softM /= 5f; // Korrekturfaktor, größere Radien sollen nicht so stark die Sehweite ändern
-            m = softM + 1f;
-        }
-        float distance = Constants.PLAYER_DEFAULT_SIGHTDISTANCE * Math.max(1, m);
-        ComponentMappers.light.get(entity).radius = distance;
     }
 }

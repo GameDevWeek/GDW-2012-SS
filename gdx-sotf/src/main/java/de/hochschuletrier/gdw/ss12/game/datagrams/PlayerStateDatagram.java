@@ -7,6 +7,11 @@ import de.hochschuletrier.gdw.commons.netcode.core.NetDatagram;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageIn;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageOut;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageType;
+import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
+import de.hochschuletrier.gdw.ss12.game.components.InputComponent;
+import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
+import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
+import de.hochschuletrier.gdw.ss12.game.data.PlayerState;
 
 /**
  * send from server only
@@ -18,31 +23,24 @@ public final class PlayerStateDatagram extends NetDatagram {
     private float moveSpeed;
     private float viewingAngle;
     private float radius;
-    private int renderEffectState;
-//    private byte teamID; //why would this have to be send every frame ?
-    private byte animState;
+    private int effectBits;
+    public PlayerState state;
+//todo:    public final PlayerStatistic statistic = new PlayerStatistic();
 
     public static PlayerStateDatagram create(Entity entity) {
         PlayerStateDatagram datagram = DatagramFactory.create(PlayerStateDatagram.class);
         datagram.netId = entity.getId();
 
-//        if (player.isDead()) {
-//            position.set(player.getDeathPosition());
-//        } else {
-//            position.set(player.getPosition());
-//        }
-//        moveSpeed = player.getMoveSpeed();
-//        viewingAngle = player.getViewingAngle();
-//        radius = player.getRadius();
-//        teamID = (byte) player.getTeam().getID();
-//        animState = (byte) player.getAnimState();
-//
-//        renderEffectState = 0;
-//        for (IPlayerRenderEffect effect : player.getRenderEffects().values()) {
-//            if (effect.isActive()) {
-//                renderEffectState |= 1 << effect.getBit();
-//            }
-//        }
+        PlayerComponent player = ComponentMappers.player.get(entity);
+        PositionComponent position = ComponentMappers.position.get(entity);
+        InputComponent input = ComponentMappers.input.get(entity);
+        datagram.position.set(position.x, position.y);
+        datagram.moveSpeed = input.speed;
+        datagram.viewingAngle = player.angle;
+        datagram.radius = player.radius;
+
+        datagram.effectBits = player.effectBits;
+        datagram.state = player.state;
         return datagram;
     }
 
@@ -66,15 +64,12 @@ public final class PlayerStateDatagram extends NetDatagram {
         return radius;
     }
 
-    public int getRenderEffectState() {
-        return renderEffectState;
+    public int getEffectBits() {
+        return effectBits;
     }
 
-//    public byte getTeamID() {
-//        return teamID;
-//    }
-    public byte getAnimState() {
-        return animState;
+    public PlayerState getState() {
+        return state;
     }
 
     @Override
@@ -88,11 +83,10 @@ public final class PlayerStateDatagram extends NetDatagram {
         message.putFloat(position.x);
         message.putFloat(position.y);
         message.putFloat(moveSpeed);
-        message.putFloat(radius);
         message.putFloat(viewingAngle);
-        message.putInt(renderEffectState);
-//        message.put(teamID);
-        message.put(animState);
+        message.putFloat(radius);
+        message.putInt(effectBits);
+        message.putEnum(state);
     }
 
     public @Override
@@ -101,10 +95,9 @@ public final class PlayerStateDatagram extends NetDatagram {
         position.x = message.getFloat();
         position.y = message.getFloat();
         moveSpeed = message.getFloat();
-        radius = message.getFloat();
         viewingAngle = message.getFloat();
-        renderEffectState = message.getInt();
-//        teamID = message.get();
-        animState = message.get();
+        radius = message.getFloat();
+        effectBits = message.getInt();
+        state = message.getEnum(PlayerState.class);
     }
 }

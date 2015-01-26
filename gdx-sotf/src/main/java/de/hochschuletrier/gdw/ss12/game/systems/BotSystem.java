@@ -108,7 +108,7 @@ public class BotSystem extends EntitySystem implements EntityListener {
                 return;
             }
             
-            if(player.isSlipping) {
+            if(player.isSlipping()) {
                 return;
             }
 

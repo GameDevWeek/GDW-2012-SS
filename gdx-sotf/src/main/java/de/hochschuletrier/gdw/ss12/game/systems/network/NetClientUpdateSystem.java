@@ -97,28 +97,28 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
 //            world.getTeam(team).setPizzaCount(pizzaCount[team]);
 //        }
     }
+    
+    public Entity getPlayerByNetId(long netId) {
+        return null; //fixme
+    }
 
     public void handle(PlayerStateDatagram datagram) {
-        NetConnection connection = datagram.getConnection();
-        Entity playerEntity = (Entity)connection.getAttachment();
-        NetPlayerComponent netPlayer = ComponentMappers.netPlayer.get(playerEntity);
+        Entity playerEntity = getPlayerByNetId(datagram.getNetId());
+        if(playerEntity != null) {
+            NetPlayerComponent netPlayer = ComponentMappers.netPlayer.get(playerEntity);
 
-        // only handle the latest datagrams
-        if(netPlayer.lastSequenceId > datagram.getSequenceId()) {
-            PlayerComponent player = ComponentMappers.player.get(playerEntity);
-//            player.setAnimState(datagram.getAnimState());
-//            player.setMoveSpeed(datagram.getMoveSpeed());
-//            player.setRadius(datagram.getRadius());
-//            player.applyRenderEffects(datagram.getRenderEffectState());
-//            Entity localPlayerEntity = game.getLocalPlayer();
-//            if (datagram.getID() != localPlayer.getID()) {
-//                if (player.isDead()) {
-//                    player.getDeathPosition().set(datagram.getPosition());
-//                } else {
-//                    player.getPosition().set(datagram.getPosition());
-//                }
-//                player.setViewingAngle(datagram.getViewingAngle());
-//            }
+            // only handle the latest datagrams
+            if(netPlayer.lastSequenceId > datagram.getSequenceId()) {
+                netPlayer.lastSequenceId = datagram.getSequenceId();
+                ComponentMappers.position.get(playerEntity).set(datagram.getPosition());
+                ComponentMappers.input.get(playerEntity).speed = datagram.getMoveSpeed();
+                PlayerComponent player = ComponentMappers.player.get(playerEntity);
+                player.angle = datagram.getViewingAngle();
+                player.radius = datagram.getRadius();
+                player.effectBits = datagram.getEffectBits();
+                player.state = datagram.getState();
+                ComponentMappers.light.get(playerEntity).setFromPlayerRadius(player.radius);
+            }
         }
     }
 }

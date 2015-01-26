@@ -44,10 +44,10 @@ public class RenderPizzaHudSystem extends EntitySystem implements SystemGameInit
         int numSlices = Math.min(8, player.team.pizzaCount);
         DrawUtil.draw(underlay, (Gdx.graphics.getWidth() / 2 - pizza[0].getWidth() / 2) - 34, Constants.HUD_PIZZA_OFFSET_Y - 28);
 
-        if (numSlices > 0 || player.hasPizzaPowerup) {
+        if (numSlices > 0 || player.hasPizzaPowerup()) {
             float x = (Gdx.graphics.getWidth() - pizza[0].getWidth()) / 2;
             float y = Constants.HUD_PIZZA_OFFSET_Y;
-            if (player.hasPizzaPowerup) {
+            if (player.hasPizzaPowerup()) {
                 stateTime += deltaTime;
                 DrawUtil.batch.draw(pizzaAnimation.getKeyFrame(stateTime), x, y);
             } else {

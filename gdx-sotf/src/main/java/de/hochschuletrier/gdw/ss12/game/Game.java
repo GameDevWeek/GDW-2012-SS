@@ -99,7 +99,7 @@ public class Game {
         engine.addSystem(new UpdateSoundEmitterSystem());
 
         engine.addSystem(new EntitySpawnSystem());
-        engine.addSystem(new PowerupSystem()); //Fixme?
+        engine.addSystem(new UpdatePlayerEffectsSystem());
 
         engine.addSystem(new RenderShadowMapSystem());
         engine.addSystem(new RenderMapSystem());
@@ -341,7 +341,6 @@ public class Game {
             player.state = PlayerState.ALIVE;
             player.lastTeleport = 0;
             player.killer = null;
-            player.hasPizzaPowerup = false;
             ComponentMappers.light.get(entity).radius = player.radius;
             ComponentMappers.position.get(entity).ignorePhysix = false;
             entity.remove(DropableComponent.class);
