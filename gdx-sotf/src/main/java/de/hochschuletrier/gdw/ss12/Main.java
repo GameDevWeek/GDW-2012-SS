@@ -233,9 +233,9 @@ public class Main extends StateBasedGame {
 
     public void startSingleplayer() {
         if (beforeConnect()) {
-            //fixme: set username
             Game game = new Game(assetManager);
             game.loadMap(Settings.MAP_FILE.get());
+            game.setLocalPlayer(game.acquireBotPlayer(), Settings.PLAYER_NAME.get());
             GameplayState gameplayState = new GameplayState(assetManager, game);
             changeState(gameplayState, new SplitHorizontalTransition(500), null);
         }
@@ -243,9 +243,12 @@ public class Main extends StateBasedGame {
 
     public void createServer(String ip, int port) {
         if (beforeConnect()) {
-//            GameWorld world = GameWorld.getInstance();
-//            world.loadMap(Settings.MAP_FILE.get());
-//            world.setLocalPlayer(0, name.getText());
+            //Fixme: create netServer, init it and pass to game
+            Game game = new Game(assetManager);
+            game.loadMap(Settings.MAP_FILE.get());
+            game.setLocalPlayer(game.acquireBotPlayer(), Settings.PLAYER_NAME.get());
+            GameplayState gameplayState = new GameplayState(assetManager, game);
+            changeState(gameplayState, new SplitHorizontalTransition(500), null);
         }
     }
 

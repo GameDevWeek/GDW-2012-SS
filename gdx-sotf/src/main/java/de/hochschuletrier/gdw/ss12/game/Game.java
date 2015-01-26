@@ -248,15 +248,15 @@ public class Game {
                 initializer.initMap(map, teams);
             }
         }
-
-        // Setup local player
-        localPlayer = acquireBotPlayer();
+    }
+    
+    public void setLocalPlayer(Entity entity, String name) {
+        localPlayer = entity;
         if (localPlayer == null) {
-            throw new RuntimeException("No free player available");
+            throw new RuntimeException("Null player");
         }
 
-        PlayerComponent player = ComponentMappers.player.get(localPlayer);
-        player.name = Settings.PLAYER_NAME.get();
+        ComponentMappers.player.get(localPlayer).name = name;
 
         updateCameraForced();
     }
