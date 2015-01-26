@@ -36,20 +36,4 @@ public class NetServerSendSystem extends EntitySystem {
 //            stateChanged = false;
 //        }
     }
-
-//    public void sendWorldSetup(NetConnection connection) {
-//        WorldSetupDatagram worldSetup = (WorldSetupDatagram)DatagramType.WORLD_SETUP.create();
-//        worldSetup.setup(getMapName(), paused, player.getID(), player.getPosition());
-//        
-//        connection.sendReliable(worldSetup);
-//        for (Entity entity : eatables) {
-//            CreateEntityDatagram createEntity = (CreateEntityDatagram)DatagramType.CREATE_ENTITY.create();
-//            createEntity.setEntity(entity);
-//            connection.sendReliable(createEntity);
-//        }
-//
-//        WorldStateDatagram worldState = (WorldStateDatagram)DatagramType.WORLD_STATE.create();
-//        worldState.setup();
-//        connection.sendReliable(worldState);
-//    }
 }

@@ -6,11 +6,11 @@ import com.badlogic.gdx.utils.Pool;
 public class NetPlayerComponent extends Component implements Pool.Poolable {
     
     public long id;
-    public int dropItemCount;
+    public long lastSequenceId;
 
     @Override
     public void reset() {
         id = -1;
-        dropItemCount = 0;
+        lastSequenceId = -1;
     }
 }

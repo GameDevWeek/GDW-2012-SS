@@ -1,13 +1,18 @@
 package de.hochschuletrier.gdw.ss12.game.systems.network;
 
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.netcode.core.NetConnection;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetDatagramHandler;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetServerSimple;
+import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Game;
+import de.hochschuletrier.gdw.ss12.game.components.InputComponent;
+import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.datagrams.ConnectDatagram;
+import de.hochschuletrier.gdw.ss12.game.datagrams.DropItemDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerInputDatagram;
 
 public class NetServerUpdateSystem extends EntitySystem implements NetDatagramHandler, NetServerSimple.Listener, SystemGameInitializer {
@@ -30,61 +35,60 @@ public class NetServerUpdateSystem extends EntitySystem implements NetDatagramHa
 
     @Override
     public boolean onConnect(NetConnection connection) {
-//        Entity player = GameWorld.getInstance().getFirstUnconnectedPlayer();
-//        if (player == null) {
-//            // no free players available
-//            connection.shutdown();
-//            return false;
-//        }
-//
-//        player.onConnect();
-//        connection.setAttachment(player);
+        Entity playerEntity = game.acquireBotPlayer();
+        if (playerEntity == null) {
+            // no free players available
+            return false;
+        }
+
+        connection.setAttachment(playerEntity);
         return true;
     }
 
     @Override
     public void onDisconnect(NetConnection connection) {
-//        Entity player = (Entity) connection.getAttachment();
-//        if (player != null) {
-//            player.onDisconnect();
+        Entity playerEntity = (Entity) connection.getAttachment();
+        if (playerEntity != null) {
+            game.freeBotPlayer(playerEntity);
+        }
+    }
+
+    public void sendWorldSetup(NetConnection connection) {
+//        WorldSetupDatagram worldSetup = WorldSetupDatagram.create(getMapName(), paused, player.getID(), player.getPosition());
+//        
+//        connection.sendReliable(worldSetup);
+//        for (Entity entity : eatables) {
+//            CreateEntityDatagram createEntity = (CreateEntityDatagram)DatagramType.CREATE_ENTITY.create();
+//            createEntity.setEntity(entity);
+//            connection.sendReliable(createEntity);
 //        }
+//
+//        WorldStateDatagram worldState = (WorldStateDatagram)DatagramType.WORLD_STATE.create();
+//        worldState.setup();
+//        connection.sendReliable(worldState);
     }
 
     public void handle(ConnectDatagram datagram) {
         NetConnection connection = datagram.getConnection();
-//        if (!connection.isAccepted() && connection.isConnected()) {
-//            connection.setAccepted(true);
-//            Entity player = (Entity) connection.getAttachment();
-//            player.setName(datagram.getPlayerName());
-//            GameWorld.getInstance().sendWorldSetup(player);
-//        }
+        if (connection.isConnected()) {
+            Entity playerEntity = (Entity) connection.getAttachment();
+            PlayerComponent player = ComponentMappers.player.get(playerEntity);
+            player.name = datagram.getPlayerName();
+            sendWorldSetup(connection);
+            //fixme: send new name to everyone
+        }
     }
 
-    // fixme: handle methods for all datagrams
-//    public void handle(PlayerControlDatagram datagram) {
-//        NetConnection connection = datagram.getConnection();
-//        Entity player = (Entity) connection.getAttachment();
-//        if (datagram.getID() == player.getID()) {
-//            player.getPosition().set(datagram.getPosition());
-//            player.setViewingAngle(datagram.getViewingAngle());
-//        }
-//    }
-//
-//    public void handle(TeleportDatagram datagram) {
-//        NetConnection connection = datagram.getConnection();
-//        Entity player = (Entity) connection.getAttachment();
-//        if (datagram.getID() == player.getId()) {
-//            Sound sound = AssetLoader.getInstance().getSound("player_swallow");
-//            GameWorld.playSound(sound, datagram.getFrom());
-//            GameWorld.playSound(sound, datagram.getTo());
-//
-//            send(datagram);
-//        }
-//    }
-//
-//    public void handle(NetUseItemDatagram datagram) {
-//        NetConnection connection = datagram.getConnection();
-//        Entity player = (Entity) connection.getAttachment();
-//        player.use(datagram.getID());
-//    }
+    public void handle(PlayerInputDatagram datagram) {
+        NetConnection connection = datagram.getConnection();
+        Entity playerEntity = (Entity) connection.getAttachment();
+        ComponentMappers.position.get(playerEntity).set(datagram.getMoveDirection());
+    }
+
+    public void handle(DropItemDatagram datagram) {
+        NetConnection connection = datagram.getConnection();
+        Entity playerEntity = (Entity) connection.getAttachment();
+        InputComponent input = ComponentMappers.input.get(playerEntity);
+        input.dropItem = true;
+    }
 }

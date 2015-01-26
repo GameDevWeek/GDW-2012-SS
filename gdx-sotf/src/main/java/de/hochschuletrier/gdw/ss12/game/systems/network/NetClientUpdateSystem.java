@@ -9,10 +9,14 @@ import de.hochschuletrier.gdw.commons.netcode.simple.NetClientSimple;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetDatagramHandler;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Game;
+import de.hochschuletrier.gdw.ss12.game.components.NetPlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
+import de.hochschuletrier.gdw.ss12.game.datagrams.CreateEntityDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerStateDatagram;
+import de.hochschuletrier.gdw.ss12.game.datagrams.WorldSetupDatagram;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.datagrams.WorldSoundDatagram;
+import de.hochschuletrier.gdw.ss12.game.datagrams.WorldStateDatagram;
 
 public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHandler, SystemGameInitializer {
 
@@ -39,7 +43,7 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
     }
 
     // fixme: handle methods for all datagrams
-//    public void handle(WorldSetupDatagram datagram) {
+    public void handle(WorldSetupDatagram datagram) {
 //        serverConnection.setAccepted(true);
 //        GameWorld world = GameWorld.getInstance();
 //        String newMapName = datagram.getMapname();
@@ -55,9 +59,9 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
 //        world.getLocalPlayer().setPosition(datagram.getStartPosition());
 //
 //        GameStates.CLANARENA.fadeActivate(700);
-//    }
-//
-//    public void handle(CreateEntityDatagram datagram) {
+    }
+
+    public void handle(CreateEntityDatagram datagram) {
 //        ITeam team = datagram.getTeam() == -1 ? null : GameWorld.getInstance().getTeam(datagram.getTeam());
 //        Entity entity = (Entity) EntityFactory.create(datagram.getID(), datagram.getEntityType(), datagram.getPosition(), team);
 //        if (entity instanceof IEatable) {
@@ -67,7 +71,7 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
 //        } else {
 //            throw new UnsupportedOperationException("Unknown entity class: " + entity.getClass().toString());
 //        }
-//    }
+    }
 //
 //    public void handle(RemoveEntityDatagram datagram) {
 //        Entity e = EntityFactory.debugHashMapForEntities.get(entityId);
@@ -75,7 +79,7 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
 //        engine.removeEntity(e);
 //    }
 //
-//    public void handle(WorldStateDatagram datagram) {
+    public void handle(WorldStateDatagram datagram) {
 //        GameWorld world = GameWorld.getInstance();
 //
 //        String[] playerNames = datagram.getPlayerNames();
@@ -92,15 +96,16 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
 //        for (int team = 0; team < pizzaCount.length; ++team) {
 //            world.getTeam(team).setPizzaCount(pizzaCount[team]);
 //        }
-//    }
-//
-//    public void handle(PlayerStateDatagram datagram) {
-//        NetConnection connection = datagram.getConnection();
-//        Entity playerEntity = (Entity)connection.getAttachment();
-//        PlayerComponent player = ComponentMappers.player.get(playerEntity);
-//
-//        // only handle the latest datagrams
-//        if(player.lastSequenceId > datagram.getSequenceId()) {
+    }
+
+    public void handle(PlayerStateDatagram datagram) {
+        NetConnection connection = datagram.getConnection();
+        Entity playerEntity = (Entity)connection.getAttachment();
+        NetPlayerComponent netPlayer = ComponentMappers.netPlayer.get(playerEntity);
+
+        // only handle the latest datagrams
+        if(netPlayer.lastSequenceId > datagram.getSequenceId()) {
+            PlayerComponent player = ComponentMappers.player.get(playerEntity);
 //            player.setAnimState(datagram.getAnimState());
 //            player.setMoveSpeed(datagram.getMoveSpeed());
 //            player.setRadius(datagram.getRadius());
@@ -114,25 +119,6 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
 //                }
 //                player.setViewingAngle(datagram.getViewingAngle());
 //            }
-//        }
-//    }
-//
-//    public void handle(EntityEventDatagram datagram) {
-//        int id = datagram.getID();
-//        Entity e = EntityFactory.debugHashMapForEntities.get(id);
-//        if (e == null) {
-//            // see if it is a player
-//            for (IPlayer p : GameWorld.getInstance().getPlayers()) {
-//                if (p.getID() == id) {
-//                    e = p;
-//                    break;
-//                }
-//            }
-//            if (e == null) {
-//                throw new IllegalArgumentException("You Sir have failed: " + id + " does not exist");
-//            }
-//        }
-//
-//        e.onEvent(datagram.getParam1(), datagram.getParam2());
-//    }
+        }
+    }
 }

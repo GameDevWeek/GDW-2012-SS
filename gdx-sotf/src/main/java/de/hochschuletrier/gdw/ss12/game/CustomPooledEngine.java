@@ -21,27 +21,30 @@ public class CustomPooledEngine extends PooledEngine {
     static {
         // System priorities are set here:
         int priority = 0;
+        // Network (receiving)
+        ORDER.put(NetServerUpdateSystem.class, priority++); // server
+        ORDER.put(NetClientUpdateSystem.class, priority++); // client
+        
+        // Input
+        ORDER.put(KeyboardInputSystem.class, priority++); // both
+        ORDER.put(BotSystem.class, priority++); // server
+        ORDER.put(InputSystem.class, priority++); // server
+        ORDER.put(NetClientSendInputSystem.class, priority++); // client
+        
         // Logic
-        ORDER.put(KeyboardInputSystem.class, priority++);
-        ORDER.put(BotSystem.class, priority++);
-        ORDER.put(InputSystem.class, priority++);
-        ORDER.put(PhysixSystem.class, priority++);
-        ORDER.put(UpdatePositionSystem.class, priority++);
-        ORDER.put(UpdateSoundEmitterSystem.class, priority++);
-        ORDER.put(EntitySpawnSystem.class, priority++);
-        ORDER.put(PowerupSystem.class, priority++);
-        ORDER.put(UpdatePlayerSystem.class, priority++);
-        ORDER.put(UpdateLightSystem.class, priority++);
-        ORDER.put(RemoveAnimatedItemSystem.class, priority++);
-        ORDER.put(GameStateSystem.class, priority++);
+        ORDER.put(PhysixSystem.class, priority++); // server
+        ORDER.put(UpdatePositionSystem.class, priority++); // both
+        ORDER.put(UpdateSoundEmitterSystem.class, priority++); // both
+        ORDER.put(EntitySpawnSystem.class, priority++); // both
+        ORDER.put(SpawnRandomEatableSystem.class, priority++); // server
+        ORDER.put(PowerupSystem.class, priority++); // uncertain
+        ORDER.put(UpdatePlayerSystem.class, priority++); // server
+        ORDER.put(UpdateLightSystem.class, priority++); // server
+        ORDER.put(RemoveAnimatedItemSystem.class, priority++); // server
+        ORDER.put(GameStateSystem.class, priority++); // server
+        ORDER.put(NetServerSendSystem.class, priority++); // server
 
-        // Network
-        ORDER.put(NetServerSendSystem.class, priority++);
-        ORDER.put(NetServerUpdateSystem.class, priority++);
-        ORDER.put(NetClientSendControlSystem.class, priority++);
-        ORDER.put(NetClientUpdateSystem.class, priority++);
-
-        // Rendering
+        // Rendering (all both, except physix debug)
         ORDER.put(RenderShadowMapSystem.class, priority++);
         ORDER.put(RenderMapSystem.class, priority++);
         ORDER.put(RenderParticleEffectSystem.class, priority++);
@@ -49,7 +52,7 @@ public class CustomPooledEngine extends PooledEngine {
         ORDER.put(RenderItemAnimationSystem.class, priority++);
         ORDER.put(RenderPlayerSystem.class, priority++);
         ORDER.put(RenderShadowMapCleanupSystem.class, priority++);
-        ORDER.put(PhysixDebugRenderSystem.class, priority++);
+        ORDER.put(PhysixDebugRenderSystem.class, priority++); // server
         ORDER.put(RenderMiniMapSystem.class, priority++);
         ORDER.put(RenderPowerupHudSystem.class, priority++);
         ORDER.put(RenderDropableHudSystem.class, priority++);

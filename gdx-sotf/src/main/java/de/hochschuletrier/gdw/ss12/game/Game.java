@@ -34,12 +34,12 @@ import de.hochschuletrier.gdw.commons.tiled.TiledMap;
 import de.hochschuletrier.gdw.commons.tiled.utils.RectangleGenerator;
 import de.hochschuletrier.gdw.commons.utils.Rectangle;
 import de.hochschuletrier.gdw.ss12.Main;
+import de.hochschuletrier.gdw.ss12.Settings;
 import de.hochschuletrier.gdw.ss12.game.data.PlayerState;
 import de.hochschuletrier.gdw.ss12.game.data.Team;
 import de.hochschuletrier.gdw.ss12.game.components.BotComponent;
 import de.hochschuletrier.gdw.ss12.game.components.DropableComponent;
 import de.hochschuletrier.gdw.ss12.game.components.InputComponent;
-import de.hochschuletrier.gdw.ss12.game.components.ParticleEffectComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 import de.hochschuletrier.gdw.ss12.game.components.SoundEmitterComponent;
@@ -52,8 +52,10 @@ import de.hochschuletrier.gdw.ss12.game.interfaces.SystemMapInitializer;
 import de.hochschuletrier.gdw.ss12.game.systems.*;
 import de.hochschuletrier.gdw.ss12.game.systems.input.*;
 import de.hochschuletrier.gdw.ss12.game.systems.rendering.*;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.function.Consumer;
 
 public class Game {
@@ -78,9 +80,23 @@ public class Game {
     protected final Array<Team> teams = new Array();
     protected AssetManagerX assetManager;
     private InputForwarder inputForwarder = new InputForwarder();
+    private final LinkedList<String> freeBotNames = new LinkedList();
+    private static final String BOT_NAME_PREFIX = "[BOT] ";
+    private final String[] botNamesOrdered = {
+        "Stan", "Kyle", "Cartman", "Kenny",
+        "Butters", "Timmy", "Jimmy", "Token",
+        "Wendy", "Bebe", "Nichole", "Stacy",
+        "Shelly", "Jessica", "Maria", "Henrietta",
+        "Chef", "Garrison", "Prin. Victoria", "Ms. Choksondik",
+        "Randy", "Sharon", "Gerald", "Sheila"
+    };
 
     public Game(AssetManagerX assetManager) {
         this.assetManager = assetManager;
+
+        Collections.addAll(freeBotNames, botNamesOrdered);
+        Collections.shuffle(freeBotNames);
+
         for (int i = 0; i < Constants.TEAM_COLOR_TABLE.length; i++) {
             final Team team = new Team(i, "Team " + i, Constants.TEAM_COLOR_TABLE[i]);
             HashMap<PlayerState, AnimationExtended> animations = team.animations;
@@ -103,6 +119,15 @@ public class Game {
             toggleBotsEnabled.register();
             resetGame.register();
         }
+    }
+
+    public String acquireBotName() {
+        return BOT_NAME_PREFIX + freeBotNames.pop();
+    }
+
+    public void freeBotName(String botName) {
+        freeBotNames.add(botName.substring(BOT_NAME_PREFIX.length()));
+        Collections.shuffle(freeBotNames);
     }
 
     public void dispose() {
@@ -140,6 +165,7 @@ public class Game {
         engine.addSystem(new UpdateSoundEmitterSystem());
 
         engine.addSystem(new EntitySpawnSystem());
+        engine.addSystem(new SpawnRandomEatableSystem());
         engine.addSystem(new PowerupSystem());
         engine.addSystem(new UpdatePlayerSystem());
         engine.addSystem(new UpdateLightSystem());
@@ -224,10 +250,13 @@ public class Game {
         }
 
         // Setup local player
-        localPlayer = acquireBotPlayer("Maximo");
+        localPlayer = acquireBotPlayer();
         if (localPlayer == null) {
             throw new RuntimeException("No free player available");
         }
+
+        PlayerComponent player = ComponentMappers.player.get(localPlayer);
+        player.name = Settings.PLAYER_NAME.get();
 
         updateCameraForced();
     }
@@ -349,15 +378,17 @@ public class Game {
         }
     };
 
-    public Entity acquireBotPlayer(String name) {
+    public Entity acquireBotPlayer() {
         teams.sort(acquireTeamComparator);
         Team bestTeam = teams.get(0);
 
         Entity entity = acquireBotPlayer(bestTeam);
         if (entity != null) {
             PlayerComponent player = ComponentMappers.player.get(entity);
-            player.name = name;
             player.team.numConnectedPlayers++;
+            freeBotName(player.name);
+            player.name = "[Connecting]";
+            //fixme: send new name to everyone
             entity.remove(BotComponent.class);
         }
         return entity;
@@ -374,6 +405,14 @@ public class Game {
 
         // now take whatever you can get
         return botPlayers.random();
+    }
+
+    public void freeBotPlayer(Entity entity) {
+        PlayerComponent player = ComponentMappers.player.get(entity);
+        player.team.numConnectedPlayers--;
+        player.name = acquireBotName();
+        //fixme: send new name to everyone
+        entity.add(engine.createComponent(BotComponent.class));
     }
 
     private void addShape(PhysixSystem physixSystem, Rectangle rect, int tileWidth, int tileHeight) {

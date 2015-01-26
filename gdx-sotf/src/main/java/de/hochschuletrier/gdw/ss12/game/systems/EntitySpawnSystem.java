@@ -3,18 +3,13 @@ package de.hochschuletrier.gdw.ss12.game.systems;
 import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.ashley.core.EntitySystem;
-import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
-import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Pool;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.gdx.physix.PhysixBodyDef;
 import de.hochschuletrier.gdw.commons.gdx.physix.PhysixFixtureDef;
@@ -24,7 +19,6 @@ import de.hochschuletrier.gdw.commons.gdx.physix.systems.PhysixSystem;
 import de.hochschuletrier.gdw.commons.jackson.JacksonReader;
 import de.hochschuletrier.gdw.commons.tiled.Layer;
 import de.hochschuletrier.gdw.commons.tiled.LayerObject;
-import de.hochschuletrier.gdw.commons.tiled.TileInfo;
 import de.hochschuletrier.gdw.commons.tiled.TiledMap;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Constants;
@@ -47,40 +41,20 @@ import de.hochschuletrier.gdw.ss12.game.components.SoundEmitterComponent;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemMapInitializer;
 import de.hochschuletrier.gdw.ss12.game.data.EntityJson;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Random;
-import java.util.Stack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EntitySpawnSystem extends EntitySystem implements SystemGameInitializer, SystemMapInitializer, EntityListener {
+public class EntitySpawnSystem extends EntitySystem implements SystemGameInitializer, SystemMapInitializer {
 
     private static final Logger logger = LoggerFactory.getLogger(EntitySystem.class);
-
-    private ImmutableArray<Entity> eatables;
-    private Stack<String> nextEatables = new Stack();
-    private Stack<String> usedEatables = new Stack();
 
     private PooledEngine engine;
     private PhysixSystem physixSystem;
     private HashMap<String, EntityJson> entityJsonMap;
     private AssetManagerX assetManager;
-    private final SpawnPositionPool spawnPositionPool = new SpawnPositionPool(256, 512);
-    private final Array<SpawnPosition> spawnPositions = new Array();
-    private float timeSincelastItemSpawnTry;
-    private final Random random = new Random();
-    private final LinkedList<String> freeBotNames = new LinkedList();
-    private final String[] botNamesOrdered = {
-        "Stan", "Kyle", "Cartman", "Kenny",
-        "Butters", "Timmy", "Jimmy", "Token",
-        "Wendy", "Bebe", "Nichole", "Stacy",
-        "Shelly", "Jessica", "Maria", "Henrietta",
-        "Chef", "Garrison", "Prin. Victoria", "Ms. Choksondik",
-        "Randy", "Sharon", "Gerald", "Sheila"
-    };
+    private Game game;
 
     public EntitySpawnSystem() {
         super(0);
@@ -88,25 +62,15 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
 
     @Override
     public void initGame(Game game, AssetManagerX assetManager) {
+        this.game = game;
         this.assetManager = assetManager;
-
-        nextEatables.clear();
-        usedEatables.clear();
+        physixSystem = engine.getSystem(PhysixSystem.class);
 
         try {
             entityJsonMap = JacksonReader.readMap("data/json/entities.json", EntityJson.class);
-            for (Map.Entry<String, EntityJson> entry : entityJsonMap.entrySet()) {
-                for (int i = 0; i < entry.getValue().frequency; i++) {
-                    nextEatables.push(entry.getKey());
-                }
-            }
-            Collections.shuffle(nextEatables);
         } catch (Exception e) {
             logger.error("Error reading entities.json", e);
         }
-
-        Collections.addAll(freeBotNames, botNamesOrdered);
-        Collections.shuffle(freeBotNames);
     }
 
     @Override
@@ -125,119 +89,22 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
                             throw new RuntimeException("Map contains bad Team Id: " + id);
                         }
 
-                        createBotPlayer(obj.getX() + obj.getWidth() / 2, obj.getY() + obj.getHeight() / 2, teams.get(id), "[BOT] " + freeBotNames.pop());
+                        createBotPlayer(obj.getX() + obj.getWidth() / 2, obj.getY() + obj.getHeight() / 2, teams.get(id), game.acquireBotName());
                     }
                 }
             }
         }
-
-        int width = map.getWidth();
-        int height = map.getHeight();
-
-        boolean available[][] = new boolean[width][height];
-        for (Layer layer : map.getLayers()) {
-            if (layer.isTileLayer()) {
-                for (int x = 0; x < width; x++) {
-                    for (int y = 0; y < height; y++) {
-                        TileInfo tile = layer.getTiles()[x][y];
-                        if (tile != null && tile.getBooleanProperty("itemspawn", false)) {
-                            available[x][y] = true;
-                        }
-                    }
-                }
-            }
-        }
-
-        // Item spawns hinzufügen wenn ein Tile und dessen umliegenden Tiles nicht genutzt sind.
-        int tileWidth = map.getTileWidth();
-        int tileHeight = map.getTileHeight();
-        int numItemSpawns = 0;
-        for (int y = 1; y < height - 1; ++y) {
-            for (int x = 1; x < width - 1; ++x) {
-                if (available[x - 1][y - 1] && available[x][y - 1] && available[x + 1][y - 1]
-                        && available[x - 1][y] && available[x][y] && available[x + 1][y]
-                        && available[x - 1][y + 1] && available[x][y + 1] && available[x + 1][y + 1]) {
-                    available[x][y] = false;
-                    SpawnPosition pos = spawnPositionPool.obtain();
-                    pos.set(x * tileWidth, y * tileHeight);
-                    spawnPositions.add(pos);
-                    numItemSpawns++;
-                    x++;
-                }
-            }
-        }
-
-        if (numItemSpawns == 0) {
-            throw new RuntimeException("Map contains no space for item spawns");
-        }
-    }
-
-    @Override
-    public void update(float deltaTime) {
-        spawnRandomItems(deltaTime);
-    }
-
-    private void spawnRandomItems(float deltaTime) {
-        // spawn random items
-        timeSincelastItemSpawnTry += deltaTime;
-        if (timeSincelastItemSpawnTry >= Constants.TIME_TO_NEXT_ITEM_CHANCE && spawnPositions.size > 0) {
-            float rand = random.nextFloat();
-
-            // Spawnrate reduziert wenn mehr als 24 Items auf der Map.
-            if ((rand <= Constants.CHANCE_FOR_NEW_ITEM)
-                    && (eatables.size() < Constants.AT_THIS_NUMBER_REDUCED_ITEM_CHANCE_STARTS)
-                    || (rand <= Constants.CHANCE_FOR_NEW_ITEM_REDUCED)) {
-
-                int index = random.nextInt(spawnPositions.size);
-
-                SpawnPosition spawnPos = spawnPositions.removeIndex(index);
-                createRandomEatable(spawnPos);
-                spawnPositionPool.free(spawnPos);
-            }
-            timeSincelastItemSpawnTry -= Constants.TIME_TO_NEXT_ITEM_CHANCE;
-        }
-    }
-
-    private void createRandomEatable(Vector2 position) {
-        if (nextEatables.empty()) {
-            Stack<String> t = nextEatables;
-            nextEatables = usedEatables;
-            usedEatables = t;
-            Collections.shuffle(nextEatables);
-        }
-        String eatableName = nextEatables.pop();
-        usedEatables.push(eatableName);
-        createStaticEntity(eatableName, position.x, position.y, Constants.ITEM_RADIUS, null);
     }
 
     @Override
     public void addedToEngine(Engine engine) {
         this.engine = (PooledEngine) engine;
-        physixSystem = engine.getSystem(PhysixSystem.class);
-        engine.addEntityListener(this);
-        eatables = engine.getEntitiesFor(Family.all(EatableComponent.class).get());
     }
 
     @Override
     public void removedFromEngine(Engine engine) {
         this.engine = null;
         physixSystem = null;
-        engine.removeEntityListener(this);
-        eatables = null;
-    }
-
-    @Override
-    public void entityAdded(Entity entity) {
-    }
-
-    @Override
-    public void entityRemoved(Entity entity) {
-        if (ComponentMappers.eatable.has(entity)) {
-            PositionComponent position = ComponentMappers.position.get(entity);
-            SpawnPosition spawnPos = spawnPositionPool.obtain();
-            spawnPos.set(position.x, position.y);
-            spawnPositions.add(spawnPos);
-        }
     }
 
     private Entity createBotPlayer(float x, float y, Team team, String name) {
@@ -248,8 +115,11 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         position.x = x;
         position.y = y;
         entity.add(position);
-        PhysixModifierComponent modifyComponent = engine.createComponent(PhysixModifierComponent.class);
-        entity.add(modifyComponent);
+        PhysixModifierComponent modifyComponent = null;
+        if (physixSystem != null) {
+            modifyComponent = engine.createComponent(PhysixModifierComponent.class);
+            entity.add(modifyComponent);
+        }
 
         PlayerComponent player = engine.createComponent(PlayerComponent.class);
         player.radius = Constants.PLAYER_DEFAULT_SIZE;
@@ -281,21 +151,23 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         light.radius = Constants.PLAYER_DEFAULT_SIGHTDISTANCE;
         entity.add(light);
 
-        modifyComponent.schedule(() -> {
-            PhysixBodyComponent bodyComponent = engine.createComponent(PhysixBodyComponent.class);
-            PhysixBodyDef bodyDef = new PhysixBodyDef(BodyDef.BodyType.DynamicBody, physixSystem)
-                    .position(player.startPosition).fixedRotation(true);//.linearDamping(20);
-            bodyComponent.init(bodyDef, physixSystem, entity);
-            PhysixFixtureDef fixtureDef = new PhysixFixtureDef(physixSystem).groupIndex((short) -1)
-                    .density(5).friction(0).shapeCircle(player.radius);
-            Fixture fixture = bodyComponent.createFixture(fixtureDef);
-            fixture.setUserData("body");
-            PhysixFixtureDef fixtureDef2 = new PhysixFixtureDef(physixSystem)
-                    .sensor(true).shapeCircle(player.radius);
-            Fixture fixture2 = bodyComponent.createFixture(fixtureDef2);
-            fixture2.setUserData("sensor");
-            entity.add(bodyComponent);
-        });
+        if (modifyComponent != null) {
+            modifyComponent.schedule(() -> {
+                PhysixBodyComponent bodyComponent = engine.createComponent(PhysixBodyComponent.class);
+                PhysixBodyDef bodyDef = new PhysixBodyDef(BodyDef.BodyType.DynamicBody, physixSystem)
+                        .position(player.startPosition).fixedRotation(true);//.linearDamping(20);
+                bodyComponent.init(bodyDef, physixSystem, entity);
+                PhysixFixtureDef fixtureDef = new PhysixFixtureDef(physixSystem).groupIndex((short) -1)
+                        .density(5).friction(0).shapeCircle(player.radius);
+                Fixture fixture = bodyComponent.createFixture(fixtureDef);
+                fixture.setUserData("body");
+                PhysixFixtureDef fixtureDef2 = new PhysixFixtureDef(physixSystem)
+                        .sensor(true).shapeCircle(player.radius);
+                Fixture fixture2 = bodyComponent.createFixture(fixtureDef2);
+                fixture2.setUserData("sensor");
+                entity.add(bodyComponent);
+            });
+        }
         engine.addEntity(entity);
 
         return entity;
@@ -389,7 +261,10 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
                     return component;
                 }
                 case "PhysixBodyComponent":
-                    return engine.createComponent(PhysixModifierComponent.class);
+                    if (physixSystem != null) {
+                        return engine.createComponent(PhysixModifierComponent.class);
+                    }
+                    return null;
                 default:
                     logger.error("Uknown component {}", type);
             }
@@ -397,25 +272,5 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
             logger.error("Error creating component with config", e);
         }
         return null;
-    }
-
-    private static class SpawnPosition extends Vector2 implements Pool.Poolable {
-
-        @Override
-        public void reset() {
-            setZero();
-        }
-    }
-
-    private static class SpawnPositionPool extends Pool<SpawnPosition> {
-
-        public SpawnPositionPool(int initialSize, int maxSize) {
-            super(initialSize, maxSize);
-        }
-
-        @Override
-        protected SpawnPosition newObject() {
-            return new SpawnPosition();
-        }
     }
 }

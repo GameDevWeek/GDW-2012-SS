@@ -19,6 +19,7 @@ import de.hochschuletrier.gdw.ss12.game.data.Team;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import java.util.Iterator;
 
+//fixme: split into render and update systems
 public class RenderNoticeSystem extends EntitySystem implements SystemGameInitializer {
 
     private final ReflectionPool<Notice> noticePool = new ReflectionPool(Notice.class);
