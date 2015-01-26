@@ -43,6 +43,10 @@ public class NetServerSimple implements NetDatagramHandler {
         return manager != null && manager.isRunning();
     }
 
+    public List<NetConnection> getConnections() {
+        return connections;
+    }
+
     public void update() {
         if (isRunning()) {
             getNewConnections();
