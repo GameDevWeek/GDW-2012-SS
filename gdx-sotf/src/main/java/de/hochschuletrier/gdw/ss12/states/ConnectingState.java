@@ -21,7 +21,6 @@ import java.io.IOException;
  */
 public class ConnectingState extends BaseGameState implements NetDatagramHandler {
 
-    //fixme: status for loading resources ?
     public static enum Status {
 
         CONNECTING,

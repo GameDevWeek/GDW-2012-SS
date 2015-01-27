@@ -13,10 +13,12 @@ import java.util.List;
 
 public class GameServer extends GameLocal {
 
-    NetServerSimple server; // fixme
+    private final NetServerSimple netServer;
 
-    public GameServer(AssetManagerX assetManager) {
+    public GameServer(AssetManagerX assetManager, NetServerSimple netServer) {
         super(assetManager);
+        
+        this.netServer = netServer;
     }
 
     @Override
@@ -24,7 +26,7 @@ public class GameServer extends GameLocal {
         super.addSystems();
 
         // Remember to set priorities in CustomPooledEngine when creating new system classes
-        engine.addSystem(new NetServerUpdateSystem());
+        engine.addSystem(new NetServerUpdateSystem(netServer));
         engine.addSystem(new NetServerSendSystem());
     }
 
@@ -33,7 +35,7 @@ public class GameServer extends GameLocal {
         if (localPlayer == entity) {
             super.scheduleNoticeForPlayer(type, delay, entity);
         } else {
-            for (NetConnection connection : server.getConnections()) {
+            for (NetConnection connection : netServer.getConnections()) {
                 if(connection.getAttachment() == entity) {
                     connection.sendUnreliable(NoticeDatagram.create(type, delay));
                     break;
@@ -47,7 +49,7 @@ public class GameServer extends GameLocal {
         super.scheduleNoticeForTeam(type, delay, team);
 
         // Send to all players of this team
-        List<NetConnection> connections = server.getConnections();
+        List<NetConnection> connections = netServer.getConnections();
         if (!connections.isEmpty()) {
             NoticeDatagram datagram = NoticeDatagram.create(type, delay);
             //Fixme: can we remove the need for manual broadcastCount ?

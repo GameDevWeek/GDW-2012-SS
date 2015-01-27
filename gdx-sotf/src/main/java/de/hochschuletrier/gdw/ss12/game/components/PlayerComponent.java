@@ -33,11 +33,21 @@ public class PlayerComponent extends Component implements Pool.Poolable {
 
     @Override
     public void reset() {
-        statistic.reset();
+        startPosition.setZero();
         newPowerups.clear();
         powerups.clear();
+        statistic.reset();
+
+        radius = 0;
+        name = "";
+        state = null;
+        team = null;
+        lastTeleport = 0;
+        killer = null;
+        lastSpawnShapeSize = 0;
+        stateTime = 0;
+        angle = 0;
         effectBits = 0;
-        //fixme
     }
 
     public boolean canEat(PlayerComponent other) {

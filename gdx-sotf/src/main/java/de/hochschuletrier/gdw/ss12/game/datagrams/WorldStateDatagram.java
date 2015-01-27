@@ -4,6 +4,8 @@ import de.hochschuletrier.gdw.commons.netcode.core.NetDatagram;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageIn;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageOut;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageType;
+import de.hochschuletrier.gdw.commons.utils.Assert;
+import de.hochschuletrier.gdw.ss12.game.Constants;
 import de.hochschuletrier.gdw.ss12.game.Game;
 
 /**
@@ -70,9 +72,9 @@ public final class WorldStateDatagram extends NetDatagram {
 
     public @Override
     void readFromMessage(NetMessageIn message) {
-        //Fixme: check for size overflow
         // read player names
         int maxPlayers = message.getInt();
+        Assert.that(maxPlayers >= Constants.NET_MAX_PLAYERS, "maxPlayers exceeds maximum player number");
         playerNames = new String[maxPlayers];
         for (int player = 0; player < maxPlayers; ++player) {
             playerNames[player] = message.getString();
@@ -80,12 +82,14 @@ public final class WorldStateDatagram extends NetDatagram {
 
         // read number team wins
         int maxTeamWins = message.getInt();
+        Assert.that(maxTeamWins >= Constants.TEAM_COLOR_TABLE.length, "maxTeamWins exceeds maximum team number");
         numberTeamWins = new int[maxTeamWins];
         for (int team = 0; team < maxTeamWins; ++team) {
             numberTeamWins[team] = message.getInt();
         }
 
         int maxPizzaCounts = message.getInt();
+        Assert.that(maxPizzaCounts >= Constants.TEAM_COLOR_TABLE.length, "maxPizzaCounts exceeds maximum team number");
         pizzaCount = new byte[maxPizzaCounts];
         for (int team = 0; team < maxPizzaCounts; ++team) {
             pizzaCount[team] = message.get();

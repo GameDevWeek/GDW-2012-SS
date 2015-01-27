@@ -31,7 +31,8 @@ public class MenuPageConnection extends MenuPage {
     private final Type type;
     private final Label titleLabel;
     private final TextField username;
-    private final TextField server;
+    private final TextField serverIp;
+    private final TextField serverPort;
     private final Label errorLabel;
     private final SelectBox<MapInfo> mapSelect;
     private final DecoImage previewImage;
@@ -97,11 +98,18 @@ public class MenuPageConnection extends MenuPage {
         username = createTextField(y, "Username", "Spieler");
         y -= yStep;
 
-        if (type != Type.SINGLEPLAYER) {
-            server = createTextField(y, "Server:Port", "");
+        if (type == Type.JOIN_SERVER) {
+            serverIp = createTextField(y, "Server IP", "");
             y -= yStep;
         } else {
-            server = null;
+            serverIp = null;
+        }
+
+        if (type != Type.SINGLEPLAYER) {
+            serverPort = createTextField(y, "Server Port", "");
+            y -= yStep;
+        } else {
+            serverPort = null;
         }
 
         // Map selection
@@ -184,8 +192,11 @@ public class MenuPageConnection extends MenuPage {
             }
         }
         username.setText(Settings.PLAYER_NAME.get());
-        if (server != null) {
-            server.setText(Settings.LAST_HOST.get() + ":" + Settings.LAST_PORT.get());
+        if (serverIp != null) {
+            serverIp.setText(Settings.LAST_HOST.get());
+        }
+        if (serverPort != null) {
+            serverPort.setText("" + Settings.LAST_PORT.get());
         }
     }
 
@@ -194,8 +205,10 @@ public class MenuPageConnection extends MenuPage {
             Settings.MAP_FILE.set(mapSelect.getSelected().mapFile);
         }
         Settings.PLAYER_NAME.set(username.getText());
-        if (server != null) {
+        if (serverIp != null) {
             Settings.LAST_HOST.set(ip);
+        }
+        if (serverPort != null) {
             Settings.LAST_PORT.set(port);
         }
         Settings.flush();
@@ -208,13 +221,13 @@ public class MenuPageConnection extends MenuPage {
             return;
         }
 
-        parseServerString(server.getText());
+        parseServerString();
         if (valid) {
             storeSettings();
 
             try {
                 if (type == Type.CREATE_SERVER) {
-                    main.createServer(ip, port);
+                    main.createServer(port);
                 } else {
                     main.joinServer(ip, port);
                 }
@@ -228,16 +241,17 @@ public class MenuPageConnection extends MenuPage {
         }
     }
 
-    private void parseServerString(String connection) {
+    private void parseServerString() {
         try {
-            String[] parts = connection.split(":");
-            ip = parts[0];
-            port = Integer.parseInt(parts[1]);
+            if (serverIp != null) {
+                ip = serverIp.getText();
+            }
+            port = Integer.parseInt(serverPort.getText());
             valid = true;
-            server.setStyle(skin.get(TextField.TextFieldStyle.class));
+            serverIp.setStyle(skin.get(TextField.TextFieldStyle.class));
         } catch (NumberFormatException e) {
             valid = false;
-            server.setStyle(skin.get("error", TextField.TextFieldStyle.class));
+            serverPort.setStyle(skin.get("error", TextField.TextFieldStyle.class));
         }
     }
 }

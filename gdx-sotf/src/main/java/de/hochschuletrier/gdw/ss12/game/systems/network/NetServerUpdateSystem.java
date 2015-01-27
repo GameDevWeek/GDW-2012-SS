@@ -18,10 +18,13 @@ import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerInputDatagram;
 
 public class NetServerUpdateSystem extends EntitySystem implements NetDatagramHandler, NetServerSimple.Listener, SystemGameInitializer {
 
+    private final NetServerSimple netServer;
     private GameServer game;
 
-    public NetServerUpdateSystem() {
+    public NetServerUpdateSystem(NetServerSimple netServer) {
         super(0);
+        
+        this.netServer = netServer;
     }
 
     @Override
@@ -31,7 +34,7 @@ public class NetServerUpdateSystem extends EntitySystem implements NetDatagramHa
 
     @Override
     public void update(float deltaTime) {
-        // fixme: call update on manager
+        netServer.update();
     }
 
     @Override
@@ -55,6 +58,7 @@ public class NetServerUpdateSystem extends EntitySystem implements NetDatagramHa
     }
 
     public void sendWorldSetup(NetConnection connection) {
+        //fixme
 //        WorldSetupDatagram worldSetup = WorldSetupDatagram.create(getMapName(), paused, player.getID(), player.getPosition());
 //        
 //        connection.sendReliable(worldSetup);

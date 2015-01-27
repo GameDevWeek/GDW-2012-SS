@@ -22,10 +22,11 @@ import de.hochschuletrier.gdw.ss12.game.datagrams.WorldStateDatagram;
 public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHandler, SystemGameInitializer {
 
     private Game game;
-    private NetClientSimple netClient;
+    private final NetClientSimple netClient;
 
-    public NetClientUpdateSystem() {
+    public NetClientUpdateSystem(NetClientSimple netClient) {
         super(0);
+        this.netClient = netClient;
     }
 
     @Override
