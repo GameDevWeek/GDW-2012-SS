@@ -7,6 +7,7 @@ import de.hochschuletrier.gdw.commons.netcode.core.NetMessageIn;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageOut;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageType;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
+import de.hochschuletrier.gdw.ss12.game.Game;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 
 /**
@@ -19,11 +20,11 @@ public final class WorldSetupDatagram extends NetDatagram {
     private boolean paused;
     private final Vector2 startPosition = new Vector2();
 
-    public static WorldSetupDatagram create(String mapname, boolean paused, Entity entity) {
+    public static WorldSetupDatagram create(Game game, Entity entity) {
         WorldSetupDatagram datagram = DatagramFactory.create(WorldSetupDatagram.class);
         datagram.netId = entity.getId();
-        datagram.mapname = mapname;
-        datagram.paused = paused;
+        datagram.mapname = game.getMapName();
+//        datagram.paused = game.paused;
         PositionComponent position = ComponentMappers.position.get(entity);
         datagram.startPosition.set(position.x, position.y);
         return datagram;

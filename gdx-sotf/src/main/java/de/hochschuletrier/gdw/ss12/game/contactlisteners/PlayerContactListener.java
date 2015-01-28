@@ -72,7 +72,7 @@ public class PlayerContactListener extends PhysixContactAdapter {
         eater.radius += eatable.energy * Constants.PLAYER_GROW_FACTOR;
 
         if (ComponentMappers.pizzaSlice.has(eatableEntity)) {
-            eater.team.pizzaCount++;
+            eater.team.setPizzaCount(eater.team.getPizzaCount() + 1);
         }
 
         copyDropable(eaterEntity, eatableEntity);

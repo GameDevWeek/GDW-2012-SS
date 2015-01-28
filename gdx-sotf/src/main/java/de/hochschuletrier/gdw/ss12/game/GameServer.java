@@ -7,6 +7,7 @@ import de.hochschuletrier.gdw.commons.netcode.simple.NetServerSimple;
 import de.hochschuletrier.gdw.ss12.game.data.NoticeType;
 import de.hochschuletrier.gdw.ss12.game.data.Team;
 import de.hochschuletrier.gdw.ss12.game.datagrams.NoticeDatagram;
+import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerNameDatagram;
 import de.hochschuletrier.gdw.ss12.game.systems.network.NetServerSendSystem;
 import de.hochschuletrier.gdw.ss12.game.systems.network.NetServerUpdateSystem;
 import java.util.List;
@@ -17,7 +18,7 @@ public class GameServer extends GameLocal {
 
     public GameServer(AssetManagerX assetManager, NetServerSimple netServer) {
         super(assetManager);
-        
+
         this.netServer = netServer;
     }
 
@@ -27,7 +28,12 @@ public class GameServer extends GameLocal {
 
         // Remember to set priorities in CustomPooledEngine when creating new system classes
         engine.addSystem(new NetServerUpdateSystem(netServer));
-        engine.addSystem(new NetServerSendSystem());
+        engine.addSystem(new NetServerSendSystem(netServer));
+    }
+
+    @Override
+    protected void onPlayerNameChanged(Entity entity) {
+        netServer.broadcastReliable(PlayerNameDatagram.create(entity));
     }
 
     @Override
@@ -36,7 +42,7 @@ public class GameServer extends GameLocal {
             super.scheduleNoticeForPlayer(type, delay, entity);
         } else {
             for (NetConnection connection : netServer.getConnections()) {
-                if(connection.getAttachment() == entity) {
+                if (connection.getAttachment() == entity) {
                     connection.sendUnreliable(NoticeDatagram.create(type, delay));
                     break;
                 }

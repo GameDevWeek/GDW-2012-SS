@@ -93,6 +93,14 @@ public class Game {
         return localPlayer;
     }
 
+    public Array<Team> getTeams() {
+        return teams;
+    }
+    
+    public String getMapName() {
+        return map.getFilename();
+    }
+
     protected void addSystems() {
         // Remember to set priorities in CustomPooledEngine when creating new system classes
         engine.addSystem(new KeyboardInputSystem());

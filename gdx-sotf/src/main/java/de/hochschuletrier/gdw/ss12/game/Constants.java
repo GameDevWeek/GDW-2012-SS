@@ -71,6 +71,8 @@ public class Constants {
      */
     public static final float CHANCE_FOR_NEW_ITEM_REDUCED = 0.3f;
     public static final Color[] TEAM_COLOR_TABLE = {Color.BLUE, Color.RED, Color.YELLOW, Color.GREEN};
+    public static int MAX_TEAMS = TEAM_COLOR_TABLE.length;
+    public static final int MAX_PLAYERS = 32;
 
     public static float MUSIC_FADE_TIME = 2;
 
@@ -84,6 +86,4 @@ public class Constants {
     public static final int POSITION_ITERATIONS = 3;
     public static final int VELOCITY_ITERATIONS = 8;
     public static final int BOX2D_SCALE = 40;
-    
-    public static final int NET_MAX_PLAYERS = 32;
 }

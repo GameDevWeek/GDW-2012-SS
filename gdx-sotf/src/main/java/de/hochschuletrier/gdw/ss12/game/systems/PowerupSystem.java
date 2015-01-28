@@ -97,8 +97,8 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
     @Override
     public void update(float deltaTime) {
         for (Team team : teams) {
-            if (team.pizzaCount >= 8) {
-                team.pizzaCount -= 8;
+            if (team.getPizzaCount() >= 8) {
+                team.setPizzaCount(team.getPizzaCount() - 8);
 
                 // Add Powerups to all team members alive
                 for (Entity entity : getEntities()) {

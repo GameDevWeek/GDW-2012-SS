@@ -33,7 +33,7 @@ public class CustomPooledEngine extends PooledEngine {
         
         // Logic
         ORDER.put(PhysixSystem.class, priority++); // server
-        ORDER.put(UpdatePositionSystem.class, priority++); // both
+        ORDER.put(UpdatePositionSystem.class, priority++); // server
         ORDER.put(UpdateSoundEmitterSystem.class, priority++); // both
         ORDER.put(EntitySpawnSystem.class, priority++); // both
         ORDER.put(SpawnRandomEatableSystem.class, priority++); // server
@@ -45,7 +45,7 @@ public class CustomPooledEngine extends PooledEngine {
         ORDER.put(GameStateSystem.class, priority++); // server
         ORDER.put(NetServerSendSystem.class, priority++); // server
 
-        // Rendering (all both, except physix debug)
+        // World rendering (all both)
         ORDER.put(RenderShadowMapSystem.class, priority++);
         ORDER.put(RenderMapSystem.class, priority++);
         ORDER.put(RenderParticleEffectSystem.class, priority++);
@@ -53,7 +53,11 @@ public class CustomPooledEngine extends PooledEngine {
         ORDER.put(RenderItemAnimationSystem.class, priority++);
         ORDER.put(RenderPlayerSystem.class, priority++);
         ORDER.put(RenderShadowMapCleanupSystem.class, priority++);
-        ORDER.put(PhysixDebugRenderSystem.class, priority++); // server
+        
+        // Debug physix rendering (server)
+        ORDER.put(PhysixDebugRenderSystem.class, priority++);
+        
+        // HUD Rendering (all both)
         ORDER.put(RenderMiniMapSystem.class, priority++);
         ORDER.put(RenderPowerupHudSystem.class, priority++);
         ORDER.put(RenderDropableHudSystem.class, priority++);

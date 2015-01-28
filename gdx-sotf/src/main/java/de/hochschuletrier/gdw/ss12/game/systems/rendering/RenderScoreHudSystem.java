@@ -66,7 +66,7 @@ public class RenderScoreHudSystem extends EntitySystem implements SystemGameInit
                         }
                     }
 
-                    String output = String.format("%s (%d/%d)\n %d Kills %d Wins", team.teamName, team.alivePlayers, team.numPlayers, kills, team.wins);
+                    String output = String.format("%s (%d/%d)\n %d Kills %d Wins", team.name, team.alivePlayers, team.numPlayers, kills, team.getWins());
                     font.setColor(team.color);
                     font.drawMultiLine(DrawUtil.batch, output, 25, y);
                     y += 100;

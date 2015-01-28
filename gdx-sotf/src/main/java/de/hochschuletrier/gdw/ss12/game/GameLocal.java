@@ -27,7 +27,6 @@ import de.hochschuletrier.gdw.ss12.game.systems.SpawnRandomEatableSystem;
 import de.hochschuletrier.gdw.ss12.game.systems.UpdateLightSystem;
 import de.hochschuletrier.gdw.ss12.game.systems.UpdatePlayerSystem;
 import de.hochschuletrier.gdw.ss12.game.systems.UpdatePositionSystem;
-import de.hochschuletrier.gdw.ss12.game.systems.rendering.RenderNoticeSystem;
 import java.util.Collections;
 import java.util.LinkedList;
 
@@ -117,6 +116,9 @@ public class GameLocal extends Game {
         botsEnabled.toggle(false);
     }
 
+    protected void onPlayerNameChanged(Entity entity) {
+    }
+
     public String acquireBotName() {
         return BOT_NAME_PREFIX + freeBotNames.pop();
     }
@@ -136,7 +138,7 @@ public class GameLocal extends Game {
             player.team.numConnectedPlayers++;
             freeBotName(player.name);
             player.name = "[Connecting]";
-            //fixme: send new name to everyone
+            onPlayerNameChanged(entity);
             entity.remove(BotComponent.class);
         }
         return entity;
@@ -159,7 +161,7 @@ public class GameLocal extends Game {
         PlayerComponent player = ComponentMappers.player.get(entity);
         player.team.numConnectedPlayers--;
         player.name = acquireBotName();
-        //fixme: send new name to everyone
+        onPlayerNameChanged(entity);
         entity.add(engine.createComponent(BotComponent.class));
     }
 

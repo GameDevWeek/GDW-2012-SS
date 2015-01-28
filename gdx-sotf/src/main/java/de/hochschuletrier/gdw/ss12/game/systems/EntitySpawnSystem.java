@@ -24,6 +24,7 @@ import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Constants;
 import de.hochschuletrier.gdw.ss12.game.Game;
 import de.hochschuletrier.gdw.ss12.game.GameLocal;
+import de.hochschuletrier.gdw.ss12.game.GameServer;
 import de.hochschuletrier.gdw.ss12.game.data.PlayerState;
 import de.hochschuletrier.gdw.ss12.game.data.Team;
 import de.hochschuletrier.gdw.ss12.game.components.BotComponent;
@@ -39,6 +40,7 @@ import de.hochschuletrier.gdw.ss12.game.components.DropableComponent;
 import de.hochschuletrier.gdw.ss12.game.components.ParticleEffectComponent;
 import de.hochschuletrier.gdw.ss12.game.components.RenderAnimationComponent;
 import de.hochschuletrier.gdw.ss12.game.components.SoundEmitterComponent;
+import de.hochschuletrier.gdw.ss12.game.components.SetupComponent;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemMapInitializer;
 import de.hochschuletrier.gdw.ss12.game.data.EntityJson;
@@ -205,6 +207,12 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
                 bodyComponent.createFixture(fixtureDef);
                 entity.add(bodyComponent);
             });
+        }
+
+        if(game instanceof GameServer) {
+            SetupComponent setup = engine.createComponent(SetupComponent.class);
+            setup.team = team;
+            setup.name = name;
         }
 
         engine.addEntity(entity);

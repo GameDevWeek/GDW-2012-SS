@@ -4,20 +4,20 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.gdx.math.Vector2;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
-import de.hochschuletrier.gdw.commons.netcode.core.NetConnection;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetClientSimple;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetDatagramHandler;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Game;
 import de.hochschuletrier.gdw.ss12.game.components.NetPlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
+import de.hochschuletrier.gdw.ss12.game.data.PlayerUpdate;
 import de.hochschuletrier.gdw.ss12.game.datagrams.CreateEntityDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.NoticeDatagram;
-import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerStateDatagram;
+import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerUpdatesDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.WorldSetupDatagram;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.datagrams.WorldSoundDatagram;
-import de.hochschuletrier.gdw.ss12.game.datagrams.WorldStateDatagram;
+import de.hochschuletrier.gdw.ss12.game.datagrams.TeamStatesDatagram;
 
 public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHandler, SystemGameInitializer {
 
@@ -86,7 +86,7 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
 //    }
 //
 
-    public void handle(WorldStateDatagram datagram) {
+    public void handle(TeamStatesDatagram datagram) {
 //        GameWorld world = GameWorld.getInstance();
 //
 //        String[] playerNames = datagram.getPlayerNames();
@@ -109,22 +109,27 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
         return null; //fixme
     }
 
-    public void handle(PlayerStateDatagram datagram) {
-        Entity playerEntity = getPlayerByNetId(datagram.getNetId());
-        if (playerEntity != null) {
-            NetPlayerComponent netPlayer = ComponentMappers.netPlayer.get(playerEntity);
+    public void handle(PlayerUpdatesDatagram datagram) {
+        int numPlayers = datagram.getNumPlayers();
+        PlayerUpdate[] updates = datagram.getUpdates();
+        for (int i = 0; i < numPlayers; i++) {
+            PlayerUpdate update = updates[i];
+            Entity playerEntity = getPlayerByNetId(update.netId);
+            if (playerEntity != null) {
+                NetPlayerComponent netPlayer = ComponentMappers.netPlayer.get(playerEntity);
 
-            // only handle the latest datagrams
-            if (netPlayer.lastSequenceId > datagram.getSequenceId()) {
-                netPlayer.lastSequenceId = datagram.getSequenceId();
-                ComponentMappers.position.get(playerEntity).set(datagram.getPosition());
-                ComponentMappers.input.get(playerEntity).speed = datagram.getMoveSpeed();
-                PlayerComponent player = ComponentMappers.player.get(playerEntity);
-                player.angle = datagram.getViewingAngle();
-                player.radius = datagram.getRadius();
-                player.effectBits = datagram.getEffectBits();
-                player.state = datagram.getState();
-                ComponentMappers.light.get(playerEntity).setFromPlayerRadius(player.radius);
+                // only handle the latest datagrams
+                if (netPlayer.lastSequenceId > datagram.getSequenceId()) {
+                    netPlayer.lastSequenceId = datagram.getSequenceId();
+                    ComponentMappers.position.get(playerEntity).set(update.position);
+                    ComponentMappers.input.get(playerEntity).speed = update.speed;
+                    PlayerComponent player = ComponentMappers.player.get(playerEntity);
+                    player.angle = update.angle;
+                    player.radius = update.radius;
+                    player.effectBits = update.effectBits;
+                    player.state = update.state;
+                    ComponentMappers.light.get(playerEntity).setFromPlayerRadius(player.radius);
+                }
             }
         }
     }

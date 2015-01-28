@@ -80,9 +80,9 @@ public class GameStateSystem extends EntitySystem implements SystemGameInitializ
                     game.scheduleNoticeForTeam(NoticeType.ROUND_LOST, 0, team);
                 }
             } else {
-                aliveTeam.wins++;
+                aliveTeam.setWins(aliveTeam.getWins() + 1);
 
-                if (aliveTeam.wins < Constants.WIN_LIMIT) {
+                if (aliveTeam.getWins() < Constants.WIN_LIMIT) {
                     // Round won/lost message
                     for (Team team : teams) {
                         if (aliveTeam == team) {
@@ -99,7 +99,7 @@ public class GameStateSystem extends EntitySystem implements SystemGameInitializ
                         } else {
                             game.scheduleNoticeForTeam(NoticeType.TEAM_LOST, 0, team);
                         }
-                        team.wins = 0;
+                        team.setWins(0);
                     }
                 }
             }

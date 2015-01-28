@@ -11,19 +11,17 @@ public final class DatagramFactory {
 
     public static final NetDatagramPool POOL = new NetDatagramPool(
             ConnectDatagram.class,
-            WorldSetupDatagram.class,
             CreateEntityDatagram.class,
-//            RemoveEntityDatagram.class,
-            PlayerStateDatagram.class,
+            RemoveEntityDatagram.class,
+            EntitySoundDatagram.class,
             PlayerInputDatagram.class,
-            WorldStateDatagram.class,
-//            FireEventDatagram.class,
-//            EntityEventDatagram.class,
-//            UseItemDatagram.class,
-            WorldSoundDatagram.class,
-//            UnpauseDatagram.class,
+            PlayerUpdatesDatagram.class,
+            PlayerNameDatagram.class,
+            DropItemDatagram.class,
             NoticeDatagram.class,
-            EntitySoundDatagram.class
+            TeamStatesDatagram.class,
+            WorldSetupDatagram.class,
+            WorldSoundDatagram.class
     );
 
     static <T extends NetDatagram> T create(Class<T> clazz) {

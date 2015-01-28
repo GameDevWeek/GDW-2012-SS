@@ -6,7 +6,9 @@ import de.hochschuletrier.gdw.commons.netcode.core.NetDatagram;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageIn;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageOut;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageType;
-import de.hochschuletrier.gdw.ss12.game.data.Team;
+import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
+import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
+import de.hochschuletrier.gdw.ss12.game.components.SetupComponent;
 
 /**
  * send from server only
@@ -21,17 +23,11 @@ public class CreateEntityDatagram extends NetDatagram {
     public static CreateEntityDatagram create(Entity entity) {
         CreateEntityDatagram datagram = DatagramFactory.create(CreateEntityDatagram.class);
         datagram.netId = entity.getId();
-//        entityType = e.getEntityType();
-//        position.set(e.getPosition());
-//        team = -1;
-//        if (e instanceof ICandle) {
-//            team = (byte) ((ICandle) e).getTeam().getID();
-//        } else if (e instanceof IEatable) {
-//            Team t = ((IEatable) e).getTeam();
-//            if (t != null) {
-//                team = (byte) t.getID();
-//            }
-//        }
+        final SetupComponent setup = ComponentMappers.setup.get(entity);
+        datagram.entityType = setup.name;
+        PositionComponent position = ComponentMappers.position.get(entity);
+        datagram.position.set(position.x, position.y);
+        datagram.team = (byte)setup.team.id;
         return datagram;
     }
 

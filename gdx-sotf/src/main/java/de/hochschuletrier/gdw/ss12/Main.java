@@ -248,7 +248,7 @@ public class Main extends StateBasedGame {
     public void createServer(int port) {
         if (beforeConnect()) {
             NetServerSimple netServer = new NetServerSimple(DatagramFactory.POOL);
-            if (netServer.start(port, Constants.NET_MAX_PLAYERS)) {
+            if (netServer.start(port, Constants.MAX_PLAYERS)) {
                 GameServer game = new GameServer(assetManager, netServer);
                 game.loadMap(Settings.MAP_FILE.get());
                 game.setLocalPlayer(game.acquireBotPlayer(), Settings.PLAYER_NAME.get());

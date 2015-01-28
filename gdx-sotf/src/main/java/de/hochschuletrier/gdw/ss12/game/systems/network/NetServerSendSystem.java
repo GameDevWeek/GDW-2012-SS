@@ -1,39 +1,79 @@
 package de.hochschuletrier.gdw.ss12.game.systems.network;
 
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.ashley.core.EntitySystem;
-import com.badlogic.gdx.math.Vector2;
-import de.hochschuletrier.gdw.commons.netcode.core.NetConnection;
-import de.hochschuletrier.gdw.commons.netcode.core.NetDatagram;
-import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
-import de.hochschuletrier.gdw.ss12.game.components.InputComponent;
+import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.utils.Array;
+import de.hochschuletrier.gdw.commons.netcode.simple.NetServerSimple;
+import de.hochschuletrier.gdw.commons.tiled.TiledMap;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
+import de.hochschuletrier.gdw.ss12.game.components.SetupComponent;
+import de.hochschuletrier.gdw.ss12.game.data.Team;
 import de.hochschuletrier.gdw.ss12.game.datagrams.CreateEntityDatagram;
-import de.hochschuletrier.gdw.ss12.game.datagrams.DatagramFactory;
-import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerStateDatagram;
-import de.hochschuletrier.gdw.ss12.game.datagrams.WorldSetupDatagram;
-import de.hochschuletrier.gdw.ss12.game.datagrams.WorldStateDatagram;
+import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerUpdatesDatagram;
+import de.hochschuletrier.gdw.ss12.game.datagrams.RemoveEntityDatagram;
+import de.hochschuletrier.gdw.ss12.game.datagrams.TeamStatesDatagram;
+import de.hochschuletrier.gdw.ss12.game.interfaces.SystemMapInitializer;
 
-public class NetServerSendSystem extends EntitySystem {
+public class NetServerSendSystem extends EntitySystem implements EntityListener, SystemMapInitializer {
 
-    public NetServerSendSystem() {
+    private final NetServerSimple netServer;
+    private ImmutableArray<Entity> players;
+    private Array<Team> teams;
+
+    public NetServerSendSystem(NetServerSimple netServer) {
         super(0);
+
+        this.netServer = netServer;
+    }
+
+    @Override
+    public void addedToEngine(Engine engine) {
+        engine.addEntityListener(Family.all(SetupComponent.class).get(), this);
+        players = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
+    }
+
+    @Override
+    public void removedFromEngine(Engine engine) {
+        engine.removeEntityListener(this);
+        players = null;
     }
 
     @Override
     public void update(float deltaTime) {
-//        for (Entity entity : players) {
-//            PlayerComponent player = ComponentMappers.player.get(entity);
-//            PlayerStateDatagram playerState = (PlayerStateDatagram)DatagramType.WORLD_STATE.create();
-//            playerState.setup(player);
-//            netServer.broadcastUnreliable(playerState);
-//        }
-//
-//        if (stateChanged) {
-//            WorldStateDatagram worldState = (WorldStateDatagram)DatagramType.WORLD_STATE.create();
-//            worldState.setup();
-//            netServer.broadcastUnreliable(worldState);
-//            stateChanged = false;
-//        }
+        netServer.broadcastUnreliable(PlayerUpdatesDatagram.create(players));
+
+        if (hasChangedTeams()) {
+            netServer.broadcastReliable(TeamStatesDatagram.create(teams));
+        }
+    }
+
+    boolean hasChangedTeams() {
+        boolean changedTeams = false;
+        for (Team team : teams) {
+            if (team.changed) {
+                team.changed = false;
+                changedTeams = true;
+            }
+        }
+        return changedTeams;
+    }
+
+    @Override
+    public void entityAdded(Entity entity) {
+        netServer.broadcastReliable(CreateEntityDatagram.create(entity));
+    }
+
+    @Override
+    public void entityRemoved(Entity entity) {
+        netServer.broadcastReliable(RemoveEntityDatagram.create(entity));
+    }
+
+    @Override
+    public void initMap(TiledMap map, Array<Team> teams) {
+        this.teams = teams;
     }
 }
