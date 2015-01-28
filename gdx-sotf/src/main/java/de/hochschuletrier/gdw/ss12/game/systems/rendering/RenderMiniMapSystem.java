@@ -40,6 +40,7 @@ public class RenderMiniMapSystem extends EntitySystem implements SystemGameIniti
     private int yOffset;
     private Engine engine;
     private float renderScale;
+    private RenderMapSystem renderMapSystem;
 
     public RenderMiniMapSystem() {
         super(0);
@@ -65,6 +66,7 @@ public class RenderMiniMapSystem extends EntitySystem implements SystemGameIniti
     @Override
     public void initGame(Game game, AssetManagerX assetManager) {
         this.game = game;
+        renderMapSystem = engine.getSystem(RenderMapSystem.class);
     }
 
     @Override
@@ -94,7 +96,6 @@ public class RenderMiniMapSystem extends EntitySystem implements SystemGameIniti
         }
 
         fbo = new FrameBuffer(Format.RGB888, mapWidthScaled, mapHeightScaled, false);
-        RenderMapSystem renderMapSystem = engine.getSystem(RenderMapSystem.class);
         fbo.begin();
         renderCamera.resize(mapWidth, mapHeight);
         renderCamera.bind();

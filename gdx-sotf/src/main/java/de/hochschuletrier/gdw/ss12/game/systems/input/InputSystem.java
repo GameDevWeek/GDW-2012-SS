@@ -20,6 +20,7 @@ public class InputSystem extends IteratingSystem implements SystemGameInitialize
 
     private Engine engine;
     private Game game;
+    private EntitySpawnSystem entitySpawnSystem;
 
     public InputSystem() {
         super(Family.all(InputComponent.class).get(), 0);
@@ -40,6 +41,7 @@ public class InputSystem extends IteratingSystem implements SystemGameInitialize
     @Override
     public void initGame(Game game, AssetManagerX assetManager) {
         this.game = game;
+        entitySpawnSystem = engine.getSystem(EntitySpawnSystem.class);
     }
 
     @Override
@@ -88,8 +90,7 @@ public class InputSystem extends IteratingSystem implements SystemGameInitialize
         DropableComponent dropable = ComponentMappers.dropable.get(entity);
         if (!player.isDead() && dropable != null) {
             PositionComponent position = ComponentMappers.position.get(entity);
-            EntitySpawnSystem spawnSystem = engine.getSystem(EntitySpawnSystem.class);
-            spawnSystem.createStaticEntity(dropable.item, position.x, position.y, Constants.ITEM_RADIUS, player.team);
+            entitySpawnSystem.createStaticEntity(dropable.item, position.x, position.y, Constants.ITEM_RADIUS, player.team);
 
             game.playEntitySound(dropable.sound, entity, false);
             entity.remove(DropableComponent.class);

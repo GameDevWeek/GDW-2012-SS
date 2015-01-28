@@ -55,6 +55,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
 
     private PooledEngine engine;
     private PhysixSystem physixSystem;
+    private PowerupSystem powerupSystem;
     private HashMap<String, EntityJson> entityJsonMap;
     private AssetManagerX assetManager;
     private Game game;
@@ -67,7 +68,11 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
     public void initGame(Game game, AssetManagerX assetManager) {
         this.game = game;
         this.assetManager = assetManager;
-        physixSystem = engine.getSystem(PhysixSystem.class);
+
+        if (game instanceof GameLocal) {
+            physixSystem = engine.getSystem(PhysixSystem.class);
+            powerupSystem = engine.getSystem(PowerupSystem.class);
+        }
 
         try {
             entityJsonMap = JacksonReader.readMap("data/json/entities.json", EntityJson.class);
@@ -209,7 +214,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
             });
         }
 
-        if(game instanceof GameServer) {
+        if (game instanceof GameServer) {
             SetupComponent setup = engine.createComponent(SetupComponent.class);
             setup.team = team;
             setup.name = name;
@@ -221,18 +226,45 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
 
     private Component createComponentFromConfig(String type, Map<String, String> config, Team team) {
         try {
-            switch (type) {
-                case "EatableComponent": {
-                    EatableComponent component = engine.createComponent(EatableComponent.class);
-                    component.energy = Float.parseFloat(config.get("energy"));
-                    component.sound = config.get("sound");
-                    String powerupName = config.get("powerup");
-                    if (powerupName != null) {
-                        PowerupSystem powerupSystem = engine.getSystem(PowerupSystem.class);
-                        component.powerup = powerupSystem.createPowerup(powerupName);
+            // Some types don't need to be created on the clientside
+            if (game instanceof GameLocal) {
+                switch (type) {
+                    case "EatableComponent": {
+                        EatableComponent component = engine.createComponent(EatableComponent.class);
+                        component.energy = Float.parseFloat(config.get("energy"));
+                        component.sound = config.get("sound");
+                        String powerupName = config.get("powerup");
+                        if (powerupName != null) {
+                            component.powerup = powerupSystem.createPowerup(powerupName);
+                        }
+                        return component;
                     }
-                    return component;
+                    case "ItemTrapComponent": {
+                        ItemTrapComponent component = engine.createComponent(ItemTrapComponent.class);
+                        component.team = team;
+                        component.sound = config.get("sound");
+                        String powerupName = config.get("powerup");
+                        if (powerupName != null) {
+                            PowerupSystem powerupSystem = engine.getSystem(PowerupSystem.class);
+                            component.powerup = powerupSystem.createPowerup(powerupName);
+                        }
+                        return component;
+                    }
+                    case "PizzaSliceComponent":
+                        return engine.createComponent(PizzaSliceComponent.class);
+                    case "DropableComponent": {
+                        DropableComponent component = engine.createComponent(DropableComponent.class);
+                        component.item = config.get("item");
+                        component.sound = config.get("sound");
+                        component.texture = assetManager.getTexture(config.get("texture"));
+                        return component;
+                    }
+                    case "PhysixBodyComponent":
+                        return engine.createComponent(PhysixModifierComponent.class);
                 }
+            }
+
+            switch (type) {
                 case "RenderTextureComponent": {
                     RenderTextureComponent component = engine.createComponent(RenderTextureComponent.class);
                     component.texture = assetManager.getTexture(config.get("image"));
@@ -252,30 +284,11 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
                     component.shrinkPixelPerSecond = Float.parseFloat(config.get("shrinkPixelPerSecond"));
                     return component;
                 }
-                case "ItemTrapComponent": {
-                    ItemTrapComponent component = engine.createComponent(ItemTrapComponent.class);
-                    component.team = team;
-                    component.sound = config.get("sound");
-                    String powerupName = config.get("powerup");
-                    if (powerupName != null) {
-                        PowerupSystem powerupSystem = engine.getSystem(PowerupSystem.class);
-                        component.powerup = powerupSystem.createPowerup(powerupName);
-                    }
-                    return component;
-                }
+                case "EatableComponent":
+                case "ItemTrapComponent":
                 case "PizzaSliceComponent":
-                    return engine.createComponent(PizzaSliceComponent.class);
-                case "DropableComponent": {
-                    DropableComponent component = engine.createComponent(DropableComponent.class);
-                    component.item = config.get("item");
-                    component.sound = config.get("sound");
-                    component.texture = assetManager.getTexture(config.get("texture"));
-                    return component;
-                }
+                case "DropableComponent":
                 case "PhysixBodyComponent":
-                    if (physixSystem != null) {
-                        return engine.createComponent(PhysixModifierComponent.class);
-                    }
                     return null;
                 default:
                     logger.error("Uknown component {}", type);

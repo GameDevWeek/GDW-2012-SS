@@ -19,6 +19,8 @@ import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 public class UpdatePlayerSystem extends IteratingSystem implements SystemGameInitializer {
 
     private PhysixSystem physixSystem;
+    PowerupSystem powerupSystem;
+    EntitySpawnSystem entitySpawnSystem;
     private Engine engine;
     private Game game;
 
@@ -29,19 +31,20 @@ public class UpdatePlayerSystem extends IteratingSystem implements SystemGameIni
     @Override
     public void initGame(Game game, AssetManagerX assetManager) {
         this.game = game;
+        physixSystem = engine.getSystem(PhysixSystem.class);
+        entitySpawnSystem = engine.getSystem(EntitySpawnSystem.class);
+        powerupSystem = engine.getSystem(PowerupSystem.class);
     }
 
     @Override
     public void addedToEngine(Engine engine) {
         super.addedToEngine(engine);
-        physixSystem = engine.getSystem(PhysixSystem.class);
         this.engine = engine;
     }
 
     @Override
     public void removedFromEngine(Engine engine) {
         super.removedFromEngine(engine);
-        physixSystem = null;
         this.engine = null;
     }
 
@@ -89,13 +92,13 @@ public class UpdatePlayerSystem extends IteratingSystem implements SystemGameIni
     private void triggerPlayerDeath(Entity entity, PlayerComponent player, String animationEntity) {
         player.statistic.deaths++;
         final PositionComponent position = ComponentMappers.position.get(entity);
-        engine.getSystem(EntitySpawnSystem.class).createStaticEntity(animationEntity, position.x, position.y, Constants.PLAYER_DEFAULT_SIZE, null);
+        entitySpawnSystem.createStaticEntity(animationEntity, position.x, position.y, Constants.PLAYER_DEFAULT_SIZE, null);
         player.powerups.clear();
         player.state = PlayerState.DEAD;
         player.radius = Constants.PLAYER_DEFAULT_SIZE;
         ComponentMappers.light.get(entity).radius = 0;
         position.ignorePhysix = true;
         ComponentMappers.physixBody.get(entity).setActive(false);
-        engine.getSystem(PowerupSystem.class).removePlayerPowerups(entity, player);
+        powerupSystem.removePlayerPowerups(entity, player);
     }
 }

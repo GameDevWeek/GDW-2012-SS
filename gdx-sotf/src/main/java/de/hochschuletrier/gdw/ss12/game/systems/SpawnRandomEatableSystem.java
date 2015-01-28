@@ -41,6 +41,7 @@ public class SpawnRandomEatableSystem extends EntitySystem implements SystemGame
     private Stack<String> usedEatables = new Stack();
 
     private PooledEngine engine;
+    private EntitySpawnSystem entitySpawnSystem;
     private final SpawnPositionPool spawnPositionPool = new SpawnPositionPool(256, 512);
     private final Array<SpawnPosition> spawnPositions = new Array();
     private float timeSincelastItemSpawnTry;
@@ -54,6 +55,7 @@ public class SpawnRandomEatableSystem extends EntitySystem implements SystemGame
     public void initGame(Game game, AssetManagerX assetManager) {
         nextEatables.clear();
         usedEatables.clear();
+        entitySpawnSystem = engine.getSystem(EntitySpawnSystem.class);
 
         try {
             HashMap<String, EntityJson> entityJsonMap = JacksonReader.readMap("data/json/entities.json", EntityJson.class);
@@ -146,8 +148,7 @@ public class SpawnRandomEatableSystem extends EntitySystem implements SystemGame
         }
         String eatableName = nextEatables.pop();
         usedEatables.push(eatableName);
-        EntitySpawnSystem spawnSystem = engine.getSystem(EntitySpawnSystem.class);
-        spawnSystem.createStaticEntity(eatableName, position.x, position.y, Constants.ITEM_RADIUS, null);
+        entitySpawnSystem.createStaticEntity(eatableName, position.x, position.y, Constants.ITEM_RADIUS, null);
     }
 
     @Override

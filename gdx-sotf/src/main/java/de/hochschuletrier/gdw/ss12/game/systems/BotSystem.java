@@ -10,19 +10,22 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
+import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.gdx.physix.components.PhysixBodyComponent;
 import de.hochschuletrier.gdw.commons.gdx.physix.systems.PhysixSystem;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Constants;
+import de.hochschuletrier.gdw.ss12.game.Game;
 import de.hochschuletrier.gdw.ss12.game.data.IgnoreEatable;
 import de.hochschuletrier.gdw.ss12.game.components.BotComponent;
 import de.hochschuletrier.gdw.ss12.game.components.EatableComponent;
 import de.hochschuletrier.gdw.ss12.game.components.InputComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
+import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import java.util.Iterator;
 import java.util.Map;
 
-public class BotSystem extends EntitySystem implements EntityListener {
+public class BotSystem extends EntitySystem implements EntityListener, SystemGameInitializer {
 
     private final static float UPDATE_TIME_HAS_TARGET = 0.5f;
     private final static int UPDATE_TIME_NO_TARGET = 2;
@@ -58,8 +61,12 @@ public class BotSystem extends EntitySystem implements EntityListener {
     }
 
     @Override
-    public void update(float deltaTime) {
+    public void initGame(Game game, AssetManagerX assetManager) {
         world = engine.getSystem(PhysixSystem.class).getWorld();
+    }
+
+    @Override
+    public void update(float deltaTime) {
         for (Entity bot : bots) {
             botProcessor.process(bot, deltaTime);
         }
@@ -107,8 +114,8 @@ public class BotSystem extends EntitySystem implements EntityListener {
                 input.moveDirection.setZero();
                 return;
             }
-            
-            if(player.isSlipping()) {
+
+            if (player.isSlipping()) {
                 return;
             }
 
