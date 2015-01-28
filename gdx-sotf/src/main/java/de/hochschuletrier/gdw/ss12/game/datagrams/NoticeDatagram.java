@@ -1,7 +1,5 @@
 package de.hochschuletrier.gdw.ss12.game.datagrams;
 
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.gdx.math.Vector2;
 import de.hochschuletrier.gdw.commons.netcode.core.NetDatagram;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageIn;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageOut;

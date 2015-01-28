@@ -9,7 +9,7 @@ public class PositionComponent extends Component implements Pool.Poolable {
     public float x;
     public float y;
     public boolean ignorePhysix;
-    
+
     public void set(Vector2 position) {
         x = position.x;
         y = position.y;

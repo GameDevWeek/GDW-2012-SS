@@ -27,7 +27,7 @@ public class CreateEntityDatagram extends NetDatagram {
         datagram.entityType = setup.name;
         PositionComponent position = ComponentMappers.position.get(entity);
         datagram.position.set(position.x, position.y);
-        datagram.team = (byte)setup.team.id;
+        datagram.team = (byte) setup.team.id;
         return datagram;
     }
 

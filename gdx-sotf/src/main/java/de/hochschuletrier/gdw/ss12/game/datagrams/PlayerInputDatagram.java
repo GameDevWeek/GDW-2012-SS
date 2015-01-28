@@ -30,7 +30,7 @@ public final class PlayerInputDatagram extends NetDatagram {
     @Override
     public void reset() {
         super.reset();
-        
+
         moveDirection.setZero();
     }
 

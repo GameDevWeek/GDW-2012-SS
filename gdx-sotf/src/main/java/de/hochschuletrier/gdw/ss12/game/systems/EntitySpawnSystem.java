@@ -245,7 +245,6 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
                         component.sound = config.get("sound");
                         String powerupName = config.get("powerup");
                         if (powerupName != null) {
-                            PowerupSystem powerupSystem = engine.getSystem(PowerupSystem.class);
                             component.powerup = powerupSystem.createPowerup(powerupName);
                         }
                         return component;

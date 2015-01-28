@@ -90,6 +90,7 @@ public class NetServerUpdateSystem extends EntitySystem implements NetDatagramHa
         }
 
         connection.sendReliable(TeamStatesDatagram.create(game.getTeams()));
+        //fixme: check if any of THREE,TWO,ONE,GO are currently scheduled, if so forward them
     }
 
     public void handle(ConnectDatagram datagram) {

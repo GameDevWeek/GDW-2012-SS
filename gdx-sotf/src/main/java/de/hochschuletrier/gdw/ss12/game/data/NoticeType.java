@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.Texture;
 public enum NoticeType {
 
     // Countdown
-// Countdown
     THREE(1, false, "Three", "countdown_three", NoticePosition.TOPMID, 0, 0, 0),
     TWO(1, false, "Two", "countdown_two", NoticePosition.TOPMID, 0, 0, 0),
     ONE(1, false, "One", "countdown_one", NoticePosition.TOPMID, 0, 0, 0),

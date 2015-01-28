@@ -96,7 +96,7 @@ public class Game {
     public Array<Team> getTeams() {
         return teams;
     }
-    
+
     public String getMapName() {
         return map.getFilename();
     }

@@ -33,7 +33,7 @@ public class NetClientSendInputSystem extends EntitySystem implements SystemGame
             final NetConnection connection = netClient.getConnection();
             connection.sendUnreliable(PlayerInputDatagram.create(localPlayer));
             InputComponent input = ComponentMappers.input.get(localPlayer);
-            if(input.dropItem) {
+            if (input.dropItem) {
                 connection.sendReliable(DropItemDatagram.create(localPlayer));
                 input.dropItem = false;
             }

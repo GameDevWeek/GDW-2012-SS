@@ -21,7 +21,7 @@ public enum NoticePosition {
     NoticePosition(Consumer<Vector2> consumer) {
         this.consumer = consumer;
     }
-    
+
     public void getPosition(Vector2 out) {
         consumer.accept(out);
     }
