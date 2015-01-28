@@ -143,8 +143,10 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
         }
 
         // Turn on effect and update shape size
-        player.effectBits |= powerup.effect.getBit();
-        player.lastSpawnShapeSize = -100; // force shape size update
+        if(powerup.effect != null) {
+            player.effectBits |= powerup.effect.getBit();
+            player.lastSpawnShapeSize = -100; // force shape size update
+        }
         player.powerups.add(powerup);
     }
 
