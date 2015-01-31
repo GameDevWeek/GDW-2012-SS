@@ -36,7 +36,6 @@ public class NetManagerServer extends NetManager {
 
     /**
      * Create a server on the specified ip/port accepting a maximum number of connections.
-     * This starts a thread that listens for new connections
      *
      * @param port the listening port
      * @param maxConnections the maximum number of connections to accept

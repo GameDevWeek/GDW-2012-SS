@@ -101,7 +101,7 @@ public class NetConnection {
             logger.error("Failed to close tcp channel", e);
         }
 
-        // Notify the NetThread about the disconnect
+        // Notify the manager about the disconnect
         manager.onDisconnect(this);
     }
 
