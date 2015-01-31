@@ -140,6 +140,10 @@ public class Game {
         return inputForwarder;
     }
 
+    public void scheduleNoticeForAll(NoticeType type, float delay) {
+        engine.getSystem(RenderNoticeSystem.class).schedule(type, delay);
+    }
+
     public void scheduleNoticeForPlayer(NoticeType type, float delay, Entity entity) {
         if (localPlayer == entity) {
             engine.getSystem(RenderNoticeSystem.class).schedule(type, delay);

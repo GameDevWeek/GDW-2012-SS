@@ -174,11 +174,9 @@ public class GameLocal extends Game {
     }
 
     public void sendStartNotices() {
-        for (Entity entity : nonBotPlayers) {
-            scheduleNoticeForPlayer(NoticeType.THREE, 0, entity);
-            scheduleNoticeForPlayer(NoticeType.TWO, 1, entity);
-            scheduleNoticeForPlayer(NoticeType.ONE, 2, entity);
-            scheduleNoticeForPlayer(NoticeType.GO, 3, entity);
-        }
+        scheduleNoticeForAll(NoticeType.THREE, 0);
+        scheduleNoticeForAll(NoticeType.TWO, 1);
+        scheduleNoticeForAll(NoticeType.ONE, 2);
+        scheduleNoticeForAll(NoticeType.GO, 3);
     }
 }

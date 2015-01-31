@@ -104,12 +104,12 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
                 for (Entity entity : getEntities()) {
                     PlayerComponent player = ComponentMappers.player.get(entity);
                     if (player.team == team) {
-                        game.scheduleNoticeForPlayer(NoticeType.PIZZABUFF_ACTIVATED, 0, entity);
                         if (!player.isDead()) {
                             player.newPowerups.add(createPowerup("pizza"));
                         }
                     }
                 }
+                game.scheduleNoticeForTeam(NoticeType.PIZZABUFF_ACTIVATED, 0, team);
             }
         }
         super.update(deltaTime);
