@@ -55,7 +55,6 @@ public class NetServerSimple implements NetDatagramHandler {
     }
 
     protected void updateConnections() {
-        // Send UDP datagrams
         Iterator<NetConnection> it = connections.iterator();
         while (it.hasNext()) {
             NetConnection connection = it.next();
@@ -113,8 +112,8 @@ public class NetServerSimple implements NetDatagramHandler {
             manager.shutdown();
         }
     }
-
-    public void broadcastUnreliable(NetDatagram datagram) {
+    
+    public void broadcastUnreliable(NetDatagram datagram, List<NetConnection> connections) {
         if (!connections.isEmpty()) {
             datagram.setBroadcastCount(connections.size());
             for (NetConnection c : connections) {
@@ -125,7 +124,11 @@ public class NetServerSimple implements NetDatagramHandler {
         }
     }
 
-    public void broadcastReliable(NetDatagram datagram) {
+    public void broadcastUnreliable(NetDatagram datagram) {
+        broadcastUnreliable(datagram, connections);
+    }
+
+    public void broadcastReliable(NetDatagram datagram, List<NetConnection> connections) {
         if (!connections.isEmpty()) {
             datagram.setBroadcastCount(connections.size());
             for (NetConnection c : connections) {
@@ -134,6 +137,10 @@ public class NetServerSimple implements NetDatagramHandler {
         } else {
             datagramPool.free(datagram);
         }
+    }
+
+    public void broadcastReliable(NetDatagram datagram) {
+        broadcastReliable(datagram, connections);
     }
 
     public interface Listener {
