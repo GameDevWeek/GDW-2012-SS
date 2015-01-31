@@ -15,14 +15,18 @@ import de.hochschuletrier.gdw.ss12.game.GameServer;
 import de.hochschuletrier.gdw.ss12.game.components.InputComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.SetupComponent;
+import de.hochschuletrier.gdw.ss12.game.data.NoticeType;
+import de.hochschuletrier.gdw.ss12.game.data.Team;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.datagrams.ConnectDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.CreateEntityDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.DropItemDatagram;
+import de.hochschuletrier.gdw.ss12.game.datagrams.NoticeDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerInputDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerNameDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.TeamStatesDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.WorldSetupDatagram;
+import de.hochschuletrier.gdw.ss12.game.systems.rendering.RenderNoticeSystem;
 
 public class NetServerUpdateSystem extends EntitySystem implements NetDatagramHandler, NetServerSimple.Listener, SystemGameInitializer {
 
@@ -30,6 +34,8 @@ public class NetServerUpdateSystem extends EntitySystem implements NetDatagramHa
     private GameServer game;
     private ImmutableArray<Entity> entities;
     private ImmutableArray<Entity> players;
+    private Engine engine;
+    private RenderNoticeSystem noticeSystem;
 
     public NetServerUpdateSystem(NetServerSimple netServer) {
         super(0);
@@ -40,10 +46,12 @@ public class NetServerUpdateSystem extends EntitySystem implements NetDatagramHa
     @Override
     public void initGame(Game game, AssetManagerX assetManager) {
         this.game = (GameServer) game;
+        noticeSystem = engine.getSystem(RenderNoticeSystem.class);
     }
 
     @Override
     public void addedToEngine(Engine engine) {
+        this.engine = engine;
         entities = engine.getEntitiesFor(Family.all(SetupComponent.class).get());
         players = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
     }
@@ -79,7 +87,8 @@ public class NetServerUpdateSystem extends EntitySystem implements NetDatagramHa
     }
 
     public void sendWorldSetup(NetConnection connection) {
-        connection.sendReliable(WorldSetupDatagram.create(game, (Entity) connection.getAttachment()));
+        final Entity playerEntity = (Entity) connection.getAttachment();
+        connection.sendReliable(WorldSetupDatagram.create(game, playerEntity));
 
         for (Entity entity : entities) {
             connection.sendReliable(CreateEntityDatagram.create(entity));
@@ -90,7 +99,36 @@ public class NetServerUpdateSystem extends EntitySystem implements NetDatagramHa
         }
 
         connection.sendReliable(TeamStatesDatagram.create(game.getTeams()));
-        //fixme: check if any of THREE,TWO,ONE,GO are currently scheduled, if so forward them
+
+        // check if any of forwardable notice are currently scheduled, if so forward them
+        Team localPlayerTeam = ComponentMappers.player.get(game.getLocalPlayer()).team;
+        Team playerTeam = ComponentMappers.player.get(playerEntity).team;
+        boolean sameTeam = localPlayerTeam == playerTeam;
+        for (RenderNoticeSystem.Notice notice : noticeSystem.getNotices()) {
+            if(notice.delay >= 0) {
+                switch(notice.type) {
+                    case THREE:
+                    case TWO:
+                    case ONE:
+                    case GO:
+                        connection.sendReliable(NoticeDatagram.create(notice.type, notice.delay, notice.timeLeft));
+                        break;
+                    case ROUND_WON:
+                        connection.sendReliable(NoticeDatagram.create(sameTeam ? notice.type : NoticeType.ROUND_LOST, notice.delay, notice.timeLeft));
+                        break;
+                    case ROUND_LOST:
+                        connection.sendReliable(NoticeDatagram.create(sameTeam ? notice.type : NoticeType.ROUND_WON, notice.delay, notice.timeLeft));
+                        break;
+                    case TEAM_WON:
+                        connection.sendReliable(NoticeDatagram.create(sameTeam ? notice.type : NoticeType.TEAM_LOST, notice.delay, notice.timeLeft));
+                        break;
+                    case TEAM_LOST:
+                        connection.sendReliable(NoticeDatagram.create(sameTeam ? notice.type : NoticeType.TEAM_WON, notice.delay, notice.timeLeft));
+                        break;
+                    
+                }
+            }
+        }
     }
 
     public void handle(ConnectDatagram datagram) {

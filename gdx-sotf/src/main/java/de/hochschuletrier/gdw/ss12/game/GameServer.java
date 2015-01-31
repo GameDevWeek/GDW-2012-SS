@@ -46,19 +46,19 @@ public class GameServer extends GameLocal {
     }
 
     @Override
-    public void scheduleNoticeForAll(NoticeType type, float delay) {
-        super.scheduleNoticeForAll(type, delay);
-        netServer.broadcastReliable(NoticeDatagram.create(type, delay));
+    public void scheduleNoticeForAll(NoticeType type, float delay, float timeLeft) {
+        super.scheduleNoticeForAll(type, delay, timeLeft);
+        netServer.broadcastReliable(NoticeDatagram.create(type, delay, type.displayTime));
     }
 
     @Override
-    public void scheduleNoticeForPlayer(NoticeType type, float delay, Entity entity) {
+    public void scheduleNoticeForPlayer(NoticeType type, float delay, float timeLeft, Entity entity) {
         if (localPlayer == entity) {
-            super.scheduleNoticeForPlayer(type, delay, entity);
+            super.scheduleNoticeForPlayer(type, delay, timeLeft, entity);
         } else {
             for (NetConnection connection : netServer.getConnections()) {
                 if (connection.getAttachment() == entity) {
-                    connection.sendReliable(NoticeDatagram.create(type, delay));
+                    connection.sendReliable(NoticeDatagram.create(type, delay, type.displayTime));
                     break;
                 }
             }
@@ -66,8 +66,8 @@ public class GameServer extends GameLocal {
     }
 
     @Override
-    public void scheduleNoticeForTeam(NoticeType type, float delay, Team team) {
-        super.scheduleNoticeForTeam(type, delay, team);
+    public void scheduleNoticeForTeam(NoticeType type, float delay, float timeLeft, Team team) {
+        super.scheduleNoticeForTeam(type, delay, timeLeft, team);
 
         // Send to all players of this team
         List<NetConnection> connections = netServer.getConnections();
@@ -79,7 +79,7 @@ public class GameServer extends GameLocal {
                 }
             }
 
-            netServer.broadcastReliable(NoticeDatagram.create(type, delay), broadcastList);
+            netServer.broadcastReliable(NoticeDatagram.create(type, delay, type.displayTime), broadcastList);
             broadcastList.clear();
         }
     }

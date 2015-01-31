@@ -140,19 +140,19 @@ public class Game {
         return inputForwarder;
     }
 
-    public void scheduleNoticeForAll(NoticeType type, float delay) {
-        engine.getSystem(RenderNoticeSystem.class).schedule(type, delay);
+    public void scheduleNoticeForAll(NoticeType type, float delay, float timeLeft) {
+        engine.getSystem(RenderNoticeSystem.class).schedule(type, delay, timeLeft);
     }
 
-    public void scheduleNoticeForPlayer(NoticeType type, float delay, Entity entity) {
+    public void scheduleNoticeForPlayer(NoticeType type, float delay, float timeLeft, Entity entity) {
         if (localPlayer == entity) {
-            engine.getSystem(RenderNoticeSystem.class).schedule(type, delay);
+            engine.getSystem(RenderNoticeSystem.class).schedule(type, delay, timeLeft);
         }
     }
 
-    public void scheduleNoticeForTeam(NoticeType type, float delay, Team team) {
+    public void scheduleNoticeForTeam(NoticeType type, float delay, float timeLeft, Team team) {
         if (ComponentMappers.player.get(localPlayer).team == team) {
-            engine.getSystem(RenderNoticeSystem.class).schedule(type, delay);
+            engine.getSystem(RenderNoticeSystem.class).schedule(type, delay, timeLeft);
         }
     }
 
@@ -347,6 +347,32 @@ public class Game {
         engine.getSystem(InputSystem.class).setProcessing(true);
     }
 
+    public void onNoticeStart(NoticeType type) {
+        switch(type) {
+            case GO:
+                go();
+                engine.getSystem(GameStateSystem.class).setProcessing(true);
+                break;
+            case ROUND_WON:
+            case ROUND_LOST:
+            case TEAM_WON:
+            case TEAM_LOST:
+                engine.getSystem(GameStateSystem.class).setProcessing(false);
+                break;
+        }
+    }
+
+    public void onNoticeEnd(NoticeType type) {
+        switch(type) {
+            case ROUND_WON:
+            case ROUND_LOST:
+            case TEAM_WON:
+            case TEAM_LOST:
+                reset();
+                break;
+        }
+    }
+
     public void update(float delta) {
         PositionComponent position = ComponentMappers.position.get(localPlayer);
         camera.setDestination(position.x, position.y);
@@ -356,6 +382,7 @@ public class Game {
     }
 
     public void reset() {
+        //fixme: only in GameLocal ?
         for (Entity entity : entitiesToRemove) {
             engine.removeEntity(entity);
         }

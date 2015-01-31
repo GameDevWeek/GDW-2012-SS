@@ -45,7 +45,7 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
     }
 
     public void handle(NoticeDatagram datagram) {
-        game.scheduleNoticeForPlayer(datagram.getNoticeType(), datagram.getDelay(), game.getLocalPlayer());
+        game.scheduleNoticeForPlayer(datagram.getNoticeType(), datagram.getDelay(), datagram.getTimeLeft(), game.getLocalPlayer());
     }
 
     // fixme: handle methods for all datagrams

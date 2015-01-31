@@ -77,7 +77,7 @@ public class GameStateSystem extends EntitySystem implements SystemGameInitializ
             if (aliveTeam == null) {
                 // Tie (starved at the same time?)
                 for (Team team : teams) {
-                    game.scheduleNoticeForTeam(NoticeType.ROUND_LOST, 0, team);
+                    game.scheduleNoticeForTeam(NoticeType.ROUND_LOST, 0, -1, team);
                 }
             } else {
                 aliveTeam.setWins(aliveTeam.getWins() + 1);
@@ -86,24 +86,23 @@ public class GameStateSystem extends EntitySystem implements SystemGameInitializ
                     // Round won/lost message
                     for (Team team : teams) {
                         if (aliveTeam == team) {
-                            game.scheduleNoticeForTeam(NoticeType.ROUND_WON, 0, team);
+                            game.scheduleNoticeForTeam(NoticeType.ROUND_WON, 0, -1, team);
                         } else {
-                            game.scheduleNoticeForTeam(NoticeType.ROUND_LOST, 0, team);
+                            game.scheduleNoticeForTeam(NoticeType.ROUND_LOST, 0, -1, team);
                         }
                     }
                 } else {
                     // Team win/lost message
                     for (Team team : teams) {
                         if (aliveTeam == team) {
-                            game.scheduleNoticeForTeam(NoticeType.TEAM_WON, 0, team);
+                            game.scheduleNoticeForTeam(NoticeType.TEAM_WON, 0, -1, team);
                         } else {
-                            game.scheduleNoticeForTeam(NoticeType.TEAM_LOST, 0, team);
+                            game.scheduleNoticeForTeam(NoticeType.TEAM_LOST, 0, -1, team);
                         }
                         team.setWins(0);
                     }
                 }
             }
-            game.reset();
         }
     }
 }

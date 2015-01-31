@@ -109,7 +109,7 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
                         }
                     }
                 }
-                game.scheduleNoticeForTeam(NoticeType.PIZZABUFF_ACTIVATED, 0, team);
+                game.scheduleNoticeForTeam(NoticeType.PIZZABUFF_ACTIVATED, 0, -1, team);
             }
         }
         super.update(deltaTime);
@@ -213,7 +213,7 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
                             checkPowerups = true;
                             break;
                         case PIZZA:
-                            game.scheduleNoticeForPlayer(NoticeType.PIZZABUFF_DEACTIVATED, 0, entity);
+                            game.scheduleNoticeForPlayer(NoticeType.PIZZABUFF_DEACTIVATED, 0, -1, entity);
                             break;
                     }
                 }

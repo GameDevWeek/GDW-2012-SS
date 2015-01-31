@@ -64,8 +64,8 @@ public class UpdatePlayerSystem extends IteratingSystem implements SystemGameIni
 
             PlayerComponent killer = ComponentMappers.player.get(player.killer);
             killer.statistic.kills++;
-            game.scheduleNoticeForPlayer(player.team == killer.team ? NoticeType.FRIENDLY_EATEN : NoticeType.ENEMY_EATEN, 0, player.killer);
-            game.scheduleNoticeForPlayer(NoticeType.DEATH, 0, entity);
+            game.scheduleNoticeForPlayer(player.team == killer.team ? NoticeType.FRIENDLY_EATEN : NoticeType.ENEMY_EATEN, 0, -1, player.killer);
+            game.scheduleNoticeForPlayer(NoticeType.DEATH, 0, -1, entity);
             player.killer = null;
         } else if (!player.isDead()) {
             float shrinkPixelThisFrame = Constants.PLAYER_SHRINK_PIXEL_PER_SECOND * deltaTime;
@@ -74,7 +74,7 @@ public class UpdatePlayerSystem extends IteratingSystem implements SystemGameIni
             // check if player radius got under min_size
             if (player.radius < Constants.PLAYER_MIN_SIZE) {
                 triggerPlayerDeath(entity, player, "player_starved");
-                game.scheduleNoticeForPlayer(NoticeType.STARVATION, 0, entity);
+                game.scheduleNoticeForPlayer(NoticeType.STARVATION, 0, -1, entity);
             } else {
                 if (player.radius > Constants.PLAYER_MAX_SIZE) {
                     player.radius = Constants.PLAYER_MAX_SIZE;

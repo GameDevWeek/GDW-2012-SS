@@ -13,11 +13,13 @@ public class NoticeDatagram extends NetDatagram {
 
     private NoticeType noticeType;
     private float delay;
+    private float timeLeft;
 
-    public static NoticeDatagram create(NoticeType type, float delay) {
+    public static NoticeDatagram create(NoticeType type, float delay, float timeLeft) {
         NoticeDatagram datagram = DatagramFactory.create(NoticeDatagram.class);
         datagram.noticeType = type;
         datagram.delay = delay;
+        datagram.timeLeft = timeLeft;
         return datagram;
     }
 
@@ -27,6 +29,10 @@ public class NoticeDatagram extends NetDatagram {
 
     public float getDelay() {
         return delay;
+    }
+
+    public float getTimeLeft() {
+        return timeLeft;
     }
 
     @Override

@@ -27,6 +27,10 @@ public class RenderNoticeSystem extends EntitySystem implements SystemGameInitia
     public RenderNoticeSystem() {
         super(0);
     }
+    
+    public Notice[] getNotices() {
+        return notices.items;
+    }
 
     @Override
     public void initGame(Game game, AssetManagerX assetManager) {
@@ -46,6 +50,7 @@ public class RenderNoticeSystem extends EntitySystem implements SystemGameInitia
         for (Iterator<Notice> iterator = notices.iterator(); iterator.hasNext();) {
             Notice notice = iterator.next();
             if (!update(notice, deltaTime)) {
+                game.onNoticeEnd(notice.type);
                 iterator.remove();
                 noticePool.free(notice);
                 changed = true;
@@ -63,10 +68,8 @@ public class RenderNoticeSystem extends EntitySystem implements SystemGameInitia
                 notice.delay = -1;
                 if (notice.type.sound != null) {
                     game.playAnouncerSound(notice.type.sound);
-                    if (notice.type == NoticeType.GO) {
-                        game.go();
-                    }
                 }
+                game.onNoticeStart(notice.type);
             } else {
                 notice.delay -= deltaTime;
             }
@@ -100,10 +103,10 @@ public class RenderNoticeSystem extends EntitySystem implements SystemGameInitia
         }
     }
 
-    public void schedule(NoticeType type, float delay) {
+    public void schedule(NoticeType type, float delay, float timeLeft) {
         Notice notice = noticePool.obtain();
         notice.delay = delay;
-        notice.timeLeft = type.displayTime;
+        notice.timeLeft = timeLeft >= 0 ? timeLeft : type.displayTime;
         notice.type = type;
         notices.add(notice);
         sort();

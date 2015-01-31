@@ -174,9 +174,9 @@ public class GameLocal extends Game {
     }
 
     public void sendStartNotices() {
-        scheduleNoticeForAll(NoticeType.THREE, 0);
-        scheduleNoticeForAll(NoticeType.TWO, 1);
-        scheduleNoticeForAll(NoticeType.ONE, 2);
-        scheduleNoticeForAll(NoticeType.GO, 3);
+        scheduleNoticeForAll(NoticeType.THREE, 0, -1);
+        scheduleNoticeForAll(NoticeType.TWO, 1, -1);
+        scheduleNoticeForAll(NoticeType.ONE, 2, -1);
+        scheduleNoticeForAll(NoticeType.GO, 3, -1);
     }
 }
