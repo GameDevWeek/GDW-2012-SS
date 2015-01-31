@@ -107,6 +107,12 @@ public class NetServerSimple implements NetDatagramHandler {
         }
         return false;
     }
+    
+    public void disconnect() {
+        if(isRunning()) {
+            manager.shutdown();
+        }
+    }
 
     public void broadcastUnreliable(NetDatagram datagram) {
         if (!connections.isEmpty()) {
