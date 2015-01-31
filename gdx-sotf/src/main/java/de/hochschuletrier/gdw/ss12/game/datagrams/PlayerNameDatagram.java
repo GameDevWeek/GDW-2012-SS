@@ -22,6 +22,10 @@ public final class PlayerNameDatagram extends NetDatagram {
         return datagram;
     }
 
+    public long getNetId() {
+        return netId;
+    }
+
     public String getName() {
         return name;
     }

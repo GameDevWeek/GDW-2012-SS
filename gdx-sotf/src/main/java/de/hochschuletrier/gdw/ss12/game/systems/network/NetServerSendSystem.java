@@ -15,7 +15,7 @@ import de.hochschuletrier.gdw.ss12.game.data.Team;
 import de.hochschuletrier.gdw.ss12.game.datagrams.CreateEntityDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerUpdatesDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.RemoveEntityDatagram;
-import de.hochschuletrier.gdw.ss12.game.datagrams.TeamStatesDatagram;
+import de.hochschuletrier.gdw.ss12.game.datagrams.TeamStateDatagram;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemMapInitializer;
 
 public class NetServerSendSystem extends EntitySystem implements EntityListener, SystemMapInitializer {
@@ -46,20 +46,12 @@ public class NetServerSendSystem extends EntitySystem implements EntityListener,
     public void update(float deltaTime) {
         netServer.broadcastUnreliable(PlayerUpdatesDatagram.create(players));
 
-        if (hasChangedTeams()) {
-            netServer.broadcastReliable(TeamStatesDatagram.create(teams));
-        }
-    }
-
-    boolean hasChangedTeams() {
-        boolean changedTeams = false;
         for (Team team : teams) {
             if (team.changed) {
                 team.changed = false;
-                changedTeams = true;
+                netServer.broadcastReliable(TeamStateDatagram.create(team));
             }
         }
-        return changedTeams;
     }
 
     @Override

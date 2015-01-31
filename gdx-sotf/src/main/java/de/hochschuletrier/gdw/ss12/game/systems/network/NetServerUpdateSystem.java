@@ -24,7 +24,7 @@ import de.hochschuletrier.gdw.ss12.game.datagrams.DropItemDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.NoticeDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerInputDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerNameDatagram;
-import de.hochschuletrier.gdw.ss12.game.datagrams.TeamStatesDatagram;
+import de.hochschuletrier.gdw.ss12.game.datagrams.TeamStateDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.WorldSetupDatagram;
 import de.hochschuletrier.gdw.ss12.game.systems.rendering.RenderNoticeSystem;
 
@@ -98,15 +98,17 @@ public class NetServerUpdateSystem extends EntitySystem implements NetDatagramHa
             connection.sendReliable(PlayerNameDatagram.create(entity));
         }
 
-        connection.sendReliable(TeamStatesDatagram.create(game.getTeams()));
+        for (Team team : game.getTeams()) {
+            connection.sendReliable(TeamStateDatagram.create(team));
+        }
 
         // check if any of forwardable notice are currently scheduled, if so forward them
         Team localPlayerTeam = ComponentMappers.player.get(game.getLocalPlayer()).team;
         Team playerTeam = ComponentMappers.player.get(playerEntity).team;
         boolean sameTeam = localPlayerTeam == playerTeam;
         for (RenderNoticeSystem.Notice notice : noticeSystem.getNotices()) {
-            if(notice.delay >= 0) {
-                switch(notice.type) {
+            if (notice.delay >= 0) {
+                switch (notice.type) {
                     case THREE:
                     case TWO:
                     case ONE:
@@ -125,7 +127,7 @@ public class NetServerUpdateSystem extends EntitySystem implements NetDatagramHa
                     case TEAM_LOST:
                         connection.sendReliable(NoticeDatagram.create(sameTeam ? notice.type : NoticeType.TEAM_WON, notice.delay, notice.timeLeft));
                         break;
-                    
+
                 }
             }
         }

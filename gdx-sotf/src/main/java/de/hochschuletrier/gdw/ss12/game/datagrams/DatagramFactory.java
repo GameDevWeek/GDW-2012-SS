@@ -19,7 +19,7 @@ public final class DatagramFactory {
             PlayerNameDatagram.class,
             DropItemDatagram.class,
             NoticeDatagram.class,
-            TeamStatesDatagram.class,
+            TeamStateDatagram.class,
             WorldSetupDatagram.class,
             WorldSoundDatagram.class
     );

@@ -1,28 +1,39 @@
 package de.hochschuletrier.gdw.ss12.game.systems.network;
 
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetClientSimple;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetDatagramHandler;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
+import de.hochschuletrier.gdw.ss12.game.Constants;
 import de.hochschuletrier.gdw.ss12.game.Game;
 import de.hochschuletrier.gdw.ss12.game.components.NetPlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.data.PlayerUpdate;
+import de.hochschuletrier.gdw.ss12.game.data.Team;
 import de.hochschuletrier.gdw.ss12.game.datagrams.CreateEntityDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.NoticeDatagram;
+import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerNameDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerUpdatesDatagram;
+import de.hochschuletrier.gdw.ss12.game.datagrams.RemoveEntityDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.WorldSetupDatagram;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.datagrams.WorldSoundDatagram;
-import de.hochschuletrier.gdw.ss12.game.datagrams.TeamStatesDatagram;
+import de.hochschuletrier.gdw.ss12.game.datagrams.TeamStateDatagram;
+import de.hochschuletrier.gdw.ss12.game.systems.EntitySpawnSystem;
+import java.util.HashMap;
 
 public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHandler, SystemGameInitializer {
 
     private Game game;
     private final NetClientSimple netClient;
+    private Engine engine;
+    private EntitySpawnSystem entitySpawnSystem;
+    private HashMap<Long, Entity> netEntityMap = new HashMap();
 
     public NetClientUpdateSystem(NetClientSimple netClient) {
         super(0);
@@ -32,6 +43,17 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
     @Override
     public void initGame(Game game, AssetManagerX assetManager) {
         this.game = game;
+        entitySpawnSystem = engine.getSystem(EntitySpawnSystem.class);
+    }
+
+    @Override
+    public void addedToEngine(Engine engine) {
+        this.engine = engine;
+    }
+
+    @Override
+    public void removedFromEngine(Engine engine) {
+        this.engine = null;
     }
 
     @Override
@@ -50,15 +72,10 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
 
     // fixme: handle methods for all datagrams
     public void handle(WorldSetupDatagram datagram) {
-//        serverConnection.setAccepted(true);
-//        GameWorld world = GameWorld.getInstance();
-//        String newMapName = datagram.getMapname();
-//
-//        if (!newMapName.equals(world.getMapName())) {
-//            world.loadMap(newMapName);
-//        } else {
-//            world.reset();
-//        }
+        game.loadMap(datagram.getMapname());
+        datagram.getNetId();
+        datagram.getStartPosition();
+//        game.setLocalPlayer(null, null);
 //        world.setLocalPlayer(datagram.getID(), "client " + datagram.getID());
 //
 //        world.paused = datagram.isPaused();
@@ -68,45 +85,34 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
     }
 
     public void handle(CreateEntityDatagram datagram) {
-//        ITeam team = datagram.getTeam() == -1 ? null : GameWorld.getInstance().getTeam(datagram.getTeam());
-//        Entity entity = (Entity) EntityFactory.create(datagram.getID(), datagram.getEntityType(), datagram.getPosition(), team);
-//        if (entity instanceof IEatable) {
-//            GameWorld.getInstance().addItem((IEatable) entity);
-//        } else if (entity instanceof ICandle) {
-//            GameWorld.getInstance().addItem((ICandle) entity);
-//        } else {
-//            throw new UnsupportedOperationException("Unknown entity class: " + entity.getClass().toString());
-//        }
-    }
-//
-//    public void handle(RemoveEntityDatagram datagram) {
-//        Entity e = EntityFactory.debugHashMapForEntities.get(entityId);
-//
-//        engine.removeEntity(e);
-//    }
-//
-
-    public void handle(TeamStatesDatagram datagram) {
-//        GameWorld world = GameWorld.getInstance();
-//
-//        String[] playerNames = datagram.getPlayerNames();
-//        for (int playerId = 0; playerId < playerNames.length; ++playerId) {
-//            world.getPlayerByID(playerId).setName(playerNames[playerId]);
-//        }
-//
-//        int[] numberTeamWins = datagram.getNumberTeamWins();
-//        for (int team = 0; team < numberTeamWins.length; ++team) {
-//            world.getTeam(team).setWins(numberTeamWins[team]);
-//        }
-//
-//        byte[] pizzaCount = datagram.getPizzaCount();
-//        for (int team = 0; team < pizzaCount.length; ++team) {
-//            world.getTeam(team).setPizzaCount(pizzaCount[team]);
-//        }
+        final Vector2 position = datagram.getPosition();
+        Team team = game.getTeams().get(datagram.getTeam());
+        Entity entity = entitySpawnSystem.createStaticEntity(datagram.getEntityType(), position.x, position.y, Constants.ITEM_RADIUS, team);
+        netEntityMap.put(datagram.getNetId(), entity);
     }
 
-    public Entity getPlayerByNetId(long netId) {
-        return null; //fixme
+    public void handle(RemoveEntityDatagram datagram) {
+        Entity entity = netEntityMap.get(datagram.getNetId());
+        if (entity != null) {
+            engine.removeEntity(entity);
+        } else {
+            //fixme: warn?
+        }
+    }
+
+    public void handle(PlayerNameDatagram datagram) {
+        Entity entity = netEntityMap.get(datagram.getNetId());
+        if (entity != null) {
+            ComponentMappers.player.get(entity).name = datagram.getName();
+        } else {
+            //fixme: warn?
+        }
+    }
+
+    public void handle(TeamStateDatagram datagram) {
+        Team team = game.getTeams().get(datagram.getTeamId());
+        team.setWins(datagram.getNumberTeamWins());
+        team.setPizzaCount(datagram.getPizzaCount());
     }
 
     public void handle(PlayerUpdatesDatagram datagram) {
@@ -114,7 +120,7 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
         PlayerUpdate[] updates = datagram.getUpdates();
         for (int i = 0; i < numPlayers; i++) {
             PlayerUpdate update = updates[i];
-            Entity playerEntity = getPlayerByNetId(update.netId);
+            Entity playerEntity = netEntityMap.get(update.netId);
             if (playerEntity != null) {
                 NetPlayerComponent netPlayer = ComponentMappers.netPlayer.get(playerEntity);
 

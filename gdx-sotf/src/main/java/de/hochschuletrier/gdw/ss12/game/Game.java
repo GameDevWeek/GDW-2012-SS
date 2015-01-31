@@ -169,6 +169,7 @@ public class Game {
     }
 
     private void setupPhysixWorld() {
+        //fixme: local only
         PhysixSystem physixSystem = engine.getSystem(PhysixSystem.class);
         // Generate static world
         int tileWidth = map.getTileWidth();
