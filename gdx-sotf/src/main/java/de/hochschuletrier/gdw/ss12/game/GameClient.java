@@ -16,6 +16,13 @@ public class GameClient extends Game {
     }
 
     @Override
+    public void dispose() {
+        super.dispose();
+        
+        netClient.disconnect();
+    }
+
+    @Override
     protected void addSystems() {
         super.addSystems();
 

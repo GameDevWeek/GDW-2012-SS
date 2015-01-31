@@ -23,6 +23,13 @@ public class GameServer extends GameLocal {
     }
 
     @Override
+    public void dispose() {
+        super.dispose();
+        
+        netServer.disconnect();
+    }
+
+    @Override
     protected void addSystems() {
         super.addSystems();
 

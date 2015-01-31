@@ -155,7 +155,6 @@ public class Main extends StateBasedGame {
     }
 
     public void disconnect() {
-        //fixme: disconnect netgame
         changeState(getPersistentState(MainMenuState.class), null, null);
     }
 
