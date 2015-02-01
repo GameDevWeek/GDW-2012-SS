@@ -10,6 +10,7 @@ import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.gdx.utils.DrawUtil;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetClientSimple;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetDatagramHandler;
+import de.hochschuletrier.gdw.ss12.Main;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Constants;
 import de.hochschuletrier.gdw.ss12.game.Game;
@@ -30,7 +31,7 @@ import de.hochschuletrier.gdw.ss12.game.datagrams.TeamStateDatagram;
 import de.hochschuletrier.gdw.ss12.game.systems.EntitySpawnSystem;
 import java.util.HashMap;
 
-public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHandler, SystemGameInitializer {
+public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHandler, SystemGameInitializer, NetClientSimple.Listener {
 
     private Game game;
     private final NetClientSimple netClient;
@@ -48,6 +49,7 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
         this.game = game;
         entitySpawnSystem = engine.getSystem(EntitySpawnSystem.class);
         netClient.setHandler(this);
+        netClient.setListener(this);
     }
 
     @Override
@@ -137,7 +139,7 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
                 NetPlayerComponent netPlayer = ComponentMappers.netPlayer.get(playerEntity);
 
                 // only handle the latest datagrams
-                if (netPlayer.lastSequenceId > datagram.getSequenceId()) {
+                if (netPlayer.lastSequenceId < datagram.getSequenceId()) {
                     netPlayer.lastSequenceId = datagram.getSequenceId();
                     ComponentMappers.position.get(playerEntity).set(update.position);
                     ComponentMappers.input.get(playerEntity).speed = update.speed;
@@ -150,5 +152,10 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
                 }
             }
         }
+    }
+
+    @Override
+    public void onDisconnect() {
+        Main.getInstance().disconnect();
     }
 }

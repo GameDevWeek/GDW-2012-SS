@@ -106,11 +106,17 @@ public class ConnectingState extends BaseGameState implements NetDatagramHandler
 
     @Override
     public void dispose() {
-        if (game != null) {
-            game.dispose();
-            game = null;
+        switch (status) {
+            case CONNECTING:
+                netClient.disconnect();
+                break;
+            case READY:
+                if (game != null) {
+                    game.dispose();
+                    game = null;
+                }
+                break;
         }
-        netClient.disconnect();
         serverConnection = null;
     }
 }

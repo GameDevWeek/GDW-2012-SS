@@ -6,9 +6,6 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.utils.Array;
 import de.hochschuletrier.gdw.commons.gdx.assets.AnimationExtended;
@@ -22,12 +19,7 @@ import de.hochschuletrier.gdw.commons.gdx.physix.components.PhysixModifierCompon
 import de.hochschuletrier.gdw.commons.gdx.physix.systems.PhysixSystem;
 import de.hochschuletrier.gdw.commons.gdx.audio.SoundEmitter;
 import de.hochschuletrier.gdw.commons.gdx.audio.SoundInstance;
-import de.hochschuletrier.gdw.commons.tiled.Layer;
-import de.hochschuletrier.gdw.commons.tiled.TileInfo;
-import de.hochschuletrier.gdw.commons.tiled.TileSet;
 import de.hochschuletrier.gdw.commons.tiled.TiledMap;
-import de.hochschuletrier.gdw.commons.tiled.utils.RectangleGenerator;
-import de.hochschuletrier.gdw.commons.utils.Rectangle;
 import de.hochschuletrier.gdw.ss12.Main;
 import de.hochschuletrier.gdw.ss12.game.data.PlayerState;
 import de.hochschuletrier.gdw.ss12.game.data.Team;
@@ -49,8 +41,8 @@ import java.util.function.Consumer;
 public abstract class Game {
 
     protected final CustomPooledEngine engine = new CustomPooledEngine();
-    private ImmutableArray<Entity> playerEntities = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
-    private ImmutableArray<Entity> entitiesToRemove = engine.getEntitiesFor(Family.exclude(PlayerComponent.class, TriggerComponent.class).get());
+    protected ImmutableArray<Entity> playerEntities = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
+    protected ImmutableArray<Entity> entitiesToRemove = engine.getEntitiesFor(Family.exclude(PlayerComponent.class, TriggerComponent.class).get());
 
     protected final LimitedSmoothCamera camera = new LimitedSmoothCamera();
     protected TiledMap map;
@@ -105,7 +97,6 @@ public abstract class Game {
     protected void addSystems() {
         // Remember to set priorities in CustomPooledEngine when creating new system classes
         engine.addSystem(new KeyboardInputSystem());
-        engine.addSystem(new InputSystem());
         engine.addSystem(new UpdateSoundEmitterSystem());
 
         engine.addSystem(new EntitySpawnSystem());
@@ -223,7 +214,6 @@ public abstract class Game {
 
     public void loadMap(String filename) {
         map = assetManager.getTiledMap(filename);
-        engine.getSystem(InputSystem.class).setProcessing(false);
         systemMapInit();
 
         // Setup camera
@@ -235,37 +225,12 @@ public abstract class Game {
     }
 
     public void start() {
-        engine.getSystem(InputSystem.class).setProcessing(false);
-    }
-
-    public void go() {
-        engine.getSystem(InputSystem.class).setProcessing(true);
     }
 
     public void onNoticeStart(NoticeType type) {
-        switch (type) {
-            case GO:
-                go();
-                engine.getSystem(GameStateSystem.class).setProcessing(true);
-                break;
-            case ROUND_WON:
-            case ROUND_LOST:
-            case TEAM_WON:
-            case TEAM_LOST:
-                engine.getSystem(GameStateSystem.class).setProcessing(false);
-                break;
-        }
     }
 
     public void onNoticeEnd(NoticeType type) {
-        switch (type) {
-            case ROUND_WON:
-            case ROUND_LOST:
-            case TEAM_WON:
-            case TEAM_LOST:
-                reset();
-                break;
-        }
     }
 
     public void update(float delta) {
@@ -274,34 +239,6 @@ public abstract class Game {
         camera.update(delta);
         camera.bind();
         engine.update(delta);
-    }
-
-    public void reset() {
-        //fixme: only in GameLocal ?
-        for (Entity entity : entitiesToRemove) {
-            engine.removeEntity(entity);
-        }
-        for (Entity entity : playerEntities) {
-            PlayerComponent player = ComponentMappers.player.get(entity);
-            engine.getSystem(PowerupSystem.class).removePlayerPowerups(entity, player);
-            player.radius = Constants.PLAYER_DEFAULT_SIZE;
-            player.state = PlayerState.ALIVE;
-            player.lastTeleport = 0;
-            player.killer = null;
-            ComponentMappers.light.get(entity).radius = player.radius;
-            ComponentMappers.position.get(entity).ignorePhysix = false;
-            entity.remove(DropableComponent.class);
-
-            PhysixModifierComponent modifyComponent = engine.createComponent(PhysixModifierComponent.class);
-            entity.add(modifyComponent);
-            modifyComponent.schedule(() -> {
-                PhysixBodyComponent bodyComponent = ComponentMappers.physixBody.get(entity);
-                bodyComponent.setPosition(player.startPosition);
-                bodyComponent.setLinearVelocity(0, 0);
-                bodyComponent.setActive(true);
-            });
-        }
-        start();
     }
 
     public void createTrigger(PhysixSystem physixSystem, float x, float y, float width, float height, Consumer<Entity> consumer) {

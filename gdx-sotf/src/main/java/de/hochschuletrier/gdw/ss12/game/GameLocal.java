@@ -24,12 +24,14 @@ import de.hochschuletrier.gdw.commons.tiled.utils.RectangleGenerator;
 import de.hochschuletrier.gdw.commons.utils.Rectangle;
 import de.hochschuletrier.gdw.ss12.Main;
 import de.hochschuletrier.gdw.ss12.game.components.BotComponent;
+import de.hochschuletrier.gdw.ss12.game.components.DropableComponent;
 import de.hochschuletrier.gdw.ss12.game.components.InputComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.TriggerComponent;
 import de.hochschuletrier.gdw.ss12.game.contactlisteners.PlayerContactListener;
 import de.hochschuletrier.gdw.ss12.game.contactlisteners.TriggerContactListener;
 import de.hochschuletrier.gdw.ss12.game.data.NoticeType;
+import de.hochschuletrier.gdw.ss12.game.data.PlayerState;
 import de.hochschuletrier.gdw.ss12.game.data.Team;
 import de.hochschuletrier.gdw.ss12.game.systems.BotSystem;
 import de.hochschuletrier.gdw.ss12.game.systems.GameStateSystem;
@@ -39,6 +41,7 @@ import de.hochschuletrier.gdw.ss12.game.systems.SpawnRandomEatableSystem;
 import de.hochschuletrier.gdw.ss12.game.systems.UpdateLightSystem;
 import de.hochschuletrier.gdw.ss12.game.systems.UpdatePlayerSystem;
 import de.hochschuletrier.gdw.ss12.game.systems.UpdatePositionSystem;
+import de.hochschuletrier.gdw.ss12.game.systems.input.InputSystem;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -91,6 +94,7 @@ public class GameLocal extends Game {
             resetGame.register();
         }
 
+        engine.getSystem(InputSystem.class).setProcessing(false);
         loadMap(mapName);
         setLocalPlayer(acquireBotPlayer());
         setPlayerName(localPlayer, playerName);
@@ -105,10 +109,41 @@ public class GameLocal extends Game {
         resetGame.unregister();
     }
 
+    public void reset() {
+        for (Entity entity : entitiesToRemove) {
+            engine.removeEntity(entity);
+        }
+        for (Entity entity : playerEntities) {
+            PlayerComponent player = ComponentMappers.player.get(entity);
+            engine.getSystem(PowerupSystem.class).removePlayerPowerups(entity, player);
+            player.radius = Constants.PLAYER_DEFAULT_SIZE;
+            player.state = PlayerState.ALIVE;
+            player.lastTeleport = 0;
+            player.killer = null;
+            ComponentMappers.light.get(entity).radius = player.radius;
+            ComponentMappers.position.get(entity).ignorePhysix = false;
+            entity.remove(DropableComponent.class);
+
+            PhysixModifierComponent modifyComponent = engine.createComponent(PhysixModifierComponent.class);
+            entity.add(modifyComponent);
+            modifyComponent.schedule(() -> {
+                PhysixBodyComponent bodyComponent = ComponentMappers.physixBody.get(entity);
+                bodyComponent.setPosition(player.startPosition);
+                bodyComponent.setLinearVelocity(0, 0);
+                bodyComponent.setActive(true);
+            });
+        }
+        start();
+    }
+
     @Override
     public void start() {
-        super.start();
+        engine.getSystem(InputSystem.class).setProcessing(false);
         sendStartNotices();
+    }
+
+    public void go() {
+        engine.getSystem(InputSystem.class).setProcessing(true);
     }
 
     @Override
@@ -116,6 +151,7 @@ public class GameLocal extends Game {
         super.addSystems();
 
         // Remember to set priorities in CustomPooledEngine when creating new system classes
+        engine.addSystem(new InputSystem());
         engine.addSystem(new BotSystem());
         engine.addSystem(new PhysixSystem(
                 Constants.BOX2D_SCALE, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS
@@ -209,6 +245,34 @@ public class GameLocal extends Game {
         scheduleNoticeForAll(NoticeType.GO, 3, -1);
     }
 
+    @Override
+    public void onNoticeStart(NoticeType type) {
+        switch (type) {
+            case GO:
+                go();
+                engine.getSystem(GameStateSystem.class).setProcessing(true);
+                break;
+            case ROUND_WON:
+            case ROUND_LOST:
+            case TEAM_WON:
+            case TEAM_LOST:
+                engine.getSystem(GameStateSystem.class).setProcessing(false);
+                break;
+        }
+    }
+
+    @Override
+    public void onNoticeEnd(NoticeType type) {
+        switch (type) {
+            case ROUND_WON:
+            case ROUND_LOST:
+            case TEAM_WON:
+            case TEAM_LOST:
+                reset();
+                break;
+        }
+    }
+    
     private static class TeleporterInfo extends Rectangle {
 
         public final String destination;

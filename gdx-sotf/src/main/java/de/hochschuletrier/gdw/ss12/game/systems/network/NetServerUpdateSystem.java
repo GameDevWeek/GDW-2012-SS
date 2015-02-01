@@ -147,7 +147,7 @@ public class NetServerUpdateSystem extends EntitySystem implements NetDatagramHa
     public void handle(PlayerInputDatagram datagram) {
         NetConnection connection = datagram.getConnection();
         Entity playerEntity = (Entity) connection.getAttachment();
-        ComponentMappers.position.get(playerEntity).set(datagram.getMoveDirection());
+        ComponentMappers.input.get(playerEntity).moveDirection.set(datagram.getMoveDirection());
     }
 
     public void handle(DropItemDatagram datagram) {
