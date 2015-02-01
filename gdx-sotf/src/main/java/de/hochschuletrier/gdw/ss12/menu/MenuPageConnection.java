@@ -245,10 +245,10 @@ public class MenuPageConnection extends MenuPage {
         try {
             if (serverIp != null) {
                 ip = serverIp.getText();
+                serverIp.setStyle(skin.get(TextField.TextFieldStyle.class));
             }
             port = Integer.parseInt(serverPort.getText());
             valid = true;
-            serverIp.setStyle(skin.get(TextField.TextFieldStyle.class));
         } catch (NumberFormatException e) {
             valid = false;
             serverPort.setStyle(skin.get("error", TextField.TextFieldStyle.class));

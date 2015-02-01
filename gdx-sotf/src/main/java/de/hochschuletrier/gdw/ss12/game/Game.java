@@ -6,6 +6,9 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.utils.Array;
 import de.hochschuletrier.gdw.commons.gdx.assets.AnimationExtended;
@@ -19,7 +22,12 @@ import de.hochschuletrier.gdw.commons.gdx.physix.components.PhysixModifierCompon
 import de.hochschuletrier.gdw.commons.gdx.physix.systems.PhysixSystem;
 import de.hochschuletrier.gdw.commons.gdx.audio.SoundEmitter;
 import de.hochschuletrier.gdw.commons.gdx.audio.SoundInstance;
+import de.hochschuletrier.gdw.commons.tiled.Layer;
+import de.hochschuletrier.gdw.commons.tiled.TileInfo;
+import de.hochschuletrier.gdw.commons.tiled.TileSet;
 import de.hochschuletrier.gdw.commons.tiled.TiledMap;
+import de.hochschuletrier.gdw.commons.tiled.utils.RectangleGenerator;
+import de.hochschuletrier.gdw.commons.utils.Rectangle;
 import de.hochschuletrier.gdw.ss12.Main;
 import de.hochschuletrier.gdw.ss12.game.data.PlayerState;
 import de.hochschuletrier.gdw.ss12.game.data.Team;
@@ -38,7 +46,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
-public class Game {
+public abstract class Game {
 
     protected final CustomPooledEngine engine = new CustomPooledEngine();
     private ImmutableArray<Entity> playerEntities = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
@@ -63,10 +71,9 @@ public class Game {
             animations.put(PlayerState.HALUCINATING, assetManager.getAnimation("player_halucinating"));
             teams.add(team);
         }
-        init();
     }
 
-    private void init() {
+    protected void init() {
         addSystems();
         initSystems();
         inputForwarder.set(engine.getSystem(KeyboardInputSystem.class));

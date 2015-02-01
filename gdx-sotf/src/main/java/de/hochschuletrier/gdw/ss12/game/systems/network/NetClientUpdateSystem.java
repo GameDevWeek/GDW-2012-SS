@@ -45,6 +45,7 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
     public void initGame(Game game, AssetManagerX assetManager) {
         this.game = game;
         entitySpawnSystem = engine.getSystem(EntitySpawnSystem.class);
+        netClient.setHandler(this);
     }
 
     @Override
@@ -94,7 +95,8 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
 
     public void handle(CreateEntityDatagram datagram) {
         final Vector2 position = datagram.getPosition();
-        Team team = game.getTeams().get(datagram.getTeam());
+        final byte teamId = datagram.getTeam();
+        Team team = teamId == -1 ? null : game.getTeams().get(teamId);
         Entity entity = entitySpawnSystem.createStaticEntity(datagram.getEntityType(), position.x, position.y, Constants.ITEM_RADIUS, team);
         netEntityMap.put(datagram.getNetId(), entity);
     }

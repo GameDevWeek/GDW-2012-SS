@@ -69,6 +69,10 @@ public class GameLocal extends Game {
 
     public GameLocal(AssetManagerX assetManager) {
         super(assetManager);
+    }
+
+    public void init(String mapName, String playerName) {
+        super.init();
 
         Collections.addAll(freeBotNames, botNamesOrdered);
         Collections.shuffle(freeBotNames);
@@ -86,6 +90,10 @@ public class GameLocal extends Game {
             toggleBotsEnabled.register();
             resetGame.register();
         }
+
+        loadMap(mapName);
+        setLocalPlayer(acquireBotPlayer());
+        setPlayerName(localPlayer, playerName);
     }
 
     @Override

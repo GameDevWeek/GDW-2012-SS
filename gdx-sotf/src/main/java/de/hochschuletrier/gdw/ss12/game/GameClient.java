@@ -2,6 +2,7 @@ package de.hochschuletrier.gdw.ss12.game;
 
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetClientSimple;
+import de.hochschuletrier.gdw.ss12.game.datagrams.WorldSetupDatagram;
 import de.hochschuletrier.gdw.ss12.game.systems.network.NetClientSendInputSystem;
 import de.hochschuletrier.gdw.ss12.game.systems.network.NetClientUpdateSystem;
 
@@ -14,11 +15,16 @@ public class GameClient extends Game {
 
         this.netClient = netClient;
     }
+    
+    public void init(WorldSetupDatagram worldSetupDatagram) {
+        super.init();
+        engine.getSystem(NetClientUpdateSystem.class).handle(worldSetupDatagram);
+    }
 
     @Override
     public void dispose() {
         super.dispose();
-        
+
         netClient.disconnect();
     }
 

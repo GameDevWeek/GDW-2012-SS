@@ -41,9 +41,11 @@ import de.hochschuletrier.gdw.ss12.game.GameServer;
 import de.hochschuletrier.gdw.ss12.game.GameLocal;
 import de.hochschuletrier.gdw.ss12.game.datagrams.DatagramFactory;
 import de.hochschuletrier.gdw.ss12.sandbox.SandboxCommand;
+import de.hochschuletrier.gdw.ss12.states.ConnectingState;
 import de.hochschuletrier.gdw.ss12.states.GameplayState;
 import de.hochschuletrier.gdw.ss12.states.LoadGameState;
 import de.hochschuletrier.gdw.ss12.states.MainMenuState;
+import java.io.IOException;
 import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -238,10 +240,7 @@ public class Main extends StateBasedGame {
     public void startSingleplayer() {
         if (beforeConnect()) {
             GameLocal game = new GameLocal(assetManager);
-            game.loadMap(Settings.MAP_FILE.get());
-            final Entity localPlayer = game.acquireBotPlayer();
-            game.setLocalPlayer(localPlayer);
-            game.setPlayerName(localPlayer, Settings.PLAYER_NAME.get());
+            game.init(Settings.MAP_FILE.get(), Settings.PLAYER_NAME.get());
             GameplayState gameplayState = new GameplayState(assetManager, game);
             changeState(gameplayState, new SplitHorizontalTransition(500), null);
         }
@@ -252,10 +251,7 @@ public class Main extends StateBasedGame {
             NetServerSimple netServer = new NetServerSimple(DatagramFactory.POOL);
             if (netServer.start(port, Constants.MAX_PLAYERS)) {
                 GameServer game = new GameServer(assetManager, netServer);
-                game.loadMap(Settings.MAP_FILE.get());
-                final Entity localPlayer = game.acquireBotPlayer();
-                game.setLocalPlayer(localPlayer);
-                game.setPlayerName(localPlayer, Settings.PLAYER_NAME.get());
+                game.init(Settings.MAP_FILE.get(), Settings.PLAYER_NAME.get());
                 GameplayState gameplayState = new GameplayState(assetManager, game);
                 changeState(gameplayState, new SplitHorizontalTransition(500), null);
             }
@@ -264,7 +260,12 @@ public class Main extends StateBasedGame {
 
     public void joinServer(String ip, int port) {
         if (beforeConnect()) {
-
+            try {
+                ConnectingState connectingState = new ConnectingState(assetManager, ip, port, Settings.PLAYER_NAME.get());
+                changeState(connectingState, new SplitHorizontalTransition(500), null);
+            } catch(IOException e) {
+                //fixme
+            }
         }
     }
 }
