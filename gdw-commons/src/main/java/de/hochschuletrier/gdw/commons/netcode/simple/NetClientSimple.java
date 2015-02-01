@@ -20,15 +20,21 @@ public class NetClientSimple {
 
     protected NetManagerClient manager;
     protected NetConnection connection;
+    protected boolean connected;
     protected final NetDatagramDistributor distributor = new NetDatagramDistributor();
     protected final NetDatagramPool datagramPool;
+    private Listener listener;
 
     public NetClientSimple(NetDatagramPool datagramPool) {
         this.datagramPool = datagramPool;
     }
-    
+
     public void setHandler(NetDatagramHandler handler) {
         distributor.setHandler(handler);
+    }
+
+    public void setListener(Listener listener) {
+        this.listener = listener;
     }
 
     public boolean isRunning() {
@@ -49,6 +55,11 @@ public class NetClientSimple {
                     }
                 }
             }
+        } else if (connected) {
+            connected = false;
+            if(listener != null) {
+                listener.onDisconnect();
+            }
         }
     }
 
@@ -58,6 +69,7 @@ public class NetClientSimple {
             NetThreadSimple thread = new NetThreadSimple(manager, 500);
             thread.start();
             connection = manager.getConnection();
+            connected = true;
             return true;
         } catch (IOException e) {
             connection = null;
@@ -70,10 +82,18 @@ public class NetClientSimple {
         if (connection != null) {
             connection.disconnect();
             connection = null;
+            connected = false;
+            if(listener != null) {
+                listener.onDisconnect();
+            }
         }
     }
 
     public NetConnection getConnection() {
         return connection;
+    }
+
+    public interface Listener {
+        public void onDisconnect();
     }
 }
