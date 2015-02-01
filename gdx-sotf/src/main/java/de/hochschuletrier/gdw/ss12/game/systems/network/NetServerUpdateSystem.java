@@ -24,6 +24,7 @@ import de.hochschuletrier.gdw.ss12.game.datagrams.DropItemDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.NoticeDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerInputDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerNameDatagram;
+import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerUpdatesDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.TeamStateDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.WorldSetupDatagram;
 import de.hochschuletrier.gdw.ss12.game.systems.rendering.RenderNoticeSystem;
@@ -89,13 +90,10 @@ public class NetServerUpdateSystem extends EntitySystem implements NetDatagramHa
     public void sendWorldSetup(NetConnection connection) {
         final Entity playerEntity = (Entity) connection.getAttachment();
         connection.sendReliable(WorldSetupDatagram.create(game, playerEntity));
+        connection.sendReliable(PlayerUpdatesDatagram.create(players));
 
         for (Entity entity : entities) {
             connection.sendReliable(CreateEntityDatagram.create(entity));
-        }
-
-        for (Entity entity : players) {
-            connection.sendReliable(PlayerNameDatagram.create(entity));
         }
 
         for (Team team : game.getTeams()) {

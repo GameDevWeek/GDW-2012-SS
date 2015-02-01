@@ -98,7 +98,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
                                 throw new RuntimeException("Map contains bad Team Id: " + id);
                             }
 
-                            createBotPlayer(obj.getX() + obj.getWidth() / 2, obj.getY() + obj.getHeight() / 2, teams.get(id), gameLocal.acquireBotName());
+                            createPlayer(obj.getX() + obj.getWidth() / 2, obj.getY() + obj.getHeight() / 2, teams.get(id), gameLocal.acquireBotName());
                         }
                     }
                 }
@@ -117,7 +117,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         physixSystem = null;
     }
 
-    private Entity createBotPlayer(float x, float y, Team team, String name) {
+    public Entity createPlayer(float x, float y, Team team, String name) {
         team.numPlayers++;
 
         Entity entity = engine.createEntity();
@@ -125,11 +125,6 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         position.x = x;
         position.y = y;
         entity.add(position);
-        PhysixModifierComponent modifyComponent = null;
-        if (physixSystem != null) {
-            modifyComponent = engine.createComponent(PhysixModifierComponent.class);
-            entity.add(modifyComponent);
-        }
 
         PlayerComponent player = engine.createComponent(PlayerComponent.class);
         player.radius = Constants.PLAYER_DEFAULT_SIZE;
@@ -162,7 +157,10 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         light.radius = Constants.PLAYER_DEFAULT_SIGHTDISTANCE;
         entity.add(light);
 
-        if (modifyComponent != null) {
+        if (game instanceof GameLocal) {
+            PhysixModifierComponent modifyComponent = engine.createComponent(PhysixModifierComponent.class);
+            entity.add(modifyComponent);
+
             modifyComponent.schedule(() -> {
                 PhysixBodyComponent bodyComponent = engine.createComponent(PhysixBodyComponent.class);
                 PhysixBodyDef bodyDef = new PhysixBodyDef(BodyDef.BodyType.DynamicBody, physixSystem)
@@ -218,6 +216,7 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
             SetupComponent setup = engine.createComponent(SetupComponent.class);
             setup.team = team;
             setup.name = name;
+            entity.add(setup);
         }
 
         engine.addEntity(entity);

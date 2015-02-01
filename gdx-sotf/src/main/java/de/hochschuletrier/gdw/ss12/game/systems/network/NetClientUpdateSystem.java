@@ -13,6 +13,7 @@ import de.hochschuletrier.gdw.ss12.game.Constants;
 import de.hochschuletrier.gdw.ss12.game.Game;
 import de.hochschuletrier.gdw.ss12.game.components.NetPlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
+import de.hochschuletrier.gdw.ss12.game.data.PlayerSetup;
 import de.hochschuletrier.gdw.ss12.game.data.PlayerUpdate;
 import de.hochschuletrier.gdw.ss12.game.data.Team;
 import de.hochschuletrier.gdw.ss12.game.datagrams.CreateEntityDatagram;
@@ -33,7 +34,7 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
     private final NetClientSimple netClient;
     private Engine engine;
     private EntitySpawnSystem entitySpawnSystem;
-    private HashMap<Long, Entity> netEntityMap = new HashMap();
+    private final HashMap<Long, Entity> netEntityMap = new HashMap();
 
     public NetClientUpdateSystem(NetClientSimple netClient) {
         super(0);
@@ -70,18 +71,25 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
         game.scheduleNoticeForPlayer(datagram.getNoticeType(), datagram.getDelay(), datagram.getTimeLeft(), game.getLocalPlayer());
     }
 
-    // fixme: handle methods for all datagrams
     public void handle(WorldSetupDatagram datagram) {
-        game.loadMap(datagram.getMapname());
-        datagram.getNetId();
-        datagram.getStartPosition();
-//        game.setLocalPlayer(null, null);
-//        world.setLocalPlayer(datagram.getID(), "client " + datagram.getID());
-//
-//        world.paused = datagram.isPaused();
-//        world.getLocalPlayer().setPosition(datagram.getStartPosition());
-//
-//        GameStates.CLANARENA.fadeActivate(700);
+        game.loadMap(datagram.getMapName());
+
+        Array<Team> teams = game.getTeams();
+        int numPlayers = datagram.getNumPlayers();
+        PlayerSetup[] players = datagram.getPlayers();
+        for (int i = 0; i < numPlayers; i++) {
+            PlayerSetup player = players[i];
+            Entity entity = entitySpawnSystem.createPlayer(player.start.x, player.start.y, teams.get(player.team), player.name);
+            netEntityMap.put(player.netId, entity);
+        }
+
+        Entity entity = netEntityMap.get(datagram.getNetId());
+        if (entity != null) {
+            engine.removeEntity(entity);
+            game.setLocalPlayer(entity);
+        } else {
+            //fixme: warn?
+        }
     }
 
     public void handle(CreateEntityDatagram datagram) {
@@ -104,8 +112,6 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
         Entity entity = netEntityMap.get(datagram.getNetId());
         if (entity != null) {
             ComponentMappers.player.get(entity).name = datagram.getName();
-        } else {
-            //fixme: warn?
         }
     }
 

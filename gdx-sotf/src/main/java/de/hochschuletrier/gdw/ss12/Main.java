@@ -1,5 +1,6 @@
 package de.hochschuletrier.gdw.ss12;
 
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -238,7 +239,9 @@ public class Main extends StateBasedGame {
         if (beforeConnect()) {
             GameLocal game = new GameLocal(assetManager);
             game.loadMap(Settings.MAP_FILE.get());
-            game.setLocalPlayer(game.acquireBotPlayer(), Settings.PLAYER_NAME.get());
+            final Entity localPlayer = game.acquireBotPlayer();
+            game.setLocalPlayer(localPlayer);
+            game.setPlayerName(localPlayer, Settings.PLAYER_NAME.get());
             GameplayState gameplayState = new GameplayState(assetManager, game);
             changeState(gameplayState, new SplitHorizontalTransition(500), null);
         }
@@ -250,7 +253,9 @@ public class Main extends StateBasedGame {
             if (netServer.start(port, Constants.MAX_PLAYERS)) {
                 GameServer game = new GameServer(assetManager, netServer);
                 game.loadMap(Settings.MAP_FILE.get());
-                game.setLocalPlayer(game.acquireBotPlayer(), Settings.PLAYER_NAME.get());
+                final Entity localPlayer = game.acquireBotPlayer();
+                game.setLocalPlayer(localPlayer);
+                game.setPlayerName(localPlayer, Settings.PLAYER_NAME.get());
                 GameplayState gameplayState = new GameplayState(assetManager, game);
                 changeState(gameplayState, new SplitHorizontalTransition(500), null);
             }
