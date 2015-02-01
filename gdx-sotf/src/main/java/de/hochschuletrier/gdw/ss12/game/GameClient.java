@@ -34,6 +34,6 @@ public class GameClient extends Game {
 
         // Remember to set priorities in CustomPooledEngine when creating new system classes
         engine.addSystem(new NetClientUpdateSystem(netClient));
-        engine.addSystem(new NetClientSendInputSystem());
+        engine.addSystem(new NetClientSendInputSystem(netClient));
     }
 }

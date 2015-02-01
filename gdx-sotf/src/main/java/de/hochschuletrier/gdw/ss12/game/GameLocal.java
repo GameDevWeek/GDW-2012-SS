@@ -130,6 +130,12 @@ public class GameLocal extends Game {
         engine.addSystem(new PhysixDebugRenderSystem());
     }
 
+    @Override
+    public void updateCameraForced() {
+        engine.getSystem(UpdatePositionSystem.class).update(0);
+        super.updateCameraForced();
+    }
+
     public void toggleBotsEnabled() {
         for (Entity botPlayer : botPlayers) {
             InputComponent input = ComponentMappers.input.get(botPlayer);

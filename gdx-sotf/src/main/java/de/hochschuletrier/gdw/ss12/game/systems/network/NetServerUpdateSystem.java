@@ -48,6 +48,8 @@ public class NetServerUpdateSystem extends EntitySystem implements NetDatagramHa
     public void initGame(Game game, AssetManagerX assetManager) {
         this.game = (GameServer) game;
         noticeSystem = engine.getSystem(RenderNoticeSystem.class);
+        netServer.setListener(this);
+        netServer.setHandler(this);
     }
 
     @Override

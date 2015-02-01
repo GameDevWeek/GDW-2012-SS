@@ -180,7 +180,6 @@ public abstract class Game {
     }
 
     public void updateCameraForced() {
-        engine.getSystem(UpdatePositionSystem.class).update(0);
         PositionComponent position = ComponentMappers.position.get(localPlayer);
         camera.setDestination(position.x, position.y);
         camera.updateForced();

@@ -17,8 +17,9 @@ public class NetClientSendInputSystem extends EntitySystem implements SystemGame
     private Game game;
     private NetClientSimple netClient;
 
-    public NetClientSendInputSystem() {
+    public NetClientSendInputSystem(NetClientSimple netClient) {
         super(0);
+        this.netClient = netClient;
     }
 
     @Override

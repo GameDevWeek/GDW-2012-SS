@@ -61,7 +61,9 @@ public class ConnectingState extends BaseGameState implements NetDatagramHandler
 
     @Override
     public void update(float delta) {
-        netClient.update();
+        if (!netClient.isRunning()) {
+            return;
+        }
         switch (status) {
             case CONNECTING:
                 if(!checkForDisconnect()) {

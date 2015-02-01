@@ -3,9 +3,11 @@ package de.hochschuletrier.gdw.ss12.game.systems.network;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
+import de.hochschuletrier.gdw.commons.gdx.utils.DrawUtil;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetClientSimple;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetDatagramHandler;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
@@ -32,7 +34,7 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
 
     private Game game;
     private final NetClientSimple netClient;
-    private Engine engine;
+    private PooledEngine engine;
     private EntitySpawnSystem entitySpawnSystem;
     private final HashMap<Long, Entity> netEntityMap = new HashMap();
 
@@ -50,7 +52,7 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
 
     @Override
     public void addedToEngine(Engine engine) {
-        this.engine = engine;
+        this.engine = (PooledEngine)engine;
     }
 
     @Override
@@ -73,7 +75,9 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
     }
 
     public void handle(WorldSetupDatagram datagram) {
+        DrawUtil.batch.end();
         game.loadMap(datagram.getMapName());
+        DrawUtil.batch.begin();
 
         Array<Team> teams = game.getTeams();
         int numPlayers = datagram.getNumPlayers();
@@ -81,12 +85,12 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
         for (int i = 0; i < numPlayers; i++) {
             PlayerSetup player = players[i];
             Entity entity = entitySpawnSystem.createPlayer(player.start.x, player.start.y, teams.get(player.team), player.name);
+            entity.add(engine.createComponent(NetPlayerComponent.class));
             netEntityMap.put(player.netId, entity);
         }
 
         Entity entity = netEntityMap.get(datagram.getNetId());
         if (entity != null) {
-            engine.removeEntity(entity);
             game.setLocalPlayer(entity);
         } else {
             //fixme: warn?

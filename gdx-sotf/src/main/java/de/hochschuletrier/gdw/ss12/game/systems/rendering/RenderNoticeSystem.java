@@ -28,8 +28,8 @@ public class RenderNoticeSystem extends EntitySystem implements SystemGameInitia
         super(0);
     }
     
-    public Notice[] getNotices() {
-        return notices.items;
+    public Array<Notice> getNotices() {
+        return notices;
     }
 
     @Override
