@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
+import de.hochschuletrier.gdw.commons.gdx.cameras.orthogonal.LimitedSmoothCamera;
 import de.hochschuletrier.gdw.commons.gdx.utils.DrawUtil;
 import de.hochschuletrier.gdw.ss12.Main;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
@@ -22,6 +23,7 @@ import de.hochschuletrier.gdw.ss12.game.data.Team;
 import de.hochschuletrier.gdw.ss12.game.components.LightComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
+import de.hochschuletrier.gdw.ss12.game.systems.CameraSystem;
 
 public class RenderShadowMapSystem extends EntitySystem implements SystemGameInitializer {
 
@@ -36,10 +38,12 @@ public class RenderShadowMapSystem extends EntitySystem implements SystemGameIni
     public final Vector3 ambientColor = new Vector3(0.0f, 0.0f, 0.0f);
     private Game game;
     private boolean activeFrame;
+    private LimitedSmoothCamera camera;
 
     @Override
     public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
         this.game = game;
+        camera = engine.getSystem(CameraSystem.class).getCamera();
         lights = engine.getEntitiesFor(Family.all(LightComponent.class).get());
 
         String vertexShader = Gdx.files.internal("data/shaders/vertexShader.glsl").readString();
@@ -80,7 +84,7 @@ public class RenderShadowMapSystem extends EntitySystem implements SystemGameIni
             DrawUtil.batch.end();
             //draw the light to the FBO
             fbo.begin();
-            game.getCamera().bind();
+            camera.bind();
             DrawUtil.batch.setShader(defaultShader);
             DrawUtil.clear();
             DrawUtil.batch.begin();
@@ -96,7 +100,7 @@ public class RenderShadowMapSystem extends EntitySystem implements SystemGameIni
 
             //draw the actual scene
             DrawUtil.clear();
-            game.getCamera().bind();
+            camera.bind();
             DrawUtil.batch.setShader(finalShader);
             DrawUtil.batch.begin();
             fbo.getColorBufferTexture().bind(1);
@@ -120,7 +124,7 @@ public class RenderShadowMapSystem extends EntitySystem implements SystemGameIni
         if (activeFrame) {
             DrawUtil.batch.end();
             DrawUtil.batch.begin();
-            game.getCamera().bind();
+            camera.bind();
             DrawUtil.batch.setShader(defaultShader);
         }
     }

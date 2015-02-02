@@ -5,10 +5,13 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import de.hochschuletrier.gdw.commons.devcon.cvar.CVarBool;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.gdx.input.hotkey.Hotkey;
+import de.hochschuletrier.gdw.commons.gdx.physix.PhysixBodyDef;
 import de.hochschuletrier.gdw.commons.gdx.physix.PhysixComponentAwareContactListener;
+import de.hochschuletrier.gdw.commons.gdx.physix.PhysixFixtureDef;
 import de.hochschuletrier.gdw.commons.gdx.physix.components.PhysixBodyComponent;
 import de.hochschuletrier.gdw.commons.gdx.physix.components.PhysixModifierComponent;
 import de.hochschuletrier.gdw.commons.gdx.physix.systems.PhysixSystem;
@@ -38,6 +41,7 @@ import de.hochschuletrier.gdw.ss12.game.systems.input.InputSystem;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.function.Consumer;
 
 public class GameLocal extends Game {
 
@@ -338,5 +342,25 @@ public class GameLocal extends Game {
                 player.lastTeleport = System.currentTimeMillis();
             }
         });
+    }
+
+    public void createTrigger(PhysixSystem physixSystem, float x, float y, float width, float height, Consumer<Entity> consumer) {
+        Entity entity = engine.createEntity();
+        PhysixModifierComponent modifyComponent = engine.createComponent(PhysixModifierComponent.class);
+        entity.add(modifyComponent);
+
+        TriggerComponent triggerComponent = engine.createComponent(TriggerComponent.class);
+        triggerComponent.consumer = consumer;
+        entity.add(triggerComponent);
+
+        modifyComponent.schedule(() -> {
+            PhysixBodyComponent bodyComponent = engine.createComponent(PhysixBodyComponent.class);
+            PhysixBodyDef bodyDef = new PhysixBodyDef(BodyDef.BodyType.StaticBody, physixSystem).position(x, y);
+            bodyComponent.init(bodyDef, physixSystem, entity);
+            PhysixFixtureDef fixtureDef = new PhysixFixtureDef(physixSystem).sensor(true).shapeBox(width, height);
+            bodyComponent.createFixture(fixtureDef);
+            entity.add(bodyComponent);
+        });
+        engine.addEntity(entity);
     }
 }

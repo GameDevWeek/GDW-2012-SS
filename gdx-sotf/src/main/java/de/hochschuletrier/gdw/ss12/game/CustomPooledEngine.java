@@ -44,7 +44,7 @@ public class CustomPooledEngine extends PooledEngine {
         ORDER.put(RemoveAnimatedItemSystem.class, priority++); // server
         ORDER.put(GameStateSystem.class, priority++); // server
         ORDER.put(NetServerSendSystem.class, priority++); // server
-        ORDER.put(UpdateCameraSystem.class, priority++); // both
+        ORDER.put(CameraSystem.class, priority++); // both
 
         // World rendering (all both)
         ORDER.put(RenderShadowMapSystem.class, priority++);

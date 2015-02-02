@@ -28,6 +28,7 @@ import de.hochschuletrier.gdw.ss12.game.components.LightComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemMapInitializer;
+import de.hochschuletrier.gdw.ss12.game.systems.CameraSystem;
 
 public class RenderMiniMapSystem extends EntitySystem implements SystemGameInitializer, SystemMapInitializer, Disposable {
 
@@ -42,6 +43,7 @@ public class RenderMiniMapSystem extends EntitySystem implements SystemGameIniti
     private int yOffset;
     private float renderScale;
     private RenderMapSystem renderMapSystem;
+    private LimitedSmoothCamera camera;
 
 
     @Override
@@ -56,6 +58,7 @@ public class RenderMiniMapSystem extends EntitySystem implements SystemGameIniti
     public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
         this.game = game;
         renderMapSystem = engine.getSystem(RenderMapSystem.class);
+        camera = engine.getSystem(CameraSystem.class).getCamera();
         lights = engine.getEntitiesFor(Family.all(LightComponent.class).get());
         players = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
     }
@@ -132,7 +135,6 @@ public class RenderMiniMapSystem extends EntitySystem implements SystemGameIniti
     }
 
     private void drawCamera(float mapX, float mapY, PlayerComponent localPlayer) {
-        LimitedSmoothCamera camera = game.getCamera();
         final float x = mapX + camera.getLeftOffset() * renderScale;
         final float y = mapY + camera.getTopOffset() * renderScale;
         DrawUtil.setColor(localPlayer.team.color);

@@ -4,22 +4,17 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.utils.Array;
 import de.hochschuletrier.gdw.commons.devcon.cvar.CVarBool;
 import de.hochschuletrier.gdw.commons.gdx.assets.AnimationExtended;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
-import de.hochschuletrier.gdw.commons.gdx.cameras.orthogonal.LimitedSmoothCamera;
 import de.hochschuletrier.gdw.commons.gdx.input.InputForwarder;
 import de.hochschuletrier.gdw.commons.gdx.physix.PhysixBodyDef;
 import de.hochschuletrier.gdw.commons.gdx.physix.PhysixFixtureDef;
-import de.hochschuletrier.gdw.commons.gdx.physix.components.PhysixBodyComponent;
-import de.hochschuletrier.gdw.commons.gdx.physix.components.PhysixModifierComponent;
 import de.hochschuletrier.gdw.commons.gdx.physix.systems.PhysixSystem;
 import de.hochschuletrier.gdw.commons.gdx.audio.SoundEmitter;
 import de.hochschuletrier.gdw.commons.gdx.audio.SoundInstance;
@@ -45,7 +40,6 @@ import de.hochschuletrier.gdw.ss12.game.systems.input.*;
 import de.hochschuletrier.gdw.ss12.game.systems.rendering.*;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.function.Consumer;
 
 public abstract class Game {
 
@@ -53,7 +47,6 @@ public abstract class Game {
     protected ImmutableArray<Entity> playerEntities = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
     protected ImmutableArray<Entity> entitiesToRemove = engine.getEntitiesFor(Family.exclude(PlayerComponent.class, TriggerComponent.class).get());
 
-    protected final LimitedSmoothCamera camera = new LimitedSmoothCamera();
     protected TiledMap map;
     protected Entity localPlayer;
     protected final Array<Team> teams = new Array();
@@ -97,10 +90,6 @@ public abstract class Game {
         togglePhysixDebug.unregister();
     }
 
-    public LimitedSmoothCamera getCamera() {
-        return camera;
-    }
-
     public ImmutableArray<Entity> getPlayerEntities() {
         return playerEntities;
     }
@@ -128,7 +117,7 @@ public abstract class Game {
         ));
         engine.addSystem(new EntitySpawnSystem());
         engine.addSystem(new UpdatePlayerEffectsSystem());
-        engine.addSystem(new UpdateCameraSystem(camera));
+        engine.addSystem(new CameraSystem());
         engine.addSystem(new UpdatePositionSystem());
 
         engine.addSystem(new RenderShadowMapSystem());
@@ -202,7 +191,7 @@ public abstract class Game {
 
     public void updateCameraForced() {
         engine.getSystem(UpdatePositionSystem.class).update(0);
-        engine.getSystem(UpdateCameraSystem.class).forceCameraUpdate();
+        engine.getSystem(CameraSystem.class).forceCameraUpdate();
     }
 
     public SoundInstance playAnouncerSound(String name) {
@@ -245,13 +234,6 @@ public abstract class Game {
         map = assetManager.getTiledMap(filename);
         setupPhysixWorld();
         systemMapInit();
-
-        // Setup camera
-        camera.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        float totalMapWidth = map.getWidth() * map.getTileWidth();
-        float totalMapHeight = map.getHeight() * map.getTileHeight();
-        camera.setBounds(0, 0, totalMapWidth, totalMapHeight);
-        Main.getInstance().addScreenListener(camera);
     }
 
     private void setupPhysixWorld() {
@@ -286,25 +268,5 @@ public abstract class Game {
 
     public void update(float delta) {
         engine.update(delta);
-    }
-
-    public void createTrigger(PhysixSystem physixSystem, float x, float y, float width, float height, Consumer<Entity> consumer) {
-        Entity entity = engine.createEntity();
-        PhysixModifierComponent modifyComponent = engine.createComponent(PhysixModifierComponent.class);
-        entity.add(modifyComponent);
-
-        TriggerComponent triggerComponent = engine.createComponent(TriggerComponent.class);
-        triggerComponent.consumer = consumer;
-        entity.add(triggerComponent);
-
-        modifyComponent.schedule(() -> {
-            PhysixBodyComponent bodyComponent = engine.createComponent(PhysixBodyComponent.class);
-            PhysixBodyDef bodyDef = new PhysixBodyDef(BodyType.StaticBody, physixSystem).position(x, y);
-            bodyComponent.init(bodyDef, physixSystem, entity);
-            PhysixFixtureDef fixtureDef = new PhysixFixtureDef(physixSystem).sensor(true).shapeBox(width, height);
-            bodyComponent.createFixture(fixtureDef);
-            entity.add(bodyComponent);
-        });
-        engine.addEntity(entity);
     }
 }
