@@ -1,9 +1,9 @@
 package de.hochschuletrier.gdw.ss12.game.systems;
 
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ReflectionPool;
@@ -50,10 +50,14 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
     }
 
     @Override
-    public void initGame(Game game, AssetManagerX assetManager) {
+    public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
         this.game = game;
         this.assetManager = assetManager;
 
+        engine.addEntityListener(Family.all(EatableComponent.class).get(), eatableListener);
+        engine.addEntityListener(Family.all(ItemTrapComponent.class).get(), itemTrapListener);
+        engine.addEntityListener(Family.all(PlayerComponent.class).get(), playerListener);
+        
         try {
             powerupJsonMap = JacksonReader.readMap("data/json/powerups.json", PowerupJson.class);
         } catch (Exception e) {
@@ -64,22 +68,6 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
     @Override
     public void initMap(TiledMap map, Array<Team> teams) {
         this.teams = teams;
-    }
-
-    @Override
-    public void addedToEngine(Engine engine) {
-        super.addedToEngine(engine);
-        engine.addEntityListener(Family.all(EatableComponent.class).get(), eatableListener);
-        engine.addEntityListener(Family.all(ItemTrapComponent.class).get(), itemTrapListener);
-        engine.addEntityListener(Family.all(PlayerComponent.class).get(), playerListener);
-    }
-
-    @Override
-    public void removedFromEngine(Engine engine) {
-        super.removedFromEngine(engine);
-        engine.removeEntityListener(eatableListener);
-        engine.removeEntityListener(itemTrapListener);
-        engine.removeEntityListener(playerListener);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package de.hochschuletrier.gdw.ss12.game.systems;
 
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.ashley.core.EntitySystem;
@@ -40,22 +39,19 @@ public class SpawnRandomEatableSystem extends EntitySystem implements SystemGame
     private Stack<String> nextEatables = new Stack();
     private Stack<String> usedEatables = new Stack();
 
-    private PooledEngine engine;
     private EntitySpawnSystem entitySpawnSystem;
     private final SpawnPositionPool spawnPositionPool = new SpawnPositionPool(256, 512);
     private final Array<SpawnPosition> spawnPositions = new Array();
     private float timeSincelastItemSpawnTry;
     private final Random random = new Random();
 
-    public SpawnRandomEatableSystem() {
-        super(0);
-    }
-
     @Override
-    public void initGame(Game game, AssetManagerX assetManager) {
+    public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
         nextEatables.clear();
         usedEatables.clear();
         entitySpawnSystem = engine.getSystem(EntitySpawnSystem.class);
+        engine.addEntityListener(this);
+        eatables = engine.getEntitiesFor(Family.all(EatableComponent.class).get());
 
         try {
             HashMap<String, EntityJson> entityJsonMap = JacksonReader.readMap("data/json/entities.json", EntityJson.class);
@@ -149,20 +145,6 @@ public class SpawnRandomEatableSystem extends EntitySystem implements SystemGame
         String eatableName = nextEatables.pop();
         usedEatables.push(eatableName);
         entitySpawnSystem.createStaticEntity(eatableName, position.x, position.y, Constants.ITEM_RADIUS, null);
-    }
-
-    @Override
-    public void addedToEngine(Engine engine) {
-        this.engine = (PooledEngine) engine;
-        engine.addEntityListener(this);
-        eatables = engine.getEntitiesFor(Family.all(EatableComponent.class).get());
-    }
-
-    @Override
-    public void removedFromEngine(Engine engine) {
-        this.engine = null;
-        engine.removeEntityListener(this);
-        eatables = null;
     }
 
     @Override

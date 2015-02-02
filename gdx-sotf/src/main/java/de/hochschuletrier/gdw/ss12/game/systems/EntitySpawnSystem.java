@@ -1,7 +1,6 @@
 package de.hochschuletrier.gdw.ss12.game.systems;
 
 import com.badlogic.ashley.core.Component;
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.PooledEngine;
@@ -60,14 +59,11 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
     private AssetManagerX assetManager;
     private Game game;
 
-    public EntitySpawnSystem() {
-        super(0);
-    }
-
     @Override
-    public void initGame(Game game, AssetManagerX assetManager) {
+    public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
         this.game = game;
         this.assetManager = assetManager;
+        this.engine = engine;
 
         if (game instanceof GameLocal) {
             physixSystem = engine.getSystem(PhysixSystem.class);
@@ -104,17 +100,6 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
                 }
             }
         }
-    }
-
-    @Override
-    public void addedToEngine(Engine engine) {
-        this.engine = (PooledEngine) engine;
-    }
-
-    @Override
-    public void removedFromEngine(Engine engine) {
-        this.engine = null;
-        physixSystem = null;
     }
 
     public Entity createPlayer(float x, float y, Team team, String name) {

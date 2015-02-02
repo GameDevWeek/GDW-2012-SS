@@ -2,6 +2,7 @@ package de.hochschuletrier.gdw.ss12.game.systems.network;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
+import com.badlogic.ashley.core.PooledEngine;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.netcode.core.NetConnection;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetClientSimple;
@@ -15,7 +16,7 @@ import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 public class NetClientSendInputSystem extends EntitySystem implements SystemGameInitializer {
 
     private Game game;
-    private NetClientSimple netClient;
+    private final NetClientSimple netClient;
 
     public NetClientSendInputSystem(NetClientSimple netClient) {
         super(0);
@@ -23,7 +24,7 @@ public class NetClientSendInputSystem extends EntitySystem implements SystemGame
     }
 
     @Override
-    public void initGame(Game game, AssetManagerX assetManager) {
+    public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
         this.game = game;
     }
 

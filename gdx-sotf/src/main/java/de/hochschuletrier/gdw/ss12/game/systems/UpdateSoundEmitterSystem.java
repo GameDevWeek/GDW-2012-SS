@@ -1,8 +1,8 @@
 package de.hochschuletrier.gdw.ss12.game.systems;
 
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.systems.IteratingSystem;
 import de.hochschuletrier.gdw.commons.devcon.DevConsole;
 import de.hochschuletrier.gdw.commons.devcon.cvar.CVarEnum;
@@ -27,24 +27,13 @@ public class UpdateSoundEmitterSystem extends IteratingSystem implements SystemG
     }
 
     @Override
-    public void initGame(Game game, AssetManagerX assetManager) {
+    public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
         this.game = game;
-    }
-
-    @Override
-    public void addedToEngine(Engine engine) {
-        super.addedToEngine(engine);
         DevConsole console = Main.getInstance().console;
         console.register(distanceModel);
         distanceModel.addListener((CVar) -> distanceModel.get().activate());
 
         console.register(emitterMode);
-    }
-
-    @Override
-    public void removedFromEngine(Engine engine) {
-        super.removedFromEngine(engine);
-        SoundEmitter.disposeGlobal();
     }
 
     @Override

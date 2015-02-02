@@ -1,9 +1,9 @@
 package de.hochschuletrier.gdw.ss12.game.systems.network;
 
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.netcode.core.NetConnection;
@@ -35,7 +35,6 @@ public class NetServerUpdateSystem extends EntitySystem implements NetDatagramHa
     private GameServer game;
     private ImmutableArray<Entity> entities;
     private ImmutableArray<Entity> players;
-    private Engine engine;
     private RenderNoticeSystem noticeSystem;
 
     public NetServerUpdateSystem(NetServerSimple netServer) {
@@ -45,23 +44,13 @@ public class NetServerUpdateSystem extends EntitySystem implements NetDatagramHa
     }
 
     @Override
-    public void initGame(Game game, AssetManagerX assetManager) {
+    public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
         this.game = (GameServer) game;
-        noticeSystem = engine.getSystem(RenderNoticeSystem.class);
         netServer.setListener(this);
         netServer.setHandler(this);
-    }
-
-    @Override
-    public void addedToEngine(Engine engine) {
-        this.engine = engine;
+        noticeSystem = engine.getSystem(RenderNoticeSystem.class);
         entities = engine.getEntitiesFor(Family.all(SetupComponent.class).get());
         players = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
-    }
-
-    @Override
-    public void removedFromEngine(Engine engine) {
-        entities = null;
     }
 
     @Override

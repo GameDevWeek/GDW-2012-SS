@@ -2,6 +2,7 @@ package de.hochschuletrier.gdw.ss12.game.systems.rendering;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import de.hochschuletrier.gdw.commons.gdx.assets.AnimationExtended;
@@ -21,12 +22,8 @@ public class RenderPizzaHudSystem extends EntitySystem implements SystemGameInit
     private float stateTime;
     private Game game;
 
-    public RenderPizzaHudSystem() {
-        super(0);
-    }
-
     @Override
-    public void initGame(Game game, AssetManagerX assetManager) {
+    public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
         this.game = game;
         underlay = assetManager.getTexture("hud_underlay_pizza");
 

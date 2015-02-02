@@ -1,6 +1,5 @@
 package de.hochschuletrier.gdw.ss12.game.systems.network;
 
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.PooledEngine;
@@ -45,21 +44,12 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
     }
 
     @Override
-    public void initGame(Game game, AssetManagerX assetManager) {
+    public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
+        this.engine = engine;
         this.game = game;
         entitySpawnSystem = engine.getSystem(EntitySpawnSystem.class);
         netClient.setHandler(this);
         netClient.setListener(this);
-    }
-
-    @Override
-    public void addedToEngine(Engine engine) {
-        this.engine = (PooledEngine)engine;
-    }
-
-    @Override
-    public void removedFromEngine(Engine engine) {
-        this.engine = null;
     }
 
     @Override

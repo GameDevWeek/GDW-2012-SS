@@ -1,10 +1,10 @@
 package de.hochschuletrier.gdw.ss12.game.systems;
 
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -35,34 +35,15 @@ public class BotSystem extends EntitySystem implements EntityListener, SystemGam
     protected final Vector2 position = new Vector2();
 
     private final BotProcessor botProcessor = new BotProcessor();
-    private Engine engine;
     private World world;
 
-    public BotSystem() {
-        super(0);
-    }
-
     @Override
-    public void addedToEngine(Engine engine) {
-        super.addedToEngine(engine);
+    public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
+        world = engine.getSystem(PhysixSystem.class).getWorld();
         bots = engine.getEntitiesFor(Family.all(BotComponent.class).get());
         players = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
         eatables = engine.getEntitiesFor(Family.all(EatableComponent.class).get());
         engine.addEntityListener(this);
-        this.engine = engine;
-    }
-
-    @Override
-    public void removedFromEngine(Engine engine) {
-        super.removedFromEngine(engine);
-        bots = players = eatables = null;
-        engine.removeEntityListener(this);
-        this.engine = null;
-    }
-
-    @Override
-    public void initGame(Game game, AssetManagerX assetManager) {
-        world = engine.getSystem(PhysixSystem.class).getWorld();
     }
 
     @Override

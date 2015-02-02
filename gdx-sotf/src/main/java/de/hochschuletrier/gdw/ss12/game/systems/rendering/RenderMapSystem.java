@@ -13,10 +13,6 @@ public class RenderMapSystem extends EntitySystem implements SystemMapInitialize
     private TiledMap map;
     private ITiledMapRenderer mapRenderer;
 
-    public RenderMapSystem() {
-        super(0);
-    }
-
     @Override
     public void initMap(TiledMap map, Array<Team> teams) {
         this.map = map;

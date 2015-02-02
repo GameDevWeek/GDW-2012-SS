@@ -23,7 +23,6 @@ import de.hochschuletrier.gdw.commons.tiled.TiledMap;
 import de.hochschuletrier.gdw.ss12.Main;
 import de.hochschuletrier.gdw.ss12.game.data.PlayerState;
 import de.hochschuletrier.gdw.ss12.game.data.Team;
-import de.hochschuletrier.gdw.ss12.game.components.DropableComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 import de.hochschuletrier.gdw.ss12.game.components.SoundEmitterComponent;
@@ -72,6 +71,8 @@ public abstract class Game {
     }
 
     public void dispose() {
+        //fixme: call dispose on all systems implementing Disposable
+        SoundEmitter.disposeGlobal();
     }
 
     public LimitedSmoothCamera getCamera() {
@@ -123,7 +124,7 @@ public abstract class Game {
             EntitySystem system = systems.get(i);
             if (system instanceof SystemGameInitializer) {
                 SystemGameInitializer initializer = (SystemGameInitializer) system;
-                initializer.initGame(this, assetManager);
+                initializer.initGame(this, assetManager, engine);
             }
         }
     }

@@ -1,9 +1,9 @@
 package de.hochschuletrier.gdw.ss12.game.systems;
 
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.utils.Array;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
@@ -25,23 +25,10 @@ public class GameStateSystem extends EntitySystem implements SystemGameInitializ
     private final Family family = Family.all(PlayerComponent.class).get();
     private ImmutableArray<Entity> players;
 
-    public GameStateSystem() {
-        super(0);
-    }
-
     @Override
-    public void addedToEngine(Engine engine) {
-        players = engine.getEntitiesFor(family);
-    }
-
-    @Override
-    public void removedFromEngine(Engine engine) {
-        players = null;
-    }
-
-    @Override
-    public void initGame(Game game, AssetManagerX assetManager) {
+    public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
         this.game = game;
+        players = engine.getEntitiesFor(family);
     }
 
     @Override

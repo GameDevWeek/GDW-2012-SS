@@ -2,6 +2,7 @@ package de.hochschuletrier.gdw.ss12.game.systems.rendering;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.gdx.utils.DrawUtil;
@@ -16,12 +17,8 @@ public class RenderDropableHudSystem extends EntitySystem implements SystemGameI
 
     private Game game;
 
-    public RenderDropableHudSystem() {
-        super(0);
-    }
-
     @Override
-    public void initGame(Game game, AssetManagerX assetManager) {
+    public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
         this.game = game;
     }
 

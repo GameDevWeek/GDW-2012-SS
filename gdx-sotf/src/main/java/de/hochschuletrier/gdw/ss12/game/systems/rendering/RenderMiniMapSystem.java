@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Disposable;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.gdx.cameras.orthogonal.LimitedSmoothCamera;
 import de.hochschuletrier.gdw.commons.gdx.cameras.orthogonal.ScreenCamera;
@@ -27,7 +29,7 @@ import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemMapInitializer;
 
-public class RenderMiniMapSystem extends EntitySystem implements SystemGameInitializer, SystemMapInitializer {
+public class RenderMiniMapSystem extends EntitySystem implements SystemGameInitializer, SystemMapInitializer, Disposable {
 
     private ImmutableArray<Entity> lights;
     private ImmutableArray<Entity> players;
@@ -38,25 +40,12 @@ public class RenderMiniMapSystem extends EntitySystem implements SystemGameIniti
     private Game game;
     private int xOffset;
     private int yOffset;
-    private Engine engine;
     private float renderScale;
     private RenderMapSystem renderMapSystem;
 
-    public RenderMiniMapSystem() {
-        super(0);
-    }
 
     @Override
-    public void addedToEngine(Engine engine) {
-        lights = engine.getEntitiesFor(Family.all(LightComponent.class).get());
-        players = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
-        this.engine = engine;
-    }
-
-    @Override
-    public void removedFromEngine(Engine engine) {
-        lights = null;
-        this.engine = null;
+    public void dispose() {
         if (fbo != null) {
             fbo.dispose();
             fbo = null;
@@ -64,9 +53,11 @@ public class RenderMiniMapSystem extends EntitySystem implements SystemGameIniti
     }
 
     @Override
-    public void initGame(Game game, AssetManagerX assetManager) {
+    public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
         this.game = game;
         renderMapSystem = engine.getSystem(RenderMapSystem.class);
+        lights = engine.getEntitiesFor(Family.all(LightComponent.class).get());
+        players = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
     }
 
     @Override

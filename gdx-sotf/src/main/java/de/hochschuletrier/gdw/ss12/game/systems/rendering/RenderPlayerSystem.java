@@ -2,6 +2,7 @@ package de.hochschuletrier.gdw.ss12.game.systems.rendering;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.systems.SortedIteratingSystem;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -28,7 +29,7 @@ public class RenderPlayerSystem extends SortedIteratingSystem implements SystemG
     }
 
     @Override
-    public void initGame(Game game, AssetManagerX assetManager) {
+    public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
         this.game = game;
         font = assetManager.getFont("verdana_24");
     }

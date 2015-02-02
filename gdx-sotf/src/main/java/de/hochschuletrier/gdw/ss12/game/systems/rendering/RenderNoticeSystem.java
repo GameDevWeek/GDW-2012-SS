@@ -1,6 +1,7 @@
 package de.hochschuletrier.gdw.ss12.game.systems.rendering;
 
 import com.badlogic.ashley.core.EntitySystem;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
@@ -24,16 +25,12 @@ public class RenderNoticeSystem extends EntitySystem implements SystemGameInitia
     private Game game;
     private NoticePosition lastPosition;
 
-    public RenderNoticeSystem() {
-        super(0);
-    }
-    
     public Array<Notice> getNotices() {
         return notices;
     }
 
     @Override
-    public void initGame(Game game, AssetManagerX assetManager) {
+    public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
         this.game = game;
         font = assetManager.getFont("quartz_50");
         for (NoticeType type : NoticeType.values()) {

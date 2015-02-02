@@ -1,14 +1,16 @@
 package de.hochschuletrier.gdw.ss12.game.systems.network;
 
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.utils.Array;
+import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetServerSimple;
 import de.hochschuletrier.gdw.commons.tiled.TiledMap;
+import de.hochschuletrier.gdw.ss12.game.Game;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.SetupComponent;
 import de.hochschuletrier.gdw.ss12.game.data.Team;
@@ -16,9 +18,10 @@ import de.hochschuletrier.gdw.ss12.game.datagrams.CreateEntityDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerUpdatesDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.RemoveEntityDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.TeamStateDatagram;
+import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemMapInitializer;
 
-public class NetServerSendSystem extends EntitySystem implements EntityListener, SystemMapInitializer {
+public class NetServerSendSystem extends EntitySystem implements EntityListener, SystemMapInitializer, SystemGameInitializer {
 
     private final NetServerSimple netServer;
     private ImmutableArray<Entity> players;
@@ -31,15 +34,9 @@ public class NetServerSendSystem extends EntitySystem implements EntityListener,
     }
 
     @Override
-    public void addedToEngine(Engine engine) {
+    public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
         engine.addEntityListener(Family.all(SetupComponent.class).get(), this);
         players = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
-    }
-
-    @Override
-    public void removedFromEngine(Engine engine) {
-        engine.removeEntityListener(this);
-        players = null;
     }
 
     @Override

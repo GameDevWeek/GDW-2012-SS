@@ -2,6 +2,7 @@ package de.hochschuletrier.gdw.ss12.game.systems.input;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
@@ -18,12 +19,8 @@ public class KeyboardInputSystem extends EntitySystem implements SystemGameIniti
     private boolean upDown;
     private boolean downDown;
 
-    public KeyboardInputSystem() {
-        super(0);
-    }
-
     @Override
-    public void initGame(Game game, AssetManagerX assetManager) {
+    public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
         this.game = game;
     }
 

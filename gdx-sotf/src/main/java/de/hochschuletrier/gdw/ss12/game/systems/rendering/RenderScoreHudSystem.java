@@ -1,9 +1,9 @@
 package de.hochschuletrier.gdw.ss12.game.systems.rendering;
 
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -25,28 +25,15 @@ public class RenderScoreHudSystem extends EntitySystem implements SystemGameInit
     private Array<Team> teams;
     private ImmutableArray<Entity> entities;
 
-    public RenderScoreHudSystem() {
-        super(0);
-    }
-
     @Override
-    public void initGame(Game game, AssetManagerX assetManager) {
+    public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
         font = assetManager.getFont("quartz_50");
+        entities = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
     }
 
     @Override
     public void initMap(TiledMap map, Array<Team> teams) {
         this.teams = teams;
-    }
-
-    @Override
-    public void addedToEngine(Engine engine) {
-        entities = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
-    }
-
-    @Override
-    public void removedFromEngine(Engine engine) {
-        entities = null;
     }
 
     @Override

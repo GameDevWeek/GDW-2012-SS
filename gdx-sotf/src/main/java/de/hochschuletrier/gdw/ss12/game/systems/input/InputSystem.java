@@ -1,8 +1,8 @@
 package de.hochschuletrier.gdw.ss12.game.systems.input;
 
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.systems.IteratingSystem;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.gdx.physix.components.PhysixBodyComponent;
@@ -18,7 +18,6 @@ import de.hochschuletrier.gdw.ss12.game.systems.EntitySpawnSystem;
 
 public class InputSystem extends IteratingSystem implements SystemGameInitializer {
 
-    private Engine engine;
     private Game game;
     private EntitySpawnSystem entitySpawnSystem;
 
@@ -27,19 +26,7 @@ public class InputSystem extends IteratingSystem implements SystemGameInitialize
     }
 
     @Override
-    public void addedToEngine(Engine engine) {
-        super.addedToEngine(engine);
-        this.engine = engine;
-    }
-
-    @Override
-    public void removedFromEngine(Engine engine) {
-        super.removedFromEngine(engine);
-        this.engine = null;
-    }
-
-    @Override
-    public void initGame(Game game, AssetManagerX assetManager) {
+    public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
         this.game = game;
         entitySpawnSystem = engine.getSystem(EntitySpawnSystem.class);
     }

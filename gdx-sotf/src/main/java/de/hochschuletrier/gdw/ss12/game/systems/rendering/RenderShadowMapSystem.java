@@ -1,9 +1,9 @@
 package de.hochschuletrier.gdw.ss12.game.systems.rendering;
 
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -37,23 +37,11 @@ public class RenderShadowMapSystem extends EntitySystem implements SystemGameIni
     private Game game;
     private boolean activeFrame;
 
-    public RenderShadowMapSystem() {
-        super(0);
-    }
-
     @Override
-    public void addedToEngine(Engine engine) {
-        lights = engine.getEntitiesFor(Family.all(LightComponent.class).get());
-    }
-
-    @Override
-    public void removedFromEngine(Engine engine) {
-        lights = null;
-    }
-
-    @Override
-    public void initGame(Game game, AssetManagerX assetManager) {
+    public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
         this.game = game;
+        lights = engine.getEntitiesFor(Family.all(LightComponent.class).get());
+
         String vertexShader = Gdx.files.internal("data/shaders/vertexShader.glsl").readString();
         String defaultPixelShader = Gdx.files.internal("data/shaders/defaultPixelShader.glsl").readString();
         String finalPixelShader = Gdx.files.internal("data/shaders/pixelShader.glsl").readString();
