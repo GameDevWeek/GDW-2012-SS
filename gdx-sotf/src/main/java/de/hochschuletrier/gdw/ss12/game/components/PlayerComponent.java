@@ -20,6 +20,7 @@ public class PlayerComponent extends Component implements Pool.Poolable {
     public final List<Powerup> powerups = new ArrayList();
     public final PlayerStatistic statistic = new PlayerStatistic();
 
+    public long lastSequenceId; // Network
     public float radius;
     public String name;
     public PlayerState state;
@@ -38,6 +39,7 @@ public class PlayerComponent extends Component implements Pool.Poolable {
         powerups.clear();
         statistic.reset();
 
+        lastSequenceId = 0;
         radius = 0;
         name = "";
         state = null;

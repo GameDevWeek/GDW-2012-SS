@@ -13,7 +13,6 @@ import de.hochschuletrier.gdw.ss12.Main;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Constants;
 import de.hochschuletrier.gdw.ss12.game.Game;
-import de.hochschuletrier.gdw.ss12.game.components.NetPlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.data.PlayerSetup;
 import de.hochschuletrier.gdw.ss12.game.data.PlayerUpdate;
@@ -77,7 +76,6 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
         for (int i = 0; i < numPlayers; i++) {
             PlayerSetup player = players[i];
             Entity entity = entitySpawnSystem.createPlayer(player.start.x, player.start.y, teams.get(player.team), player.name);
-            entity.add(engine.createComponent(NetPlayerComponent.class));
             netEntityMap.put(player.netId, entity);
         }
 
@@ -126,14 +124,13 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
             PlayerUpdate update = updates[i];
             Entity playerEntity = netEntityMap.get(update.netId);
             if (playerEntity != null) {
-                NetPlayerComponent netPlayer = ComponentMappers.netPlayer.get(playerEntity);
 
                 // only handle the latest datagrams
-                if (netPlayer.lastSequenceId < datagram.getSequenceId()) {
-                    netPlayer.lastSequenceId = datagram.getSequenceId();
+                PlayerComponent player = ComponentMappers.player.get(playerEntity);
+                if (player.lastSequenceId < datagram.getSequenceId()) {
+                    player.lastSequenceId = datagram.getSequenceId();
                     ComponentMappers.position.get(playerEntity).set(update.position);
                     ComponentMappers.input.get(playerEntity).speed = update.speed;
-                    PlayerComponent player = ComponentMappers.player.get(playerEntity);
                     player.angle = update.angle;
                     player.radius = update.radius;
                     player.effectBits = update.effectBits;
