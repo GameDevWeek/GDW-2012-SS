@@ -65,8 +65,8 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         this.assetManager = assetManager;
         this.engine = engine;
 
+        physixSystem = engine.getSystem(PhysixSystem.class);
         if (game instanceof GameLocal) {
-            physixSystem = engine.getSystem(PhysixSystem.class);
             powerupSystem = engine.getSystem(PowerupSystem.class);
         }
 
@@ -142,26 +142,24 @@ public class EntitySpawnSystem extends EntitySystem implements SystemGameInitial
         light.radius = Constants.PLAYER_DEFAULT_SIGHTDISTANCE;
         entity.add(light);
 
-        if (game instanceof GameLocal) {
-            PhysixModifierComponent modifyComponent = engine.createComponent(PhysixModifierComponent.class);
-            entity.add(modifyComponent);
+        PhysixModifierComponent modifyComponent = engine.createComponent(PhysixModifierComponent.class);
+        entity.add(modifyComponent);
 
-            modifyComponent.schedule(() -> {
-                PhysixBodyComponent bodyComponent = engine.createComponent(PhysixBodyComponent.class);
-                PhysixBodyDef bodyDef = new PhysixBodyDef(BodyDef.BodyType.DynamicBody, physixSystem)
-                        .position(player.startPosition).fixedRotation(true);//.linearDamping(20);
-                bodyComponent.init(bodyDef, physixSystem, entity);
-                PhysixFixtureDef fixtureDef = new PhysixFixtureDef(physixSystem).groupIndex((short) -1)
-                        .density(5).friction(0).shapeCircle(player.radius);
-                Fixture fixture = bodyComponent.createFixture(fixtureDef);
-                fixture.setUserData("body");
-                PhysixFixtureDef fixtureDef2 = new PhysixFixtureDef(physixSystem)
-                        .sensor(true).shapeCircle(player.radius);
-                Fixture fixture2 = bodyComponent.createFixture(fixtureDef2);
-                fixture2.setUserData("sensor");
-                entity.add(bodyComponent);
-            });
-        }
+        modifyComponent.schedule(() -> {
+            PhysixBodyComponent bodyComponent = engine.createComponent(PhysixBodyComponent.class);
+            PhysixBodyDef bodyDef = new PhysixBodyDef(BodyDef.BodyType.DynamicBody, physixSystem)
+                    .position(player.startPosition).fixedRotation(true);//.linearDamping(20);
+            bodyComponent.init(bodyDef, physixSystem, entity);
+            PhysixFixtureDef fixtureDef = new PhysixFixtureDef(physixSystem).groupIndex((short) -1)
+                    .density(5).friction(0).shapeCircle(player.radius);
+            Fixture fixture = bodyComponent.createFixture(fixtureDef);
+            fixture.setUserData("body");
+            PhysixFixtureDef fixtureDef2 = new PhysixFixtureDef(physixSystem)
+                    .sensor(true).shapeCircle(player.radius);
+            Fixture fixture2 = bodyComponent.createFixture(fixtureDef2);
+            fixture2.setUserData("sensor");
+            entity.add(bodyComponent);
+        });
         engine.addEntity(entity);
 
         return entity;

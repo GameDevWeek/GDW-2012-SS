@@ -6,6 +6,7 @@ public class PlayerUpdate {
 
     public long netId;
     public final Vector2 position = new Vector2();
+    public final Vector2 moveDirection = new Vector2();
     public float speed;
     public float angle;
     public float radius;

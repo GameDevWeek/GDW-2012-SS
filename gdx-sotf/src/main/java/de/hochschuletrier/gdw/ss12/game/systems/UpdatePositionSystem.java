@@ -19,8 +19,7 @@ public class UpdatePositionSystem extends IteratingSystem {
         PositionComponent position = ComponentMappers.position.get(entity);
         if (!position.ignorePhysix) {
             PhysixBodyComponent physix = ComponentMappers.physixBody.get(entity);
-            position.x = physix.getX();
-            position.y = physix.getY();
+            position.set(physix.getPosition());
         }
     }
 }

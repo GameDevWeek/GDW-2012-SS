@@ -6,6 +6,8 @@ import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
+import de.hochschuletrier.gdw.commons.gdx.physix.components.PhysixBodyComponent;
+import de.hochschuletrier.gdw.commons.gdx.physix.systems.PhysixSystem;
 import de.hochschuletrier.gdw.commons.gdx.utils.DrawUtil;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetClientSimple;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetDatagramHandler;
@@ -13,6 +15,7 @@ import de.hochschuletrier.gdw.ss12.Main;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Constants;
 import de.hochschuletrier.gdw.ss12.game.Game;
+import de.hochschuletrier.gdw.ss12.game.components.InputComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.data.PlayerSetup;
 import de.hochschuletrier.gdw.ss12.game.data.PlayerUpdate;
@@ -36,6 +39,7 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
     private PooledEngine engine;
     private EntitySpawnSystem entitySpawnSystem;
     private final HashMap<Long, Entity> netEntityMap = new HashMap();
+    private PhysixSystem physixSystem;
 
     public NetClientUpdateSystem(NetClientSimple netClient) {
         super(0);
@@ -47,6 +51,7 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
         this.engine = engine;
         this.game = game;
         entitySpawnSystem = engine.getSystem(EntitySpawnSystem.class);
+        physixSystem = engine.getSystem(PhysixSystem.class);
         netClient.setHandler(this);
         netClient.setListener(this);
     }
@@ -130,12 +135,20 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
                 if (player.lastSequenceId < datagram.getSequenceId()) {
                     player.lastSequenceId = datagram.getSequenceId();
                     ComponentMappers.position.get(playerEntity).set(update.position);
-                    ComponentMappers.input.get(playerEntity).speed = update.speed;
+                    final InputComponent input = ComponentMappers.input.get(playerEntity);
+                    input.speed = update.speed;
+                    input.moveDirection.set(update.moveDirection);
                     player.angle = update.angle;
                     player.radius = update.radius;
                     player.effectBits = update.effectBits;
                     player.state = update.state;
+                    PhysixBodyComponent physix = ComponentMappers.physixBody.get(playerEntity);
+                    physix.setPosition(update.position);
                     ComponentMappers.light.get(playerEntity).setFromPlayerRadius(player.radius);
+                    // Adjust body and sensor size
+                    float radius = physixSystem.toBox2D(player.radius);
+                    physix.getFixtureByUserData("body").getShape().setRadius(radius);
+                    physix.getFixtureByUserData("sensor").getShape().setRadius(radius);
                 }
             }
         }

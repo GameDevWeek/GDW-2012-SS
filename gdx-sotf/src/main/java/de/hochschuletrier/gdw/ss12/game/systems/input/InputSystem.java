@@ -9,6 +9,7 @@ import de.hochschuletrier.gdw.commons.gdx.physix.components.PhysixBodyComponent;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Constants;
 import de.hochschuletrier.gdw.ss12.game.Game;
+import de.hochschuletrier.gdw.ss12.game.GameLocal;
 import de.hochschuletrier.gdw.ss12.game.components.InputComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
@@ -42,7 +43,8 @@ public class InputSystem extends IteratingSystem implements SystemGameInitialize
                 handleMovement(entity, input);
             }
         }
-        if (input.dropItem) {
+
+        if ((game instanceof GameLocal) && input.dropItem) {
             drop(entity);
             input.dropItem = false;
         }

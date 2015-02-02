@@ -5,22 +5,16 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import de.hochschuletrier.gdw.commons.devcon.cvar.CVarBool;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.gdx.input.hotkey.Hotkey;
-import de.hochschuletrier.gdw.commons.gdx.physix.PhysixBodyDef;
 import de.hochschuletrier.gdw.commons.gdx.physix.PhysixComponentAwareContactListener;
-import de.hochschuletrier.gdw.commons.gdx.physix.PhysixFixtureDef;
 import de.hochschuletrier.gdw.commons.gdx.physix.components.PhysixBodyComponent;
 import de.hochschuletrier.gdw.commons.gdx.physix.components.PhysixModifierComponent;
-import de.hochschuletrier.gdw.commons.gdx.physix.systems.PhysixDebugRenderSystem;
 import de.hochschuletrier.gdw.commons.gdx.physix.systems.PhysixSystem;
 import de.hochschuletrier.gdw.commons.tiled.Layer;
 import de.hochschuletrier.gdw.commons.tiled.TileInfo;
 import de.hochschuletrier.gdw.commons.tiled.TileSet;
-import de.hochschuletrier.gdw.commons.tiled.utils.RectangleGenerator;
 import de.hochschuletrier.gdw.commons.utils.Rectangle;
 import de.hochschuletrier.gdw.ss12.Main;
 import de.hochschuletrier.gdw.ss12.game.components.BotComponent;
@@ -40,7 +34,6 @@ import de.hochschuletrier.gdw.ss12.game.systems.RemoveAnimatedItemSystem;
 import de.hochschuletrier.gdw.ss12.game.systems.SpawnRandomEatableSystem;
 import de.hochschuletrier.gdw.ss12.game.systems.UpdateLightSystem;
 import de.hochschuletrier.gdw.ss12.game.systems.UpdatePlayerSystem;
-import de.hochschuletrier.gdw.ss12.game.systems.UpdatePositionSystem;
 import de.hochschuletrier.gdw.ss12.game.systems.input.InputSystem;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,14 +43,11 @@ public class GameLocal extends Game {
 
     private static final float TELEPORTER_SCALE = 0.4f;
 
-    private final CVarBool physixDebug = new CVarBool("physix_debug", !Main.IS_RELEASE, 0, "Draw physix debug");
     private final CVarBool botsEnabled = new CVarBool("bots_enable", true, 0, "Enable bots");
-    private final Hotkey togglePhysixDebug = new Hotkey(() -> physixDebug.toggle(false), Input.Keys.F1);
     private final Hotkey toggleBotsEnabled = new Hotkey(this::toggleBotsEnabled, Input.Keys.F2);
     private final Hotkey resetGame = new Hotkey(this::reset, Input.Keys.F5);
 
     private final ImmutableArray<Entity> botPlayers = engine.getEntitiesFor(Family.all(PlayerComponent.class, BotComponent.class).get());
-    private final ImmutableArray<Entity> nonBotPlayers = engine.getEntitiesFor(Family.all(PlayerComponent.class).exclude(BotComponent.class).get());
 
     private final LinkedList<String> freeBotNames = new LinkedList();
     private static final String BOT_NAME_PREFIX = "[BOT] ";
@@ -79,9 +69,7 @@ public class GameLocal extends Game {
 
         Collections.addAll(freeBotNames, botNamesOrdered);
         Collections.shuffle(freeBotNames);
-
-        Main.getInstance().console.register(physixDebug);
-        physixDebug.addListener((CVar) -> engine.getSystem(PhysixDebugRenderSystem.class).setProcessing(physixDebug.get()));
+        
         Main.getInstance().console.register(botsEnabled);
         botsEnabled.addListener((CVar) -> engine.getSystem(BotSystem.class).setProcessing(botsEnabled.get()));
 
@@ -89,7 +77,6 @@ public class GameLocal extends Game {
 
         // If this is a build jar file, disable hotkeys
         if (!Main.IS_RELEASE) {
-            togglePhysixDebug.register();
             toggleBotsEnabled.register();
             resetGame.register();
         }
@@ -104,7 +91,7 @@ public class GameLocal extends Game {
     public void dispose() {
         super.dispose();
 
-        togglePhysixDebug.unregister();
+        Main.getInstance().console.unregister(botsEnabled);
         toggleBotsEnabled.unregister();
         resetGame.unregister();
     }
@@ -151,25 +138,13 @@ public class GameLocal extends Game {
         super.addSystems();
 
         // Remember to set priorities in CustomPooledEngine when creating new system classes
-        engine.addSystem(new InputSystem());
         engine.addSystem(new BotSystem());
-        engine.addSystem(new PhysixSystem(
-                Constants.BOX2D_SCALE, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS
-        ));
         engine.addSystem(new PowerupSystem());
-        engine.addSystem(new UpdatePositionSystem());
         engine.addSystem(new SpawnRandomEatableSystem());
         engine.addSystem(new UpdatePlayerSystem());
         engine.addSystem(new UpdateLightSystem());
         engine.addSystem(new RemoveAnimatedItemSystem());
         engine.addSystem(new GameStateSystem());
-        engine.addSystem(new PhysixDebugRenderSystem());
-    }
-
-    @Override
-    public void updateCameraForced() {
-        engine.getSystem(UpdatePositionSystem.class).update(0);
-        super.updateCameraForced();
     }
 
     public void toggleBotsEnabled() {
@@ -285,33 +260,10 @@ public class GameLocal extends Game {
         }
     }
 
-    private void addShape(PhysixSystem physixSystem, Rectangle rect, int tileWidth, int tileHeight) {
-        float width = rect.width * tileWidth;
-        float height = rect.height * tileHeight;
-        float x = rect.x * tileWidth + width / 2;
-        float y = rect.y * tileHeight + height / 2;
-        PhysixBodyDef bodyDef = new PhysixBodyDef(BodyDef.BodyType.StaticBody, physixSystem).position(x, y).fixedRotation(false);
-        Body body = physixSystem.getWorld().createBody(bodyDef);
-        body.createFixture(new PhysixFixtureDef(physixSystem).density(1).friction(0).shapeBox(width, height));
-    }
-
     @Override
     protected void systemMapInit() {
-        setupPhysixWorld();
+        setupTeleporters(engine.getSystem(PhysixSystem.class));
         super.systemMapInit();
-    }
-
-    private void setupPhysixWorld() {
-        PhysixSystem physixSystem = engine.getSystem(PhysixSystem.class);
-        // Generate static world
-        int tileWidth = map.getTileWidth();
-        int tileHeight = map.getTileHeight();
-        RectangleGenerator generator = new RectangleGenerator();
-        generator.generate(map,
-                (Layer layer, TileInfo info) -> info.getBooleanProperty("blocked", false),
-                (Rectangle rect) -> addShape(physixSystem, rect, tileWidth, tileHeight));
-
-        setupTeleporters(physixSystem);
     }
 
     private void setupTeleporters(PhysixSystem physixSystem) {

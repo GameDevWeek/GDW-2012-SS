@@ -43,6 +43,7 @@ public final class PlayerUpdatesDatagram extends NetDatagram {
             PositionComponent position = ComponentMappers.position.get(entity);
             InputComponent input = ComponentMappers.input.get(entity);
             update.position.set(position.x, position.y);
+            update.moveDirection.set(input.moveDirection);
             update.speed = input.speed;
             update.angle = player.angle;
             update.radius = player.radius;
@@ -74,6 +75,8 @@ public final class PlayerUpdatesDatagram extends NetDatagram {
             message.putLong(update.netId);
             message.putFloat(update.position.x);
             message.putFloat(update.position.y);
+            message.putFloat(update.moveDirection.x);
+            message.putFloat(update.moveDirection.y);
             message.putFloat(update.speed);
             message.putFloat(update.angle);
             message.putFloat(update.radius);
@@ -90,6 +93,8 @@ public final class PlayerUpdatesDatagram extends NetDatagram {
             update.netId = message.getLong();
             update.position.x = message.getFloat();
             update.position.y = message.getFloat();
+            update.moveDirection.x = message.getFloat();
+            update.moveDirection.y = message.getFloat();
             update.speed = message.getFloat();
             update.angle = message.getFloat();
             update.radius = message.getFloat();
