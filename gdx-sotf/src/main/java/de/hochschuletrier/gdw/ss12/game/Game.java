@@ -2,7 +2,6 @@ package de.hochschuletrier.gdw.ss12.game;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
-import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -28,10 +27,8 @@ import de.hochschuletrier.gdw.commons.utils.Rectangle;
 import de.hochschuletrier.gdw.ss12.Main;
 import de.hochschuletrier.gdw.ss12.game.data.PlayerState;
 import de.hochschuletrier.gdw.ss12.game.data.Team;
-import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 import de.hochschuletrier.gdw.ss12.game.components.SoundEmitterComponent;
-import de.hochschuletrier.gdw.ss12.game.components.TriggerComponent;
 import de.hochschuletrier.gdw.ss12.game.data.NoticeType;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemMapInitializer;
@@ -44,8 +41,6 @@ import java.util.HashMap;
 public abstract class Game {
 
     protected final CustomPooledEngine engine = new CustomPooledEngine();
-    protected ImmutableArray<Entity> playerEntities = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
-    protected ImmutableArray<Entity> entitiesToRemove = engine.getEntitiesFor(Family.exclude(PlayerComponent.class, TriggerComponent.class).get());
 
     protected TiledMap map;
     protected Entity localPlayer;
@@ -90,10 +85,6 @@ public abstract class Game {
         togglePhysixDebug.unregister();
     }
 
-    public ImmutableArray<Entity> getPlayerEntities() {
-        return playerEntities;
-    }
-
     public Entity getLocalPlayer() {
         return localPlayer;
     }
@@ -104,6 +95,10 @@ public abstract class Game {
 
     public String getMapName() {
         return map.getFilename();
+    }
+
+    public InputProcessor getInputProcessor() {
+        return inputForwarder;
     }
 
     protected void addSystems() {
@@ -147,8 +142,13 @@ public abstract class Game {
         }
     }
 
-    public InputProcessor getInputProcessor() {
-        return inputForwarder;
+    protected void systemMapInit() {
+        for (EntitySystem system : engine.getSystems()) {
+            if (system instanceof SystemMapInitializer) {
+                SystemMapInitializer initializer = (SystemMapInitializer) system;
+                initializer.initMap(map, teams);
+            }
+        }
     }
 
     public void scheduleNoticeForAll(NoticeType type, float delay, float timeLeft) {
@@ -164,15 +164,6 @@ public abstract class Game {
     public void scheduleNoticeForTeam(NoticeType type, float delay, float timeLeft, Team team) {
         if (ComponentMappers.player.get(localPlayer).team == team) {
             engine.getSystem(RenderNoticeSystem.class).schedule(type, delay, timeLeft);
-        }
-    }
-
-    protected void systemMapInit() {
-        for (EntitySystem system : engine.getSystems()) {
-            if (system instanceof SystemMapInitializer) {
-                SystemMapInitializer initializer = (SystemMapInitializer) system;
-                initializer.initMap(map, teams);
-            }
         }
     }
 
@@ -257,10 +248,18 @@ public abstract class Game {
         body.createFixture(new PhysixFixtureDef(physixSystem).density(1).friction(0).shapeBox(width, height));
     }
 
-    public void start() {
+    public void startCountdown() {
+        engine.getSystem(InputSystem.class).setProcessing(false);
+    }
+
+    public void go() {
+        engine.getSystem(InputSystem.class).setProcessing(true);
     }
 
     public void onNoticeStart(NoticeType type) {
+        if(type == NoticeType.GO) {
+            go();
+        }
     }
 
     public void onNoticeEnd(NoticeType type) {

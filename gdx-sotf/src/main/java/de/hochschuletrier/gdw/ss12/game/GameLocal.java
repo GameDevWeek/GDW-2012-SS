@@ -47,6 +47,8 @@ public class GameLocal extends Game {
 
     private static final float TELEPORTER_SCALE = 0.4f;
 
+    private final ImmutableArray<Entity> playerEntities = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
+    private final ImmutableArray<Entity> entitiesToRemove = engine.getEntitiesFor(Family.exclude(PlayerComponent.class, TriggerComponent.class).get());
     private final CVarBool botsEnabled = new CVarBool("bots_enable", true, 0, "Enable bots");
     private final Hotkey toggleBotsEnabled = new Hotkey(this::toggleBotsEnabled, Input.Keys.F2);
     private final Hotkey resetGame = new Hotkey(this::reset, Input.Keys.F5);
@@ -124,17 +126,13 @@ public class GameLocal extends Game {
                 bodyComponent.setActive(true);
             });
         }
-        start();
+        startCountdown();
     }
 
     @Override
-    public void start() {
-        engine.getSystem(InputSystem.class).setProcessing(false);
+    public void startCountdown() {
+        super.startCountdown();
         sendStartNotices();
-    }
-
-    public void go() {
-        engine.getSystem(InputSystem.class).setProcessing(true);
     }
 
     @Override
@@ -226,9 +224,9 @@ public class GameLocal extends Game {
 
     @Override
     public void onNoticeStart(NoticeType type) {
+        super.onNoticeStart(type);
         switch (type) {
             case GO:
-                go();
                 engine.getSystem(GameStateSystem.class).setProcessing(true);
                 break;
             case ROUND_WON:

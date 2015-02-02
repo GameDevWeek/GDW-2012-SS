@@ -2,12 +2,16 @@ package de.hochschuletrier.gdw.ss12.game;
 
 import com.badlogic.ashley.core.Entity;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
+import de.hochschuletrier.gdw.commons.gdx.audio.SoundInstance;
 import de.hochschuletrier.gdw.commons.netcode.core.NetConnection;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetServerSimple;
+import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 import de.hochschuletrier.gdw.ss12.game.data.NoticeType;
 import de.hochschuletrier.gdw.ss12.game.data.Team;
+import de.hochschuletrier.gdw.ss12.game.datagrams.EntitySoundDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.NoticeDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerNameDatagram;
+import de.hochschuletrier.gdw.ss12.game.datagrams.WorldSoundDatagram;
 import de.hochschuletrier.gdw.ss12.game.systems.network.NetServerSendSystem;
 import de.hochschuletrier.gdw.ss12.game.systems.network.NetServerUpdateSystem;
 import java.util.ArrayList;
@@ -82,5 +86,24 @@ public class GameServer extends GameLocal {
             netServer.broadcastReliable(NoticeDatagram.create(type, delay, type.displayTime), broadcastList);
             broadcastList.clear();
         }
+    }
+
+    @Override
+    public SoundInstance playGlobalSound(String name, float x, float y, boolean loop) {
+        netServer.broadcastReliable(WorldSoundDatagram.create(name, x, y));
+        return super.playGlobalSound(name, x, y, loop);
+    }
+
+    @Override
+    public SoundInstance playEntitySound(String name, Entity entity, boolean loop) {
+        if (ComponentMappers.soundEmitter.has(entity)) {
+            netServer.broadcastReliable(EntitySoundDatagram.create(name, entity));
+        } else  {
+            PositionComponent position = ComponentMappers.position.get(entity);
+            if (position != null) {
+                netServer.broadcastReliable(WorldSoundDatagram.create(name, position.x, position.y));
+            }
+        }
+        return super.playEntitySound(name, entity, loop);
     }
 }

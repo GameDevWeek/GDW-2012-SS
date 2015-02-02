@@ -14,10 +14,10 @@ public final class WorldSoundDatagram extends NetDatagram {
     private final Vector2 position = new Vector2();
     private String sound;
 
-    public static WorldSoundDatagram create(String sound, Vector2 position) {
+    public static WorldSoundDatagram create(String sound, float x, float y) {
         WorldSoundDatagram datagram = DatagramFactory.create(WorldSoundDatagram.class);
         datagram.sound = sound;
-        datagram.position.set(position);
+        datagram.position.set(x, y);
         return datagram;
     }
 

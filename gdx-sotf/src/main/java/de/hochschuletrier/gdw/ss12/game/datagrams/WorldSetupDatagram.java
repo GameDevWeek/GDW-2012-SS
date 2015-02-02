@@ -2,6 +2,7 @@ package de.hochschuletrier.gdw.ss12.game.datagrams;
 
 import de.hochschuletrier.gdw.ss12.game.data.PlayerSetup;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.math.Vector2;
 import de.hochschuletrier.gdw.commons.netcode.core.NetDatagram;
 import de.hochschuletrier.gdw.commons.netcode.core.NetMessageIn;
@@ -28,13 +29,13 @@ public final class WorldSetupDatagram extends NetDatagram {
         }
     }
 
-    public static WorldSetupDatagram create(Game game, Entity playerEntity) {
+    public static WorldSetupDatagram create(String mapName, Entity playerEntity, ImmutableArray<Entity> players) {
         WorldSetupDatagram datagram = DatagramFactory.create(WorldSetupDatagram.class);
         datagram.netId = playerEntity.getId();
-        datagram.mapName = game.getMapName();
+        datagram.mapName = mapName;
         datagram.numPlayers = 0;
 
-        for (Entity entity : game.getPlayerEntities()) {
+        for (Entity entity : players) {
             PlayerSetup setup = datagram.players[datagram.numPlayers++];
             setup.netId = entity.getId();
 

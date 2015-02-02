@@ -44,11 +44,13 @@ public class NoticeDatagram extends NetDatagram {
     public void writeToMessage(NetMessageOut message) {
         message.putEnum(noticeType);
         message.putFloat(delay);
+        message.putFloat(timeLeft);
     }
 
     public @Override
     void readFromMessage(NetMessageIn message) {
         noticeType = message.getEnum(NoticeType.class);
         delay = message.getFloat();
+        timeLeft = message.getFloat();
     }
 }

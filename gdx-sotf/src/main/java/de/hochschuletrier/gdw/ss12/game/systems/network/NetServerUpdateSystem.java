@@ -80,7 +80,7 @@ public class NetServerUpdateSystem extends EntitySystem implements NetDatagramHa
 
     public void sendWorldSetup(NetConnection connection) {
         final Entity playerEntity = (Entity) connection.getAttachment();
-        connection.sendReliable(WorldSetupDatagram.create(game, playerEntity));
+        connection.sendReliable(WorldSetupDatagram.create(game.getMapName(), playerEntity, players));
         connection.sendReliable(PlayerUpdatesDatagram.create(players));
 
         for (Entity entity : entities) {
