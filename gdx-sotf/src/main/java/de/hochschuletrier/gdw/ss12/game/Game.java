@@ -102,6 +102,7 @@ public abstract class Game {
 
         engine.addSystem(new EntitySpawnSystem());
         engine.addSystem(new UpdatePlayerEffectsSystem());
+        engine.addSystem(new UpdateCameraSystem(camera));
 
         engine.addSystem(new RenderShadowMapSystem());
         engine.addSystem(new RenderMapSystem());
@@ -172,9 +173,7 @@ public abstract class Game {
     }
 
     public void updateCameraForced() {
-        PositionComponent position = ComponentMappers.position.get(localPlayer);
-        camera.setDestination(position.x, position.y);
-        camera.updateForced();
+        engine.getSystem(UpdateCameraSystem.class).forceCameraUpdate();
     }
 
     public SoundInstance playAnouncerSound(String name) {
@@ -235,10 +234,6 @@ public abstract class Game {
     }
 
     public void update(float delta) {
-        PositionComponent position = ComponentMappers.position.get(localPlayer);
-        camera.setDestination(position.x, position.y);
-        camera.update(delta);
-        camera.bind();
         engine.update(delta);
     }
 
