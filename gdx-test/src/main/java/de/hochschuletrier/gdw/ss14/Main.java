@@ -61,12 +61,13 @@ public class Main extends StateBasedGame {
 
     public static Main getInstance() {
         if (instance == null) {
-            instance = new Main(); // test
+            instance = new Main(); // hello
         }
         return instance;
     }
 
     private void setupDummyLoader() {
+        // hello
     }
 
     private void loadAssetLists() {
