@@ -61,7 +61,7 @@ public class Main extends StateBasedGame {
 
     public static Main getInstance() {
         if (instance == null) {
-            instance = new Main();
+            instance = new Main(); // test
         }
         return instance;
     }
@@ -124,6 +124,7 @@ public class Main extends StateBasedGame {
 
     @Override
     public void dispose() {
+        //test
         super.dispose();
         DrawUtil.batch.dispose();
         consoleView.dispose();
