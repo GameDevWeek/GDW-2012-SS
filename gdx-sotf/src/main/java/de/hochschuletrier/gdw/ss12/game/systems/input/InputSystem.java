@@ -7,7 +7,6 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.gdx.physix.components.PhysixBodyComponent;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
-import de.hochschuletrier.gdw.ss12.game.Constants;
 import de.hochschuletrier.gdw.ss12.game.Game;
 import de.hochschuletrier.gdw.ss12.game.GameLocal;
 import de.hochschuletrier.gdw.ss12.game.components.InputComponent;
@@ -15,12 +14,10 @@ import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 import de.hochschuletrier.gdw.ss12.game.components.DropableComponent;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
-import de.hochschuletrier.gdw.ss12.game.systems.EntitySpawnSystem;
 
 public class InputSystem extends IteratingSystem implements SystemGameInitializer {
 
     private Game game;
-    private EntitySpawnSystem entitySpawnSystem;
 
     public InputSystem() {
         super(Family.all(InputComponent.class).get(), 0);
@@ -29,7 +26,6 @@ public class InputSystem extends IteratingSystem implements SystemGameInitialize
     @Override
     public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
         this.game = game;
-        entitySpawnSystem = engine.getSystem(EntitySpawnSystem.class);
     }
 
     @Override
@@ -79,7 +75,7 @@ public class InputSystem extends IteratingSystem implements SystemGameInitialize
         DropableComponent dropable = ComponentMappers.dropable.get(entity);
         if (!player.isDead() && dropable != null) {
             PositionComponent position = ComponentMappers.position.get(entity);
-            entitySpawnSystem.createStaticEntity(dropable.item, position.x, position.y, Constants.ITEM_RADIUS, player.team);
+            game.createEntity(dropable.item, position.x, position.y, player.team);
 
             game.playEntitySound(dropable.sound, entity, false);
             entity.remove(DropableComponent.class);

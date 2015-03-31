@@ -1,198 +1,262 @@
 {
     "cookie": {
-        "frequency": 5,
+        "meta": {
+            "frequency": 5
+        },
         "components": {
-            "EatableComponent" : {
+            "Position": {},
+            "Eatable" : {
                 "energy": 10,
                 "sound": "eatable_generic"
             },
-            "RenderTextureComponent": {
+            "RenderTexture": {
                 "image": "eatable_cookie"
             },
-            "PhysixBodyComponent": {}
+            "PhysixBody": { "type": "item", "scale": 18 }
         }
     },
     "muffin": {
-        "frequency": 5,
+        "meta": {
+            "frequency": 5
+        },
         "components": {
-            "EatableComponent" : {
+            "Position": {},
+            "Eatable" : {
                 "energy": 10,
                 "sound": "eatable_generic"
             },
-            "RenderTextureComponent": {
+            "RenderTexture": {
                 "image": "eatable_muffin"
             },
-            "PhysixBodyComponent": {}
+            "PhysixBody": { "type": "item", "scale": 18 }
         }
     },
     "cake": {
-        "frequency": 3,
+        "meta": {
+            "frequency": 3
+        },
         "components": {
-            "EatableComponent" : {
+            "Position": {},
+            "Eatable" : {
                 "energy": 20,
                 "sound": "eatable_generic"
             },
-            "RenderTextureComponent": {
+            "RenderTexture": {
                 "image": "eatable_cake"
             },
-            "DropableComponent": {
+            "Dropable": {
                 "item": "candle",
                 "sound": "drop_item",
                 "texture": "dropable_candle_icon"
             },
-            "PhysixBodyComponent": {}
+            "PhysixBody": { "type": "item", "scale": 18 }
         }
     },
     "chili": {
-        "frequency": 3,
+        "meta": {
+            "frequency": 3
+        },
         "components": {
-            "EatableComponent" : {
+            "Position": {},
+            "Eatable" : {
                 "energy": 0,
                 "sound": "effect_chili",
                 "powerup": "chili"
             },
-            "RenderTextureComponent": {
+            "RenderTexture": {
                 "image": "eatable_chili"
             },
-            "PhysixBodyComponent": {}
+            "PhysixBody": { "type": "item", "scale": 18 }
         }
     },
     "garlic": {
-        "frequency": 3,
+        "meta": {
+            "frequency": 3
+        },
         "components": {
-            "EatableComponent" : {
+            "Position": {},
+            "Eatable" : {
                 "energy": 0,
                 "sound": "eatable_generic",
                 "powerup": "garlic"
             },
-            "RenderTextureComponent": {
+            "RenderTexture": {
                 "image": "eatable_garlic"
             },
-            "PhysixBodyComponent": {}
+            "PhysixBody": { "type": "item", "scale": 18 }
         }
     },
     "gumbox": {
-        "frequency": 3,
+        "meta": {
+            "frequency": 3
+        },
         "components": {
-            "EatableComponent" : {
+            "Position": {},
+            "Eatable" : {
                 "energy": 5,
                 "sound": "eatable_generic"
             },
-            "RenderTextureComponent": {
+            "RenderTexture": {
                 "image": "eatable_bubblegum"
             },
-            "DropableComponent": {
+            "Dropable": {
                 "item": "trap_bubblegum",
                 "sound": "drop_item",
                 "texture": "dropable_bubblegum_icon"
             },
-            "PhysixBodyComponent": {}
+            "PhysixBody": { "type": "item", "scale": 18 }
         }
     },
     "banana": {
-        "frequency": 3,
+        "meta": {
+            "frequency": 3
+        },
         "components": {
-            "EatableComponent" : {
+            "Position": {},
+            "Eatable" : {
                 "energy": 5,
                 "sound": "eatable_generic"
             },
-            "RenderTextureComponent": {
+            "RenderTexture": {
                 "image": "eatable_banana"
             },
-            "DropableComponent": {
+            "Dropable": {
                 "item": "trap_bananapeel",
                 "sound": "drop_item",
                 "texture": "dropable_banana_icon"
             },
-            "PhysixBodyComponent": {}
+            "PhysixBody": { "type": "item", "scale": 18 }
         }
     },
     "pizza": {
-        "frequency": 1,
+        "meta": {
+            "frequency": 1
+        },
         "components": {
-            "EatableComponent" : {
+            "Position": {},
+            "Eatable" : {
                 "energy": 15,
                 "sound": "eatable_generic"
             },
-            "RenderTextureComponent": {
+            "RenderTexture": {
                 "image": "eatable_pizza"
             },
-            "PizzaSliceComponent": {},
-            "PhysixBodyComponent": {}
+            "PizzaSlice": {},
+            "PhysixBody": { "type": "item", "scale": 18 }
         }
     },
     "magic_mushroom": {
-        "frequency": 1,
+        "meta": {
+            "frequency": 1
+        },
         "components": {
-            "EatableComponent" : {
+            "Position": {},
+            "Eatable" : {
                 "energy": 5,
                 "sound": "eatable_generic",
                 "powerup": "magic_mushroom"
             },
-            "RenderTextureComponent": {
+            "RenderTexture": {
                 "image": "eatable_magic_mushroom"
             },
-            "PhysixBodyComponent": {}
+            "PhysixBody": { "type": "item", "scale": 18 }
         }
     },
     "candle": {
-        "frequency": 0,
+        "meta": {
+            "frequency": 0
+        },
         "components": {
-            "RenderTextureComponent": {
+            "Position": {},
+            "RenderTexture": {
                 "image": "dropable_candle"
             },
-            "LightComponent": {
+            "Light": {
                 "radius": "400",
                 "shrinkPixelPerSecond": "20"
-            },
-            "PhysixBodyComponent": {}
+            }
         }
     },
     "trap_bubblegum": {
-        "frequency": 0,
+        "meta": {
+            "frequency": 0
+        },
         "components": {
-            "ItemTrapComponent" : {
+            "Position": {},
+            "ItemTrap" : {
                 "sound": "eatable_generic",
                 "powerup": "trap_bubblegum"
             },
-            "RenderTextureComponent": {
+            "RenderTexture": {
                 "image": "dropable_bubblegum"
             },
-            "PhysixBodyComponent": {}
+            "PhysixBody": { "type": "item", "scale": 18 }
         }
     },
     "trap_bananapeel": {
-        "frequency": 0,
+        "meta": {
+            "frequency": 0
+        },
         "components": {
-            "ItemTrapComponent" : {
+            "Position": {},
+            "ItemTrap" : {
                 "sound": "effect_banana",
                 "powerup": "trap_bananapeel"
             },
-            "RenderTextureComponent": {
+            "RenderTexture": {
                 "image": "dropable_banana"
             },
-            "PhysixBodyComponent": {}
+            "PhysixBody": { "type": "item", "scale": 18 }
         }
     },
     "player_eaten": {
-        "frequency": 0,
+        "meta": {
+            "frequency": 0
+        },
         "components": {
-            "RenderAnimationComponent": {
+            "Position": {},
+            "RenderAnimation": {
                 "animation": "player_eaten"
             }
         }
     },
     "player_starved": {
-        "frequency": 0,
+        "meta": {
+            "frequency": 0
+        },
         "components": {
-            "EatableComponent" : {
+            "Position": {},
+            "Eatable" : {
                 "energy": 10,
                 "sound": "eatable_generic"
             },
-            "RenderAnimationComponent": {
+            "RenderAnimation": {
                 "animation": "player_starved"
             },
-            "PhysixBodyComponent": {}
+            "PhysixBody": { "type": "item", "scale": 18 }
+        }
+    },
+    "player": {
+        "meta": {
+            "frequency": 0
+        },
+        "components": {
+            "Player": {
+                "radius": 24
+            },
+            "SoundEmitter": {},
+            "Bot": {},
+            "Position": {},
+            "ParticleEffect": {
+                "name": "player"
+            },
+            "Input": {
+                "speed": ""
+            },
+            "Light": {
+                "radius": 600
+            },
+            "PhysixBody": { "type": "player", "scale": 24 }
         }
     }
 }

@@ -10,21 +10,21 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
-import de.hochschuletrier.gdw.commons.jackson.JacksonReader;
+import de.hochschuletrier.gdw.commons.gdx.entityFactory.EntityFactory;
+import de.hochschuletrier.gdw.commons.gdx.entityFactory.EntityInfo;
 import de.hochschuletrier.gdw.commons.tiled.Layer;
 import de.hochschuletrier.gdw.commons.tiled.TileInfo;
 import de.hochschuletrier.gdw.commons.tiled.TiledMap;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
 import de.hochschuletrier.gdw.ss12.game.Constants;
 import de.hochschuletrier.gdw.ss12.game.Game;
+import de.hochschuletrier.gdw.ss12.game.components.factories.EntityFactoryParam;
 import de.hochschuletrier.gdw.ss12.game.data.Team;
 import de.hochschuletrier.gdw.ss12.game.components.EatableComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemMapInitializer;
-import de.hochschuletrier.gdw.ss12.game.data.EntityJson;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.Stack;
@@ -39,31 +39,30 @@ public class SpawnRandomEatableSystem extends EntitySystem implements SystemGame
     private Stack<String> nextEatables = new Stack();
     private Stack<String> usedEatables = new Stack();
 
-    private EntitySpawnSystem entitySpawnSystem;
     private final SpawnPositionPool spawnPositionPool = new SpawnPositionPool(256, 512);
     private final Array<SpawnPosition> spawnPositions = new Array();
     private float timeSincelastItemSpawnTry;
     private final Random random = new Random();
+    private Game game;
 
     @Override
     public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
+        this.game = game;
         nextEatables.clear();
         usedEatables.clear();
-        entitySpawnSystem = engine.getSystem(EntitySpawnSystem.class);
         engine.addEntityListener(this);
         eatables = engine.getEntitiesFor(Family.all(EatableComponent.class).get());
 
-        try {
-            HashMap<String, EntityJson> entityJsonMap = JacksonReader.readMap("data/json/entities.json", EntityJson.class);
-            for (Map.Entry<String, EntityJson> entry : entityJsonMap.entrySet()) {
-                for (int i = 0; i < entry.getValue().frequency; i++) {
-                    nextEatables.push(entry.getKey());
-                }
+        EntityFactory<EntityFactoryParam> entityFactory = game.getEntityFactory();
+        for (Map.Entry<String, EntityInfo> entrySet : entityFactory.getEntityInfos().entrySet()) {
+            String key = entrySet.getKey();
+            EntityInfo value = entrySet.getValue();
+            final int frequency = value.meta.getInt("frequency");
+            for (int i = 0; i < frequency; i++) {
+                nextEatables.push(key);
             }
-            Collections.shuffle(nextEatables);
-        } catch (Exception e) {
-            logger.error("Error reading entities.json", e);
         }
+        Collections.shuffle(nextEatables);
     }
 
     @Override
@@ -144,7 +143,7 @@ public class SpawnRandomEatableSystem extends EntitySystem implements SystemGame
         }
         String eatableName = nextEatables.pop();
         usedEatables.push(eatableName);
-        entitySpawnSystem.createStaticEntity(eatableName, position.x, position.y, Constants.ITEM_RADIUS, null);
+        game.createEntity(eatableName, position.x, position.y, null);
     }
 
     @Override

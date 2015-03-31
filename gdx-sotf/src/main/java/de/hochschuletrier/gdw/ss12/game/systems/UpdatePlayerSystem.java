@@ -20,7 +20,6 @@ public class UpdatePlayerSystem extends IteratingSystem implements SystemGameIni
 
     private PhysixSystem physixSystem;
     PowerupSystem powerupSystem;
-    EntitySpawnSystem entitySpawnSystem;
     private Game game;
 
     public UpdatePlayerSystem() {
@@ -31,7 +30,6 @@ public class UpdatePlayerSystem extends IteratingSystem implements SystemGameIni
     public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
         this.game = game;
         physixSystem = engine.getSystem(PhysixSystem.class);
-        entitySpawnSystem = engine.getSystem(EntitySpawnSystem.class);
         powerupSystem = engine.getSystem(PowerupSystem.class);
     }
 
@@ -79,7 +77,7 @@ public class UpdatePlayerSystem extends IteratingSystem implements SystemGameIni
     private void triggerPlayerDeath(Entity entity, PlayerComponent player, String animationEntity) {
         player.statistic.deaths++;
         final PositionComponent position = ComponentMappers.position.get(entity);
-        entitySpawnSystem.createStaticEntity(animationEntity, position.x, position.y, Constants.PLAYER_DEFAULT_SIZE, null);
+        game.createEntity(animationEntity, position.x, position.y, null);
         player.powerups.clear();
         player.state = PlayerState.DEAD;
         player.radius = Constants.PLAYER_DEFAULT_SIZE;

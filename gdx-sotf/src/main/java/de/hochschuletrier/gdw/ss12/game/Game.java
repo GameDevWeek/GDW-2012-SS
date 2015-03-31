@@ -2,32 +2,28 @@ package de.hochschuletrier.gdw.ss12.game;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.Array;
 import de.hochschuletrier.gdw.commons.devcon.cvar.CVarBool;
 import de.hochschuletrier.gdw.commons.gdx.assets.AnimationExtended;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
 import de.hochschuletrier.gdw.commons.gdx.input.InputForwarder;
-import de.hochschuletrier.gdw.commons.gdx.physix.PhysixBodyDef;
-import de.hochschuletrier.gdw.commons.gdx.physix.PhysixFixtureDef;
 import de.hochschuletrier.gdw.commons.gdx.physix.systems.PhysixSystem;
 import de.hochschuletrier.gdw.commons.gdx.audio.SoundEmitter;
 import de.hochschuletrier.gdw.commons.gdx.audio.SoundInstance;
+import de.hochschuletrier.gdw.commons.gdx.entityFactory.EntityFactory;
 import de.hochschuletrier.gdw.commons.gdx.input.hotkey.Hotkey;
 import de.hochschuletrier.gdw.commons.gdx.physix.systems.PhysixDebugRenderSystem;
-import de.hochschuletrier.gdw.commons.tiled.Layer;
-import de.hochschuletrier.gdw.commons.tiled.TileInfo;
 import de.hochschuletrier.gdw.commons.tiled.TiledMap;
-import de.hochschuletrier.gdw.commons.tiled.utils.RectangleGenerator;
-import de.hochschuletrier.gdw.commons.utils.Rectangle;
 import de.hochschuletrier.gdw.ss12.Main;
+import de.hochschuletrier.gdw.ss12.game.components.factories.EntityFactoryParam;
 import de.hochschuletrier.gdw.ss12.game.data.PlayerState;
 import de.hochschuletrier.gdw.ss12.game.data.Team;
 import de.hochschuletrier.gdw.ss12.game.components.PositionComponent;
+import de.hochschuletrier.gdw.ss12.game.components.SetupComponent;
 import de.hochschuletrier.gdw.ss12.game.components.SoundEmitterComponent;
 import de.hochschuletrier.gdw.ss12.game.data.NoticeType;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
@@ -41,6 +37,8 @@ import java.util.HashMap;
 public abstract class Game {
 
     protected final CustomPooledEngine engine = new CustomPooledEngine();
+    private final EntityFactoryParam factoryParam = new EntityFactoryParam();
+    private final EntityFactory<EntityFactoryParam> entityFactory = new EntityFactory("data/json/entities.json", Game.class);
 
     protected TiledMap map;
     protected Entity localPlayer;
@@ -67,6 +65,8 @@ public abstract class Game {
     protected void init() {
         addSystems();
         initSystems();
+        entityFactory.init(engine, assetManager);
+        
         inputForwarder.set(engine.getSystem(KeyboardInputSystem.class));
         Main.getInstance().console.register(physixDebug);
         physixDebug.addListener((CVar) -> engine.getSystem(PhysixDebugRenderSystem.class).setProcessing(physixDebug.get()));
@@ -93,6 +93,10 @@ public abstract class Game {
         return teams;
     }
 
+    public PooledEngine getEngine() {
+        return engine;
+    }
+
     public String getMapName() {
         return map.getFilename();
     }
@@ -110,7 +114,6 @@ public abstract class Game {
         engine.addSystem(new PhysixSystem(
                 Constants.BOX2D_SCALE, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS
         ));
-        engine.addSystem(new EntitySpawnSystem());
         engine.addSystem(new UpdatePlayerEffectsSystem());
         engine.addSystem(new CameraSystem());
         engine.addSystem(new UpdatePositionSystem());
@@ -223,29 +226,8 @@ public abstract class Game {
 
     public void loadMap(String filename) {
         map = assetManager.getTiledMap(filename);
-        setupPhysixWorld();
+        MapLoader.run(this, map);
         systemMapInit();
-    }
-
-    private void setupPhysixWorld() {
-        PhysixSystem physixSystem = engine.getSystem(PhysixSystem.class);
-        int tileWidth = map.getTileWidth();
-        int tileHeight = map.getTileHeight();
-        RectangleGenerator generator = new RectangleGenerator();
-        generator.generate(map,
-                (Layer layer, TileInfo info) -> info.getBooleanProperty("blocked", false),
-                (Rectangle rect) -> addShape(physixSystem, rect, tileWidth, tileHeight));
-
-    }
-
-    private void addShape(PhysixSystem physixSystem, Rectangle rect, int tileWidth, int tileHeight) {
-        float width = rect.width * tileWidth;
-        float height = rect.height * tileHeight;
-        float x = rect.x * tileWidth + width / 2;
-        float y = rect.y * tileHeight + height / 2;
-        PhysixBodyDef bodyDef = new PhysixBodyDef(BodyDef.BodyType.StaticBody, physixSystem).position(x, y).fixedRotation(false);
-        Body body = physixSystem.getWorld().createBody(bodyDef);
-        body.createFixture(new PhysixFixtureDef(physixSystem).density(1).friction(0).shapeBox(width, height));
     }
 
     public void startCountdown() {
@@ -267,5 +249,35 @@ public abstract class Game {
 
     public void update(float delta) {
         engine.update(delta);
+    }
+
+    public Entity createEntity(String name, float x, float y, Team team) {
+        factoryParam.game = this;
+        factoryParam.team = team;
+        factoryParam.x = x;
+        factoryParam.y = y;
+        Entity entity = entityFactory.createEntity(name, factoryParam);
+
+        if (this instanceof GameServer) {
+            SetupComponent setup = engine.createComponent(SetupComponent.class);
+            setup.team = team;
+            setup.name = name;
+            entity.add(setup);
+        }
+
+        engine.addEntity(entity);
+        return entity;
+    }
+
+    public Entity createPlayer(float x, float y, Team team, String name) {
+        team.numPlayers++;
+
+        Entity entity = createEntity("player", x, y, team);
+        ComponentMappers.player.get(entity).name = name;
+        return entity;
+    }
+
+    public EntityFactory<EntityFactoryParam> getEntityFactory() {
+        return entityFactory;
     }
 }

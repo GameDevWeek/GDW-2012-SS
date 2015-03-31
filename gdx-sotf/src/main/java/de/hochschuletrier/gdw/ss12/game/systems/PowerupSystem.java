@@ -218,7 +218,7 @@ public class PowerupSystem extends IteratingSystem implements SystemGameInitiali
         }
     }
 
-    Powerup createPowerup(String powerupName) {
+    public Powerup createPowerup(String powerupName) {
         PowerupJson powerupJson = powerupJsonMap.get(powerupName);
         Powerup powerup = powerupPool.obtain();
         powerup.image = assetManager.getTexture(powerupJson.image);

@@ -13,7 +13,6 @@ import de.hochschuletrier.gdw.commons.netcode.simple.NetClientSimple;
 import de.hochschuletrier.gdw.commons.netcode.simple.NetDatagramHandler;
 import de.hochschuletrier.gdw.ss12.Main;
 import de.hochschuletrier.gdw.ss12.game.ComponentMappers;
-import de.hochschuletrier.gdw.ss12.game.Constants;
 import de.hochschuletrier.gdw.ss12.game.Game;
 import de.hochschuletrier.gdw.ss12.game.components.InputComponent;
 import de.hochschuletrier.gdw.ss12.game.components.PlayerComponent;
@@ -21,6 +20,7 @@ import de.hochschuletrier.gdw.ss12.game.data.PlayerSetup;
 import de.hochschuletrier.gdw.ss12.game.data.PlayerUpdate;
 import de.hochschuletrier.gdw.ss12.game.data.Team;
 import de.hochschuletrier.gdw.ss12.game.datagrams.CreateEntityDatagram;
+import de.hochschuletrier.gdw.ss12.game.datagrams.EntitySoundDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.NoticeDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerNameDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.PlayerUpdatesDatagram;
@@ -29,7 +29,6 @@ import de.hochschuletrier.gdw.ss12.game.datagrams.WorldSetupDatagram;
 import de.hochschuletrier.gdw.ss12.game.interfaces.SystemGameInitializer;
 import de.hochschuletrier.gdw.ss12.game.datagrams.WorldSoundDatagram;
 import de.hochschuletrier.gdw.ss12.game.datagrams.TeamStateDatagram;
-import de.hochschuletrier.gdw.ss12.game.systems.EntitySpawnSystem;
 import java.util.HashMap;
 
 public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHandler, SystemGameInitializer, NetClientSimple.Listener {
@@ -37,7 +36,6 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
     private Game game;
     private final NetClientSimple netClient;
     private PooledEngine engine;
-    private EntitySpawnSystem entitySpawnSystem;
     private final HashMap<Long, Entity> netEntityMap = new HashMap();
     private PhysixSystem physixSystem;
 
@@ -50,7 +48,6 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
     public void initGame(Game game, AssetManagerX assetManager, PooledEngine engine) {
         this.engine = engine;
         this.game = game;
-        entitySpawnSystem = engine.getSystem(EntitySpawnSystem.class);
         physixSystem = engine.getSystem(PhysixSystem.class);
         netClient.setHandler(this);
         netClient.setListener(this);
@@ -80,7 +77,7 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
         PlayerSetup[] players = datagram.getPlayers();
         for (int i = 0; i < numPlayers; i++) {
             PlayerSetup player = players[i];
-            Entity entity = entitySpawnSystem.createPlayer(player.start.x, player.start.y, teams.get(player.team), player.name);
+            Entity entity = game.createPlayer(player.start.x, player.start.y, teams.get(player.team), player.name);
             netEntityMap.put(player.netId, entity);
         }
 
@@ -96,7 +93,7 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
         final Vector2 position = datagram.getPosition();
         final byte teamId = datagram.getTeam();
         Team team = teamId == -1 ? null : game.getTeams().get(teamId);
-        Entity entity = entitySpawnSystem.createStaticEntity(datagram.getEntityType(), position.x, position.y, Constants.ITEM_RADIUS, team);
+        Entity entity = game.createEntity(datagram.getEntityType(), position.x, position.y, team);
         netEntityMap.put(datagram.getNetId(), entity);
     }
 
@@ -121,6 +118,11 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
         team.setWins(datagram.getNumberTeamWins());
         team.setPizzaCount(datagram.getPizzaCount());
     }
+    
+    public void handle(EntitySoundDatagram datagram) {
+        Entity entity = netEntityMap.get(datagram.getNetId());
+        game.playEntitySound(datagram.getSound(), entity, false);
+    }
 
     public void handle(PlayerUpdatesDatagram datagram) {
         int numPlayers = datagram.getNumPlayers();
@@ -132,7 +134,8 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
 
                 // only handle the latest datagrams
                 PlayerComponent player = ComponentMappers.player.get(playerEntity);
-                if (player.lastSequenceId < datagram.getSequenceId()) {
+                PhysixBodyComponent physix = ComponentMappers.physixBody.get(playerEntity);
+                if (physix != null && player.lastSequenceId < datagram.getSequenceId()) {
                     player.lastSequenceId = datagram.getSequenceId();
                     ComponentMappers.position.get(playerEntity).set(update.position);
                     final InputComponent input = ComponentMappers.input.get(playerEntity);
@@ -142,7 +145,6 @@ public class NetClientUpdateSystem extends EntitySystem implements NetDatagramHa
                     player.radius = update.radius;
                     player.effectBits = update.effectBits;
                     player.state = update.state;
-                    PhysixBodyComponent physix = ComponentMappers.physixBody.get(playerEntity);
                     physix.setPosition(update.position);
                     ComponentMappers.light.get(playerEntity).setFromPlayerRadius(player.radius);
                     // Adjust body and sensor size

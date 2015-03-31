@@ -35,7 +35,6 @@ public class CustomPooledEngine extends PooledEngine {
         ORDER.put(PhysixSystem.class, priority++); // both
         ORDER.put(UpdatePositionSystem.class, priority++); // both
         ORDER.put(UpdateSoundEmitterSystem.class, priority++); // both
-        ORDER.put(EntitySpawnSystem.class, priority++); // both
         ORDER.put(SpawnRandomEatableSystem.class, priority++); // server
         ORDER.put(PowerupSystem.class, priority++); // server
         ORDER.put(UpdatePlayerEffectsSystem.class, priority++); // both
