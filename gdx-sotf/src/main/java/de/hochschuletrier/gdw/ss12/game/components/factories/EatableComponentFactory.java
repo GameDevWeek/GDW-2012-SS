@@ -3,7 +3,7 @@ package de.hochschuletrier.gdw.ss12.game.components.factories;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import de.hochschuletrier.gdw.commons.gdx.assets.AssetManagerX;
-import de.hochschuletrier.gdw.commons.gdx.entityFactory.ComponentFactory;
+import de.hochschuletrier.gdw.commons.gdx.ashley.ComponentFactory;
 import de.hochschuletrier.gdw.commons.utils.SafeProperties;
 import de.hochschuletrier.gdw.ss12.game.GameLocal;
 import de.hochschuletrier.gdw.ss12.game.components.EatableComponent;
