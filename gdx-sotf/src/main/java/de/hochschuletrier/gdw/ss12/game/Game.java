@@ -70,6 +70,7 @@ public abstract class Game {
         inputForwarder.set(engine.getSystem(KeyboardInputSystem.class));
         Main.getInstance().console.register(physixDebug);
         physixDebug.addListener((CVar) -> engine.getSystem(PhysixDebugRenderSystem.class).setProcessing(physixDebug.get()));
+        engine.getSystem(PhysixDebugRenderSystem.class).setProcessing(physixDebug.get());
         
         // If this is a build jar file, disable hotkeys
         if (!Main.IS_RELEASE) {
