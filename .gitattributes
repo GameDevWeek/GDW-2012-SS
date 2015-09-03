@@ -1,4 +1,4 @@
-﻿# Set the default behavior, in case people don't have core.autocrlf set.
+# Set the default behavior, in case people don't have core.autocrlf set.
 * text eol=crlf
 
 # These files are binary and should be left untouched
@@ -15,8 +15,10 @@
 *.so binary
 *.war binary
 *.ogg binary
+*.flac binary
 *.wav binary
 *.psd binary
+*.tga binary
 
 # Tiled Binaries
 *.tmx binary
